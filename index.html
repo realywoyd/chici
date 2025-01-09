@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shiba Inu Tap Game</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(180deg, #1e1e2f, #141422);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      font-size: 2.5em;
+      margin: 0;
+      color: #ffd700;
+    }
+
+    .header p {
+      font-size: 1.2em;
+      margin: 5px 0;
+    }
+
+    .coin-display {
+      font-size: 1.2em;
+      margin-bottom: 10px;
+    }
+
+    .coin {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .coin img {
+      width: 120px;
+      height: 120px;
+      cursor: pointer;
+      animation: pulse 1s infinite;
+    }
+
+    .coin p {
+      font-size: 1.2em;
+      margin: 5px 0;
+      text-align: center;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.1);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .button {
+      background: #282c34;
+      color: #ffd700;
+      border: 2px solid #ffd700;
+      padding: 10px 20px;
+      margin: 10px;
+      border-radius: 5px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: 0.3s ease-in-out;
+    }
+
+    .button:hover {
+      background: #ffd700;
+      color: #282c34;
+    }
+
+    .modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #282c34;
+      color: #ffd700;
+      border: 2px solid #ffd700;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      display: none;
+      z-index: 1000;
+    }
+
+    .modal h2 {
+      margin-bottom: 10px;
+    }
+
+    .modal p {
+      margin-bottom: 20px;
+    }
+
+    .close-modal {
+      background: transparent;
+      border: 2px solid #ffd700;
+      color: #ffd700;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      z-index: 999;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">
+    <h1>Shiba Inu Tap Game</h1>
+    <p>Your Coins: <span id="coinCount">0</span></p>
+    <p>Rank: <span id="rank">Warrior</span></p>
+  </div>
+
+  <div class="coin">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6e/Shiba_inu_coin_icon.png" alt="Shiba Inu Coin" id="coin">
+    <p>Tap the coin to earn points!</p>
+  </div>
+
+  <div class="buttons">
+    <button class="button" onclick="openModal('boosts')">Boosts</button>
+    <button class="button" onclick="openModal('tasks')">Tasks</button>
+    <button class="button" onclick="openModal('friends')">Friends</button>
+    <button class="button" onclick="openModal('airdrop')">Airdrop</button>
+    <button class="button" onclick="openModal('clans')">Clans</button>
+    <button class="button" onclick="openModal('ranking')">Ranking</button>
+  </div>
+
+  <div id="modal" class="modal">
+    <h2 id="modalTitle">Modal Title</h2>
+    <p id="modalText">This section is under development. Stay tuned for future updates!</p>
+    <button class="close-modal" onclick="closeModal()">Close</button>
+  </div>
+
+  <div id="overlay" class="overlay" onclick="closeModal()"></div>
+
+  <script>
+    let coinCount = 0;
+    let rank = "Warrior";
+    const ranks = ["Warrior", "Elite", "Grandmaster", "Epic", "Legendary", "Mythical"];
+    const modal = document.getElementById("modal");
+    const overlay = document.getElementById("overlay");
+    const coinDisplay = document.getElementById("coinCount");
+    const rankDisplay = document.getElementById("rank");
+
+    document.getElementById("coin").addEventListener("click", () => {
+      coinCount++;
+      coinDisplay.textContent = coinCount;
+      updateRank();
+    });
+
+    function updateRank() {
+      if (coinCount >= 1000) {
+        rank = ranks[5];
+      } else if (coinCount >= 500) {
+        rank = ranks[4];
+      } else if (coinCount >= 200) {
+        rank = ranks[3];
+      } else if (coinCount >= 100) {
+        rank = ranks[2];
+      } else if (coinCount >= 50) {
+        rank = ranks[1];
+      } else {
+        rank = ranks[0];
+      }
+      rankDisplay.textContent = rank;
+    }
+
+    function openModal(section) {
+      const titles = {
+        boosts: "Boosts",
+        tasks: "Tasks",
+        friends: "Friends",
+        airdrop: "Airdrop",
+        clans: "Clans",
+        ranking: "Ranking"
+      };
+      modal.style.display = "block";
+      overlay.style.display = "block";
+      document.getElementById("modalTitle").textContent = titles[section];
+      document.getElementById("modalText").textContent = `This section (${titles[section]}) is under development.`;
+    }
+
+    function closeModal() {
+      modal.style.display = "none";
+      overlay.style.display = "none";
+    }
+  </script>
+</body>
+
+</html>
+
+
+
+
