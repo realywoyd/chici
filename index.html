@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shiba Inu Tap Game</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     body {
@@ -14,7 +13,6 @@
       color: white;
     }
 
-    /* Стили для иконок с текстом внутри */
     .icon-button {
       width: 72px;
       height: 72px;
@@ -22,27 +20,28 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      border-radius: 50%;
       text-align: center;
+      border-radius: 50%;
       background-color: #2d3748;
       color: white;
       font-size: 12px;
       position: relative;
-    }
-
-    .icon-button i {
-      font-size: 20px;
-    }
-
-    .icon-button span {
-      position: absolute;
-      bottom: 5px;
-      font-size: 10px;
+      transition: transform 0.2s, background-color 0.2s;
     }
 
     .icon-button:hover {
       background-color: #4a5568;
-      transition: background-color 0.3s;
+      transform: scale(1.1);
+    }
+
+    .icon-button img {
+      width: 36px;
+      height: 36px;
+    }
+
+    .icon-button span {
+      margin-top: 5px;
+      font-size: 10px;
     }
   </style>
 </head>
@@ -70,13 +69,13 @@
     <div class="flex justify-between items-center mb-6 px-6">
       <!-- Кланы -->
       <div class="icon-button">
-        <i class="fas fa-users"></i>
+        <img src="https://img.icons8.com/color/48/people.png" alt="Clans Icon">
         <span>Кланы</span>
       </div>
 
       <!-- Рейтинг -->
       <div class="icon-button">
-        <i class="fas fa-trophy"></i>
+        <img src="https://img.icons8.com/color/48/trophy.png" alt="Rating Icon">
         <span>Рейтинг</span>
       </div>
     </div>
@@ -85,25 +84,25 @@
     <div class="grid grid-cols-2 gap-4 px-4 sm:flex sm:justify-center sm:space-x-4">
       <!-- Бусты -->
       <div class="icon-button">
-        <i class="fas fa-bolt"></i>
+        <img src="https://img.icons8.com/color/48/flash-on.png" alt="Boosts Icon">
         <span>Бусты</span>
       </div>
 
       <!-- Задания -->
       <div class="icon-button">
-        <i class="fas fa-tasks"></i>
+        <img src="https://img.icons8.com/color/48/task.png" alt="Tasks Icon">
         <span>Задания</span>
       </div>
 
       <!-- Друзья -->
       <div class="icon-button">
-        <i class="fas fa-user-friends"></i>
+        <img src="https://img.icons8.com/color/48/conference-call.png" alt="Friends Icon">
         <span>Друзья</span>
       </div>
 
       <!-- Airdrop -->
       <div class="icon-button">
-        <i class="fas fa-gift"></i>
+        <img src="https://img.icons8.com/color/48/gift.png" alt="Airdrop Icon">
         <span>Airdrop</span>
       </div>
     </div>
