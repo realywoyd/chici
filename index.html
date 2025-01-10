@@ -3,156 +3,168 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shiba Inu Tap Game</title>
+  <title>Shiba Inu Tap Game - Futurama Style</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
+    /* Космический фон */
     body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(to bottom, #1e293b, #0f172a);
+      background: linear-gradient(180deg, #060b23, #1a0028);
+      background-size: cover;
+      min-height: 100vh;
+      overflow: hidden;
       color: white;
+      font-family: 'Arial', sans-serif;
     }
 
-    .tap-button {
-      background-color: #fbbf24;
-      border-radius: 50%;
+    .stars {
+      background: url('https://i.imgur.com/A1I5X1b.png') repeat;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 200%;
+      animation: stars 100s linear infinite;
+    }
+
+    @keyframes stars {
+      from {
+        transform: translateY(0);
+      }
+      to {
+        transform: translateY(-50%);
+      }
+    }
+
+    .planet {
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 250px;
+      height: 250px;
+      background: url('https://i.imgur.com/zGEtAAp.png') no-repeat center center;
+      background-size: contain;
+      animation: spin 60s linear infinite;
+    }
+
+    @keyframes spin {
+      from {
+        transform: translateX(-50%) rotate(0deg);
+      }
+      to {
+        transform: translateX(-50%) rotate(360deg);
+      }
+    }
+
+    .shiba-logo {
       width: 120px;
       height: 120px;
+      margin: 0 auto;
+      background: url('https://i.imgur.com/TKR4MJw.png') no-repeat center center;
+      background-size: contain;
+    }
+
+    .tap-btn {
+      width: 120px;
+      height: 120px;
+      background: #ffcc00;
+      color: black;
+      font-weight: bold;
+      text-align: center;
+      line-height: 120px;
+      border-radius: 50%;
+      box-shadow: 0 0 15px #ffcc00;
+      animation: pulse 1.5s infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 10px #ffcc00;
+      }
+      50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 30px #ffcc00;
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 10px #ffcc00;
+      }
+    }
+
+    .btns-container {
       display: flex;
-      align-items: center;
       justify-content: center;
-      transition: transform 0.2s ease-in-out;
+      gap: 20px;
+      margin-top: 20px;
     }
 
-    .tap-button:hover {
-      transform: scale(1.1);
-    }
-
-    .icon-btn {
+    .action-btn {
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      background: #1e40af; /* Синий по умолчанию */
-      color: white;
-      border-radius: 12px;
-      padding: 10px;
-      transition: transform 0.2s ease-in-out;
+      padding: 15px;
+      background: #1c1f3b;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #2b7de9;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .icon-btn:hover {
-      transform: scale(1.05);
+    .action-btn:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 20px #2b7de9;
     }
 
     .icon {
-      width: 24px;
-      height: 24px;
-      margin-bottom: 5px;
-    }
-
-    .logo {
-      width: 100px;
-      height: 100px;
-      margin: 0 auto 16px auto;
-      display: block;
+      width: 40px;
+      height: 40px;
     }
   </style>
 </head>
 <body>
-  <div class="container mx-auto text-center p-4 relative min-h-screen flex flex-col items-center justify-center">
-    <h1 class="text-3xl font-bold mb-4 sm:text-4xl">Shiba Inu Tap Game</h1>
+  <div class="stars"></div>
+  <div class="planet"></div>
 
-    <!-- Логотип -->
-    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Shiba_Inu_coin_logo.png" alt="Shiba Inu Logo" class="logo">
+  <div class="container mx-auto text-center pt-12">
+    <h1 class="text-4xl font-bold mb-4">Shiba Inu Tap Game</h1>
+    <p class="text-xl mb-4">Монеты: <span id="coins">0</span></p>
+    <div class="shiba-logo"></div>
+    <div class="tap-btn mt-8" onclick="tap()">Tap!</div>
 
-    <!-- Монеты и энергия -->
-    <div class="mb-6 text-center">
-      <p class="text-base sm:text-lg">Монеты: <span id="coins">0</span></p>
-      <p class="text-base sm:text-lg">Энергия: <span id="energy">10</span></p>
-      <p class="text-sm sm:text-lg mt-2">Ранг: <span id="rank">Воин</span></p>
-      <p class="text-xs sm:text-sm text-gray-400">До следующего ранга: <span id="next-rank-coins">10</span> монет</p>
-    </div>
-
-    <!-- Кнопка Тап -->
-    <div class="relative mb-6">
-      <div class="absolute -top-12 -left-16">
-        <button id="clans-btn" class="icon-btn bg-green-500">
-          <img src="https://cdn-icons-png.flaticon.com/512/152/152473.png" alt="Clans Icon" class="icon">
-          Кланы
-        </button>
+    <div class="btns-container mt-8">
+      <div class="action-btn" onclick="showAlert('Бусты')">
+        <img class="icon" src="https://i.imgur.com/bPhKlLl.png" alt="Boost">
+        <span class="mt-2">Бусты</span>
       </div>
-      <div class="absolute -top-12 -right-16">
-        <button id="rating-btn" class="icon-btn bg-yellow-500">
-          <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" alt="Rating Icon" class="icon">
-          Рейтинг
-        </button>
+      <div class="action-btn" onclick="showAlert('Задания')">
+        <img class="icon" src="https://i.imgur.com/nVQ02qJ.png" alt="Tasks">
+        <span class="mt-2">Задания</span>
       </div>
-      <button id="tap-button" class="tap-button">
-        <span class="text-lg font-bold">Тап!</span>
-      </button>
-    </div>
-
-    <!-- Нижние кнопки -->
-    <div class="grid grid-cols-4 gap-4 px-4">
-      <button id="boosts-btn" class="icon-btn bg-blue-500">
-        <img src="https://cdn-icons-png.flaticon.com/512/566/566020.png" alt="Boosts Icon" class="icon">
-        Бусты
-      </button>
-      <button id="tasks-btn" class="icon-btn bg-green-500">
-        <img src="https://cdn-icons-png.flaticon.com/512/1250/1250678.png" alt="Tasks Icon" class="icon">
-        Задания
-      </button>
-      <button id="friends-btn" class="icon-btn bg-purple-500">
-        <img src="https://cdn-icons-png.flaticon.com/512/876/876569.png" alt="Friends Icon" class="icon">
-        Друзья
-      </button>
-      <button id="airdrop-btn" class="icon-btn bg-orange-500">
-        <img src="https://cdn-icons-png.flaticon.com/512/1055/1055676.png" alt="Airdrop Icon" class="icon">
-        Airdrop
-      </button>
+      <div class="action-btn" onclick="showAlert('Друзья')">
+        <img class="icon" src="https://i.imgur.com/ZXOy3cJ.png" alt="Friends">
+        <span class="mt-2">Друзья</span>
+      </div>
+      <div class="action-btn" onclick="showAlert('Airdrop')">
+        <img class="icon" src="https://i.imgur.com/Ggf7YVo.png" alt="Airdrop">
+        <span class="mt-2">Airdrop</span>
+      </div>
     </div>
   </div>
 
-  <!-- Скрипт -->
   <script>
-    const tapButton = document.getElementById('tap-button');
-    const coinsDisplay = document.getElementById('coins');
     let coins = 0;
 
-    // Функциональность кнопки "Тап"
-    tapButton.addEventListener('click', () => {
-      coins += 1;
-      coinsDisplay.textContent = coins;
-      tapButton.style.transform = 'scale(0.9)';
-      setTimeout(() => {
-        tapButton.style.transform = 'scale(1)';
-      }, 100);
-    });
+    function tap() {
+      coins++;
+      document.getElementById("coins").innerText = coins;
+    }
 
-    // Функциональность остальных кнопок
-    document.getElementById('clans-btn').addEventListener('click', () => {
-      alert('Открыты кланы!');
-    });
-
-    document.getElementById('rating-btn').addEventListener('click', () => {
-      alert('Открыт рейтинг!');
-    });
-
-    document.getElementById('boosts-btn').addEventListener('click', () => {
-      alert('Открыты бусты!');
-    });
-
-    document.getElementById('tasks-btn').addEventListener('click', () => {
-      alert('Открыты задания!');
-    });
-
-    document.getElementById('friends-btn').addEventListener('click', () => {
-      alert('Открыты друзья!');
-    });
-
-    document.getElementById('airdrop-btn').addEventListener('click', () => {
-      alert('Открыт airdrop!');
-    });
+    function showAlert(feature) {
+      alert(`Открыто: ${feature}`);
+    }
   </script>
 </body>
 </html>
+
