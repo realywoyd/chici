@@ -13,35 +13,26 @@
       color: white;
     }
 
-    .icon-button {
-      width: 72px;
-      height: 72px;
+    .tap-button {
+      background-color: #fbbf24;
+      border-radius: 50%;
+      width: 120px;
+      height: 120px;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      text-align: center;
-      border-radius: 50%;
-      background-color: #2d3748;
-      color: white;
-      font-size: 12px;
+      transition: transform 0.2s ease-in-out;
       position: relative;
-      transition: transform 0.2s, background-color 0.2s;
+      overflow: hidden;
     }
 
-    .icon-button:hover {
-      background-color: #4a5568;
+    .tap-button:hover {
       transform: scale(1.1);
     }
 
-    .icon-button img {
-      width: 36px;
-      height: 36px;
-    }
-
-    .icon-button span {
-      margin-top: 5px;
-      font-size: 10px;
+    .tap-logo {
+      width: 90px;
+      height: 90px;
     }
   </style>
 </head>
@@ -58,67 +49,36 @@
       <p class="text-xs sm:text-sm text-gray-400">До следующего ранга: <span id="next-rank-coins">10</span> монет</p>
     </div>
 
-    <!-- Кнопка Тап -->
+    <!-- Кнопка Тап с логотипом -->
     <div class="mb-6">
-      <button id="tap-button" class="tap-button bg-yellow-400 text-black rounded-full w-28 h-28 sm:w-36 sm:h-36 text-lg sm:text-2xl font-bold">
-        Тап!
+      <button id="tap-button" class="tap-button">
+        <img class="tap-logo" src="https://yandex-images.clstorage.net/Qd531Rx37/6a2567cF1Atw/eGvhAJxQ-lPDy2L0ySwoW5_fERjq6rEOh_5BnQWDzUT2yZ9igagu4m8IE9810Ls3BfFCPx-YMbIzBUY2tHEfBWxPILF4oFpDw_uyZXm8WOsfL5FZqpqUi_HYlsp39VrS0V7Y4CUtu2IPSccbEQMI9gHiJywdbecFRqHhU1MXeNKJeRMCCEMqMsfrUDY5fJn8_L_Qv3r9kf7SG7dbFNc6Q-D8yuAGr1tDLihSmMKxa2MxI1b_LU8k5_Th4GOTl0jjyZlTMChDuQHVehDGeY3Znww-AwzZ_2A-Mkk2qhdmapOA7-ggBRw4IM04gFqSQsgBgzJXng-_B6bnI_MTMcTYQng7IWKY8VjCBkmy92nuOy-PXEN_SQwRHeL4JLl2V7jgwQ47MuY_GvDdWODIAfAZomJxJv0tbuY1tEPzQpM22gP4KeOymEEIINZJcZZ7rjt-fc_gbgnfsV4xSBTpRrfqM-KM2-NU7RsBH9qDq0Ih6oChYJWtzM321mWBI0JiVrkyG7mDEjngqCI1GuP2mOyJfP3NAm2JHsCf0ErGije0KNKRTOqyRe2JAX07AVgCQ7mjoLH2bjy-1oeEkONyooQK0VmrU0O4wHrwx4uydwuMCZ9fDVEO6X9jT4IaBEoFtijAkO2J4IW9G_PMaOMqoWKLEkIzVf5-Lpfn5RLD08AGOXDoGUKj2lI6YbXLUoV4fJi_XC1wPtrO43xC2GQ6N-QoAaD8ajG2jbngLjkTumNSm2LxQ9XPHZ3k9eYS0MCBlUiguGnRMPhxawAnO5I3qA1YXd990M6b7kC8oUp2mvREehBh3YiyJk9bMh37AZkRA6gzAzIWHF3cJme2E1JycoQ5s8t7wgKboTqiV4pDhLkc65-8n5Nsq2zjjpAaRViWtlpwwJ_bYKXs-KNPi3N5oyLZYJKyRk983qTWFQMR8nNEKzCoG5AwmjBI8reb8hd53Oi-XZxgvjhPUI9giOXao" alt="Shiba Inu Logo">
       </button>
-    </div>
-
-    <!-- Верхние кнопки: Кланы и Рейтинг -->
-    <div class="flex justify-between items-center mb-6 px-6">
-      <!-- Кланы -->
-      <div class="icon-button">
-        <img src="https://img.icons8.com/color/48/people.png" alt="Clans Icon">
-        <span>Кланы</span>
-      </div>
-
-      <!-- Рейтинг -->
-      <div class="icon-button">
-        <img src="https://img.icons8.com/color/48/trophy.png" alt="Rating Icon">
-        <span>Рейтинг</span>
-      </div>
     </div>
 
     <!-- Нижние кнопки -->
     <div class="grid grid-cols-2 gap-4 px-4 sm:flex sm:justify-center sm:space-x-4">
-      <!-- Бусты -->
-      <div class="icon-button">
-        <img src="https://img.icons8.com/color/48/flash-on.png" alt="Boosts Icon">
-        <span>Бусты</span>
-      </div>
-
-      <!-- Задания -->
-      <div class="icon-button">
-        <img src="https://img.icons8.com/color/48/task.png" alt="Tasks Icon">
-        <span>Задания</span>
-      </div>
-
-      <!-- Друзья -->
-      <div class="icon-button">
-        <img src="https://img.icons8.com/color/48/conference-call.png" alt="Friends Icon">
-        <span>Друзья</span>
-      </div>
-
-      <!-- Airdrop -->
-      <div class="icon-button">
-        <img src="https://img.icons8.com/color/48/gift.png" alt="Airdrop Icon">
-        <span>Airdrop</span>
-      </div>
+      <button class="bg-blue-500 text-white py-2 px-4 rounded-full">Бусты</button>
+      <button class="bg-green-500 text-white py-2 px-4 rounded-full">Задания</button>
+      <button class="bg-purple-500 text-white py-2 px-4 rounded-full">Друзья</button>
+      <button class="bg-orange-500 text-white py-2 px-4 rounded-full">Airdrop</button>
     </div>
   </div>
 
-  <!-- Модальное окно -->
-  <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-    <div class="bg-white text-black p-6 rounded-lg w-80">
-      <h2 id="modal-title" class="text-xl font-bold">Раздел в разработке</h2>
-      <p id="modal-body" class="mt-2">Этот раздел будет доступен в будущих обновлениях.</p>
-      <button id="modal-close" class="mt-4 bg-red-500 text-white py-2 px-4 rounded">Закрыть</button>
-    </div>
-  </div>
-
+  <!-- Скрипт -->
   <script>
-    // Логика игры осталась неизменной из предыдущего кода.
+    const tapButton = document.getElementById('tap-button');
+    const coinsDisplay = document.getElementById('coins');
+    let coins = 0;
+
+    tapButton.addEventListener('click', () => {
+      coins += 1;
+      coinsDisplay.textContent = coins;
+      tapButton.style.transform = 'scale(0.9)';
+      setTimeout(() => {
+        tapButton.style.transform = 'scale(1)';
+      }, 100);
+    });
   </script>
 </body>
 </html>
