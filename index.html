@@ -14,49 +14,35 @@
       color: white;
     }
 
-    /* Анимация нажатия кнопки */
-    .tap-animation {
-      animation: bounce 0.2s ease-out;
+    /* Стили для иконок с текстом внутри */
+    .icon-button {
+      width: 72px;
+      height: 72px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      text-align: center;
+      background-color: #2d3748;
+      color: white;
+      font-size: 12px;
+      position: relative;
     }
 
-    @keyframes bounce {
-      0% {
-        transform: scale(1);
-      }
-      50% {
-        transform: scale(1.15);
-      }
-      100% {
-        transform: scale(1);
-      }
+    .icon-button i {
+      font-size: 20px;
     }
 
-    /* Тени кнопок */
-    .button {
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      transition: transform 0.2s, box-shadow 0.2s;
+    .icon-button span {
+      position: absolute;
+      bottom: 5px;
+      font-size: 10px;
     }
 
-    .button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-    }
-
-    .button:active {
-      transform: translateY(0);
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    }
-
-    /* Модальное окно анимации */
-    .modal {
-      opacity: 0;
-      transform: scale(0.9);
-      transition: opacity 0.2s ease, transform 0.2s ease;
-    }
-
-    .modal.active {
-      opacity: 1;
-      transform: scale(1);
+    .icon-button:hover {
+      background-color: #4a5568;
+      transition: background-color 0.3s;
     }
   </style>
 </head>
@@ -75,7 +61,7 @@
 
     <!-- Кнопка Тап -->
     <div class="mb-6">
-      <button id="tap-button" class="tap-button bg-yellow-400 text-black rounded-full w-28 h-28 sm:w-36 sm:h-36 text-lg sm:text-2xl font-bold button">
+      <button id="tap-button" class="tap-button bg-yellow-400 text-black rounded-full w-28 h-28 sm:w-36 sm:h-36 text-lg sm:text-2xl font-bold">
         Тап!
       </button>
     </div>
@@ -83,42 +69,49 @@
     <!-- Верхние кнопки: Кланы и Рейтинг -->
     <div class="flex justify-between items-center mb-6 px-6">
       <!-- Кланы -->
-      <button id="clans" class="bg-teal-500 text-white py-2 px-3 sm:py-3 sm:px-4 rounded-lg button flex flex-col items-center text-xs sm:text-sm">
-        <i class="fas fa-users text-lg sm:text-2xl"></i>
+      <div class="icon-button">
+        <i class="fas fa-users"></i>
         <span>Кланы</span>
-      </button>
+      </div>
 
       <!-- Рейтинг -->
-      <button id="leaderboard" class="bg-gray-700 text-white py-2 px-3 sm:py-3 sm:px-4 rounded-lg button flex flex-col items-center text-xs sm:text-sm">
-        <i class="fas fa-trophy text-lg sm:text-2xl"></i>
+      <div class="icon-button">
+        <i class="fas fa-trophy"></i>
         <span>Рейтинг</span>
-      </button>
+      </div>
     </div>
 
     <!-- Нижние кнопки -->
     <div class="grid grid-cols-2 gap-4 px-4 sm:flex sm:justify-center sm:space-x-4">
-      <button id="boosts" class="bg-blue-500 text-white py-2 px-3 sm:py-3 sm:px-4 rounded-lg button flex flex-col items-center text-xs sm:text-sm">
-        <i class="fas fa-bolt text-lg sm:text-2xl"></i>
+      <!-- Бусты -->
+      <div class="icon-button">
+        <i class="fas fa-bolt"></i>
         <span>Бусты</span>
-      </button>
-      <button id="tasks" class="bg-green-500 text-white py-2 px-3 sm:py-3 sm:px-4 rounded-lg button flex flex-col items-center text-xs sm:text-sm">
-        <i class="fas fa-tasks text-lg sm:text-2xl"></i>
+      </div>
+
+      <!-- Задания -->
+      <div class="icon-button">
+        <i class="fas fa-tasks"></i>
         <span>Задания</span>
-      </button>
-      <button id="friends" class="bg-purple-500 text-white py-2 px-3 sm:py-3 sm:px-4 rounded-lg button flex flex-col items-center text-xs sm:text-sm">
-        <i class="fas fa-user-friends text-lg sm:text-2xl"></i>
+      </div>
+
+      <!-- Друзья -->
+      <div class="icon-button">
+        <i class="fas fa-user-friends"></i>
         <span>Друзья</span>
-      </button>
-      <button id="airdrop" class="bg-orange-500 text-white py-2 px-3 sm:py-3 sm:px-4 rounded-lg button flex flex-col items-center text-xs sm:text-sm">
-        <i class="fas fa-gift text-lg sm:text-2xl"></i>
+      </div>
+
+      <!-- Airdrop -->
+      <div class="icon-button">
+        <i class="fas fa-gift"></i>
         <span>Airdrop</span>
-      </button>
+      </div>
     </div>
   </div>
 
   <!-- Модальное окно -->
   <div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-    <div class="bg-white text-black p-6 rounded-lg w-80 modal">
+    <div class="bg-white text-black p-6 rounded-lg w-80">
       <h2 id="modal-title" class="text-xl font-bold">Раздел в разработке</h2>
       <p id="modal-body" class="mt-2">Этот раздел будет доступен в будущих обновлениях.</p>
       <button id="modal-close" class="mt-4 bg-red-500 text-white py-2 px-4 rounded">Закрыть</button>
