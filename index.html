@@ -22,22 +22,36 @@
       align-items: center;
       justify-content: center;
       transition: transform 0.2s ease-in-out;
-      position: relative;
-      overflow: hidden;
     }
 
     .tap-button:hover {
       transform: scale(1.1);
     }
 
-    .tap-logo {
-      width: 80px; /* Размер логотипа адаптирован для телефонов */
-      height: 80px;
+    .icon-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #1e40af; /* Синий по умолчанию */
+      color: white;
+      border-radius: 12px;
+      padding: 10px;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .icon-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .icon {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 5px;
     }
   </style>
 </head>
 <body>
-  <!-- Основной интерфейс -->
   <div class="container mx-auto text-center p-4 relative min-h-screen flex flex-col items-center justify-center">
     <h1 class="text-3xl font-bold mb-4 sm:text-4xl">Shiba Inu Tap Game</h1>
 
@@ -49,19 +63,43 @@
       <p class="text-xs sm:text-sm text-gray-400">До следующего ранга: <span id="next-rank-coins">10</span> монет</p>
     </div>
 
-    <!-- Кнопка Тап с логотипом -->
-    <div class="mb-6">
+    <!-- Кнопка Тап -->
+    <div class="relative mb-6">
+      <div class="absolute -top-12 -left-16">
+        <button id="clans-btn" class="icon-btn bg-green-500">
+          <img src="https://cdn-icons-png.flaticon.com/512/152/152473.png" alt="Clans Icon" class="icon">
+          Кланы
+        </button>
+      </div>
+      <div class="absolute -top-12 -right-16">
+        <button id="rating-btn" class="icon-btn bg-yellow-500">
+          <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" alt="Rating Icon" class="icon">
+          Рейтинг
+        </button>
+      </div>
       <button id="tap-button" class="tap-button">
-        <img class="tap-logo" src="https://yandex-images.clstorage.net/Qd531Rx37/6a2567cF1Atw/eGvhAJxQ-lPDy2L0ySwoW5_fERjq6rEOh_5BnQWDzUT2yZ9igagu4m8IE9810Ls3BfFCPx-YMbIzBUY2tHEfBWxPILF4oFpDw_uyZXm8WOsfL5FZqpqUi_HYlsp39VrS0V7Y4CUtu2IPSccbEQMI9gHiJywdbecFRqHhU1MXeNKJeRMCCEMqMsfrUDY5fJn8_L_Qv3r9kf7SG7dbFNc6Q-D8yuAGr1tDLihSmMKxa2MxI1b_LU8k5_Th4GOTl0jjyZlTMChDuQHVehDGeY3Znww-AwzZ_2A-Mkk2qhdmapOA7-ggBRw4IM04gFqSQsgBgzJXng-_B6bnI_MTMcTYQng7IWKY8VjCBkmy92nuOy-PXEN_SQwRHeL4JLl2V7jgwQ47MuY_GvDdWODIAfAZomJxJv0tbuY1tEPzQpM22gP4KeOymEEIINZJcZZ7rjt-fc_gbgnfsV4xSBTpRrfqM-KM2-NU7RsBH9qDq0Ih6oChYJWtzM321mWBI0JiVrkyG7mDEjngqCI1GuP2mOyJfP3NAm2JHsCf0ErGije0KNKRTOqyRe2JAX07AVgCQ7mjoLH2bjy-1oeEkONyooQK0VmrU0O4wHrwx4uydwuMCZ9fDVEO6X9jT4IaBEoFtijAkO2J4IW9G_PMaOMqoWKLEkIzVf5-Lpfn5RLD08AGOXDoGUKj2lI6YbXLUoV4fJi_XC1wPtrO43xC2GQ6N-QoAaD8ajG2jbngLjkTumNSm2LxQ9XPHZ3k9eYS0MCBlUiguGnRMPhxawAnO5I3qA1YXd990M6b7kC8oUp2mvREehBh3YiyJk9bMh37AZkRA6gzAzIWHF3cJme2E1JycoQ5s8t7wgKboTqiV4pDhLkc65-8n5Nsq2zjjpAaRViWtlpwwJ_bYKXs-KNPi3N5oyLZYJKyRk983qTWFQMR8nNEKzCoG5AwmjBI8reb8hd53Oi-XZxgvjhPUI9giOXao" alt="Shiba Inu Logo">
+        <span class="text-lg font-bold">Тап!</span>
       </button>
     </div>
 
     <!-- Нижние кнопки -->
-    <div class="grid grid-cols-2 gap-4 px-4 sm:grid-cols-4">
-      <button class="bg-blue-500 text-white py-2 px-4 rounded-full">Бусты</button>
-      <button class="bg-green-500 text-white py-2 px-4 rounded-full">Задания</button>
-      <button class="bg-purple-500 text-white py-2 px-4 rounded-full">Друзья</button>
-      <button class="bg-orange-500 text-white py-2 px-4 rounded-full">Airdrop</button>
+    <div class="grid grid-cols-4 gap-4 px-4">
+      <button id="boosts-btn" class="icon-btn bg-blue-500">
+        <img src="https://cdn-icons-png.flaticon.com/512/566/566020.png" alt="Boosts Icon" class="icon">
+        Бусты
+      </button>
+      <button id="tasks-btn" class="icon-btn bg-green-500">
+        <img src="https://cdn-icons-png.flaticon.com/512/1250/1250678.png" alt="Tasks Icon" class="icon">
+        Задания
+      </button>
+      <button id="friends-btn" class="icon-btn bg-purple-500">
+        <img src="https://cdn-icons-png.flaticon.com/512/876/876569.png" alt="Friends Icon" class="icon">
+        Друзья
+      </button>
+      <button id="airdrop-btn" class="icon-btn bg-orange-500">
+        <img src="https://cdn-icons-png.flaticon.com/512/1055/1055676.png" alt="Airdrop Icon" class="icon">
+        Airdrop
+      </button>
     </div>
   </div>
 
@@ -71,6 +109,7 @@
     const coinsDisplay = document.getElementById('coins');
     let coins = 0;
 
+    // Функциональность кнопки "Тап"
     tapButton.addEventListener('click', () => {
       coins += 1;
       coinsDisplay.textContent = coins;
@@ -78,6 +117,31 @@
       setTimeout(() => {
         tapButton.style.transform = 'scale(1)';
       }, 100);
+    });
+
+    // Функциональность остальных кнопок
+    document.getElementById('clans-btn').addEventListener('click', () => {
+      alert('Открыты кланы!');
+    });
+
+    document.getElementById('rating-btn').addEventListener('click', () => {
+      alert('Открыт рейтинг!');
+    });
+
+    document.getElementById('boosts-btn').addEventListener('click', () => {
+      alert('Открыты бусты!');
+    });
+
+    document.getElementById('tasks-btn').addEventListener('click', () => {
+      alert('Открыты задания!');
+    });
+
+    document.getElementById('friends-btn').addEventListener('click', () => {
+      alert('Открыты друзья!');
+    });
+
+    document.getElementById('airdrop-btn').addEventListener('click', () => {
+      alert('Открыт airdrop!');
     });
   </script>
 </body>
