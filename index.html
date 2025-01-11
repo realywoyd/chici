@@ -3,152 +3,172 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shiba Inu Tap Game - Futurama Style</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Shiba Inu Tap Game</title>
   <style>
-    /* Космический фон */
     body {
-      background: linear-gradient(180deg, #060b23, #1a0028);
-      background-size: cover;
-      min-height: 100vh;
-      overflow: hidden;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to bottom, #1d1f27, #3a3d50);
       color: white;
-      font-family: 'Arial', sans-serif;
+      text-align: center;
     }
 
-    .stars {
-      background: url('https://upload.wikimedia.org/wikipedia/commons/2/2a/Starry_sky_background.png') repeat; /* Новый фон звезд */
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    header {
+      margin-bottom: 20px;
+    }
+
+    .shiba-container {
+      position: relative;
+      margin: 20px auto;
+      width: 150px;
+      height: 150px;
+    }
+
+    .shiba {
+      width: 100%;
+      height: auto;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .shiba:hover {
+      transform: scale(1.1);
+    }
+
+    .floating-text {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 200%;
-      height: 200%;
-      animation: stars 100s linear infinite;
-    }
-
-    @keyframes stars {
-      from {
-        transform: translateY(0);
-      }
-      to {
-        transform: translateY(-50%);
-      }
-    }
-
-    .planet {
-      position: absolute;
-      bottom: -20px;
+      color: yellow;
+      font-size: 20px;
+      top: -20px;
       left: 50%;
       transform: translateX(-50%);
-      width: 250px;
-      height: 250px;
-      background: url('https://upload.wikimedia.org/wikipedia/commons/7/72/Earth_pacific.jpg') no-repeat center center; /* Новый фон планеты */
-      background-size: cover;
-      animation: spin 60s linear infinite;
+      animation: float 1s ease-out forwards;
     }
 
-    @keyframes spin {
-      from {
-        transform: translateX(-50%) rotate(0deg);
-      }
-      to {
-        transform: translateX(-50%) rotate(360deg);
-      }
-    }
-
-    .shiba-logo {
-      width: 120px;
-      height: 120px;
-      margin: 0 auto;
-      background: url('https://cryptologos.cc/logos/shiba-inu-shib-logo.png') no-repeat center center; /* Новый логотип Shiba Inu */
-      background-size: contain;
-    }
-
-    .tap-btn {
-      width: 120px;
-      height: 120px;
-      background: #ffcc00;
-      color: black;
-      font-weight: bold;
-      text-align: center;
-      line-height: 120px;
-      border-radius: 50%;
-      box-shadow: 0 0 15px #ffcc00;
-      animation: pulse 1.5s infinite;
-      margin: 0 auto;
-    }
-
-    @keyframes pulse {
+    @keyframes float {
       0% {
-        transform: scale(1);
-        box-shadow: 0 0 10px #ffcc00;
-      }
-      50% {
-        transform: scale(1.1);
-        box-shadow: 0 0 30px #ffcc00;
+        opacity: 1;
+        transform: translateY(0);
       }
       100% {
-        transform: scale(1);
-        box-shadow: 0 0 10px #ffcc00;
+        opacity: 0;
+        transform: translateY(-50px);
       }
     }
 
-    .btns-container {
+    .actions {
       display: flex;
-      justify-content: center;
-      gap: 20px;
+      justify-content: space-around;
       margin-top: 20px;
-      flex-wrap: wrap;
     }
 
     .action-btn {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 15px;
-      background: #1c1f3b;
-      border-radius: 10px;
-      box-shadow: 0 0 10px #2b7de9;
       cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      padding: 10px;
+      border: 2px solid transparent;
+      border-radius: 10px;
+      transition: 0.3s;
     }
 
     .action-btn:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 0 20px #2b7de9;
+      background: rgba(255, 255, 255, 0.1);
+      border-color: white;
     }
 
     .icon {
+      width: 50px;
+      height: 50px;
+    }
+
+    .mt-2 {
+      margin-top: 10px;
+    }
+
+    .top-buttons {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .top-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px;
+      border-radius: 10px;
+      transition: background 0.3s;
+    }
+
+    .top-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .top-btn img {
       width: 40px;
       height: 40px;
+    }
+
+    .top-btn span {
+      margin-top: 5px;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
-  <div class="stars"></div>
-  <div class="planet"></div>
+  <div class="container">
+    <header>
+      <h1>Shiba Inu Tap Game</h1>
+      <p>Монеты: <span id="coins">0</span></p>
+    </header>
 
-  <div class="container mx-auto text-center pt-12">
-    <h1 class="text-4xl font-bold mb-4">Shiba Inu Tap Game</h1>
-    <p class="text-xl mb-4">Монеты: <span id="coins">0</span></p>
-    <div class="shiba-logo"></div>
-    <div class="tap-btn mt-8" onclick="tap()">Tap!</div>
+    <!-- Кнопки в правом верхнем углу -->
+    <div class="top-buttons">
+      <!-- Кнопка Настройки -->
+      <div class="top-btn" onclick="showModal('Настройки')">
+        <img src="https://img.icons8.com/ios-filled/50/ffffff/settings.png" alt="Settings">
+        <span>Настройки</span>
+      </div>
+      <!-- Кнопка Рейтинг -->
+      <div class="top-btn" onclick="showModal('Рейтинг')">
+        <img src="https://img.icons8.com/ios-filled/50/ffffff/trophy.png" alt="Rating">
+        <span>Рейтинг</span>
+      </div>
+    </div>
 
-    <div class="btns-container mt-8">
-      <div class="action-btn" onclick="showAlert('Бусты')">
-        <img class="icon" src="https://cdn-icons-png.flaticon.com/512/1828/1828919.png" alt="Boost"> <!-- Новый значок буста -->
+    <!-- Контейнер с Шиба -->
+    <div class="shiba-container">
+      <img src="https://cryptologos.cc/logos/shiba-inu-shib-logo.png" alt="Shiba Inu" class="shiba" onclick="addCoins()">
+    </div>
+
+    <div class="actions">
+      <div class="action-btn" onclick="showModal('Бусты')">
+        <img class="icon" src="https://img.icons8.com/ios-filled/50/ffffff/flash-on.png" alt="Boosts">
         <span class="mt-2">Бусты</span>
       </div>
-      <div class="action-btn" onclick="showAlert('Задания')">
-        <img class="icon" src="https://cdn-icons-png.flaticon.com/512/2838/2838912.png" alt="Tasks"> <!-- Новый значок задач -->
+      <div class="action-btn" onclick="showModal('Задания')">
+        <img class="icon" src="https://img.icons8.com/ios-filled/50/ffffff/book.png" alt="Tasks">
         <span class="mt-2">Задания</span>
       </div>
-      <div class="action-btn" onclick="showAlert('Друзья')">
-        <img class="icon" src="https://cdn-icons-png.flaticon.com/512/1077/1077012.png" alt="Friends"> <!-- Новый значок друзей -->
+      <div class="action-btn" onclick="showModal('Друзья')">
+        <img class="icon" src="https://img.icons8.com/ios-filled/50/ffffff/user-group-man-man.png" alt="Friends">
         <span class="mt-2">Друзья</span>
       </div>
-      <div class="action-btn" onclick="showAlert('Airdrop')">
-        <img class="icon" src="https://cdn-icons-png.flaticon.com/512/1002/1002839.png" alt="Airdrop"> <!-- Новый значок Airdrop -->
+      <div class="action-btn" onclick="showModal('Airdrop')">
+        <img class="icon" src="https://img.icons8.com/ios-filled/50/ffffff/parachute.png" alt="Airdrop">
         <span class="mt-2">Airdrop</span>
       </div>
     </div>
@@ -157,17 +177,24 @@
   <script>
     let coins = 0;
 
-    function tap() {
+    function addCoins() {
       coins++;
-      document.getElementById("coins").innerText = coins;
+      document.getElementById('coins').textContent = coins;
+
+      // Анимация "+1"
+      const shibaContainer = document.querySelector('.shiba-container');
+      const floatingText = document.createElement('div');
+      floatingText.className = 'floating-text';
+      floatingText.textContent = '+1';
+
+      shibaContainer.appendChild(floatingText);
+
+      setTimeout(() => floatingText.remove(), 1000);
     }
 
-    function showAlert(feature) {
-      alert(`Открыто: ${feature}`);
+    function showModal(title) {
+      alert(title); // Заглушка для модального окна
     }
   </script>
 </body>
 </html>
-
-
-
