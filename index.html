@@ -1,1155 +1,1223 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Shiba Inu Tap Game</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <style>
-    /* Основные стили */
-    body {
-      margin: 0;
-      font-family: 'Roboto', sans-serif;
-      color: #CCD6F6;
-      text-align: center;
-      overflow: hidden;
-      position: relative;
-      background-color: #0A192F;
-      touch-action: manipulation; /* Отключаем масштабирование на мобильных устройствах */
-    }
-
-    #particles-js {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #0A192F;
-      z-index: -1;
-    }
-
-    .container {
-      max-width: 100%;
-      margin: 0 auto;
-      padding: 10px;
-      animation: fadeIn 1s ease-in-out;
-      position: relative;
-      z-index: 1;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(-20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    header {
-      margin-bottom: 10px;
-      position: relative;
-    }
-
-    .header-buttons {
-      position: absolute;
-      top: 10px;
-      left: 0;
-      right: 0;
-      display: flex;
-      justify-content: space-between;
-      padding: 0 10px;
-      z-index: 1000;
-    }
-
-    .header-buttons .action-btn {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      cursor: pointer;
-      padding: 8px 12px;
-      background: rgba(17, 34, 64, 0.8);
-      border: 2px solid #00D1FF;
-      border-radius: 10px;
-      transition: all 0.3s ease;
-      font-size: 14px;
-    }
-
-    .header-buttons .action-btn:hover {
-      background: rgba(0, 209, 255, 0.2);
-      transform: scale(1.05);
-      box-shadow: 0 0 10px rgba(0, 209, 255, 0.3);
-    }
-
-    .header-buttons .icon {
-      font-size: 16px;
-      color: #00D1FF;
-    }
-
-    .shiba-container {
-      margin: 10px 0;
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .shiba {
-      width: 360px; /* Увеличили размер в 3 раза */
-      cursor: pointer;
-      transition: transform 0.2s;
-      margin-top: 20px; /* Добавили отступ сверху */
-      margin-bottom: 20px; /* Добавили отступ снизу */
-    }
-
-    /* Анимация прыжка */
-    @keyframes jump {
-      0%, 100% {
-        transform: translateY(0);
-      }
-      50% {
-        transform: translateY(-20px);
-      }
-    }
-
-    /* Анимация виляния */
-    @keyframes wag {
-      0%, 100% {
-        transform: rotate(0deg);
-      }
-      25% {
-        transform: rotate(10deg);
-      }
-      75% {
-        transform: rotate(-10deg);
-      }
-    }
-
-    .shiba.jump {
-      animation: jump 0.3s ease;
-    }
-
-    .shiba.wag {
-      animation: wag 0.5s ease-in-out;
-    }
-
-    /* Адаптация для мобильных устройств */
-    @media (max-width: 768px) {
-      .shiba {
-        width: 180px; /* Уменьшаем размер в 2 раза */
-      }
-    }
-
-    .coin-effect {
-      position: absolute;
-      font-size: 16px;
-      color: gold;
-      animation: floatUp 1s ease-out;
-    }
-
-    @keyframes floatUp {
-      0% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-      100% {
-        opacity: 0;
-        transform: translateY(-50px);
-      }
-    }
-
-    .bottom-panel {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: rgba(17, 34, 64, 0.9);
-      padding: 8px;
-      display: flex;
-      justify-content: space-around;
-      border-top: 2px solid #00D1FF;
-      z-index: 1000;
-      animation: slideUp 0.5s ease;
-    }
-
-    @keyframes slideUp {
-      from {
-        transform: translateY(100%);
-      }
-      to {
-        transform: translateY(0);
-      }
-    }
-
-    .bottom-panel .action-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      cursor: pointer;
-      padding: 8px;
-      background: rgba(0, 209, 255, 0.1);
-      border: 2px solid #00D1FF;
-      border-radius: 10px;
-      transition: all 0.3s ease;
-      width: 70px;
-    }
-
-    .bottom-panel .action-btn:hover {
-      background: rgba(0, 209, 255, 0.2);
-      transform: scale(1.05);
-      box-shadow: 0 0 10px rgba(0, 209, 255, 0.3);
-    }
-
-    .bottom-panel .icon {
-      font-size: 20px;
-      color: #00D1FF;
-    }
-
-    .bottom-panel .mt-2 {
-      margin-top: 5px;
-      font-size: 12px;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      justify-content: center;
-      align-items: center;
-      animation: fadeInModal 0.3s ease;
-      z-index: 1000;
-    }
-
-    @keyframes fadeInModal {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
-
-    .modal-content {
-      background: #112240;
-      padding: 20px;
-      border-radius: 10px;
-      text-align: center;
-      max-width: 90%;
-      animation: slideIn 0.3s ease;
-    }
-
-    @keyframes slideIn {
-      from {
-        transform: translateY(-20px);
-      }
-      to {
-        transform: translateY(0);
-      }
-    }
-
-    .close {
-      float: right;
-      cursor: pointer;
-      font-size: 24px;
-      color: #00D1FF;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 8px;
-      background: #444;
-      border-radius: 5px;
-      margin-top: 10px;
-      overflow: hidden;
-    }
-
-    .progress {
-      height: 100%;
-      background: linear-gradient(90deg, #00D1FF, #00B8FF);
-      border-radius: 5px;
-      transition: width 0.3s ease;
-    }
-
-    .notification {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      background: #112240;
-      padding: 10px 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-      animation: slideInNotification 0.5s ease;
-    }
-
-    @keyframes slideInNotification {
-      from {
-        transform: translateX(100%);
-      }
-      to {
-        transform: translateX(0);
-      }
-    }
-
-    .boosts-modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.9);
-      justify-content: center;
-      align-items: center;
-      z-index: 1001;
-    }
-
-    .boosts-content {
-      background: #112240;
-      padding: 20px;
-      border-radius: 10px;
-      text-align: center;
-      max-width: 90%;
-      animation: slideIn 0.3s ease;
-    }
-
-    .boosts-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .boost-card {
-      background: rgba(17, 34, 64, 0.8);
-      border: 2px solid #00D1FF;
-      border-radius: 10px;
-      padding: 15px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .boost-card:hover {
-      background: rgba(0, 209, 255, 0.2);
-      transform: scale(1.02);
-      box-shadow: 0 0 10px rgba(0, 209, 255, 0.3);
-    }
-
-    .boost-card h3 {
-      margin: 0;
-      font-size: 16px;
-      color: #00D1FF;
-    }
-
-    .boost-card p {
-      margin: 5px 0;
-      font-size: 14px;
-    }
-
-    .boost-cost {
-      color: #00D1FF;
-      font-weight: bold;
-    }
-
-    .wheel-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: none;
-      justify-content: center;
-      align-items: center;
-      background: rgba(0, 0, 0, 0.9);
-      z-index: 1001;
-    }
-
-    .wheel {
-      width: 300px;
-      height: 300px;
-      position: relative;
-      border-radius: 50%;
-      background: radial-gradient(circle, #2a2a40, #1e1e2f);
-      box-shadow: 0 0 50px rgba(255, 255, 255, 0.1);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition: transform 5s cubic-bezier(0.25, 0.1, 0.25, 1);
-    }
-
-    .reward {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transform-origin: center;
-      z-index: 3;
-    }
-
-    .reward i {
-      font-size: 30px;
-      color: white;
-      transform: translateY(-100px);
-      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
-      transition: transform 0.3s ease;
-      background: linear-gradient(45deg, #00ffcc, #00b3ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .spin-button {
-      margin-top: 20px;
-      padding: 10px 30px;
-      font-size: 18px;
-      background: linear-gradient(45deg, #00ffcc, #00b3ff);
-      color: white;
-      border: none;
-      border-radius: 50px;
-      cursor: pointer;
-      transition: background 0.3s ease, transform 0.2s ease;
-      box-shadow: 0 0 20px rgba(0, 255, 204, 0.6);
-      font-weight: bold;
-    }
-
-    .spin-button:hover {
-      background: linear-gradient(45deg, #00b3ff, #00ffcc);
-      transform: scale(1.05);
-    }
-
-    .spin-button:disabled {
-      background: #444;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-
-    .back-button {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      font-size: 24px;
-      color: #00D1FF;
-      cursor: pointer;
-      transition: transform 0.2s ease;
-    }
-
-    .back-button:hover {
-      transform: scale(1.1);
-    }
-
-    .wheel-pointer {
-      position: absolute;
-      top: 120px;
-      left: 50%;
-      transform: translateX(-50%) rotate(180deg);
-      width: 30px;
-      height: 30px;
-      background: #00ffcc;
-      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-      z-index: 4;
-      filter: drop-shadow(0 0 10px #00ffcc);
-    }
-
-    .wheel-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .farms-modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.9);
-      justify-content: center;
-      align-items: center;
-      z-index: 1001;
-    }
-
-    .farms-content {
-      background: #112240;
-      padding: 20px;
-      border-radius: 10px;
-      text-align: center;
-      max-width: 90%;
-      animation: slideIn 0.3s ease;
-    }
-
-    .farms-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .farm-card {
-      background: rgba(17, 34, 64, 0.8);
-      border: 2px solid #00D1FF;
-      border-radius: 10px;
-      padding: 15px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .farm-card:hover {
-      background: rgba(0, 209, 255, 0.2);
-      transform: scale(1.02);
-      box-shadow: 0 0 10px rgba(0, 209, 255, 0.3);
-    }
-
-    .farm-card h3 {
-      margin: 0;
-      font-size: 16px;
-      color: #00D1FF;
-    }
-
-    .farm-card p {
-      margin: 5px 0;
-      font-size: 14px;
-    }
-
-    .farm-cost {
-      color: #00D1FF;
-      font-weight: bold;
-    }
-
-    /* Стили для верхней панели */
-    .top-panel {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 10px;
-      padding: 8px;
-      background: rgba(17, 34, 64, 0.8);
-      border-radius: 10px;
-      border: 2px solid #00D1FF;
-      align-items: center;
-    }
-
-    .panel-item {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 14px;
-      color: #CCD6F6;
-    }
-
-    .panel-item .icon {
-      font-size: 16px;
-      color: #00D1FF;
-    }
-
-    /* Стили для прогресс-бара */
-    .progress-bar {
-      width: 80px;
-      height: 6px;
-      background: #444;
-      border-radius: 5px;
-      overflow: hidden;
-    }
-
-    .progress {
-      height: 100%;
-      background: linear-gradient(90deg, #00D1FF, #00B8FF);
-      border-radius: 5px;
-      transition: width 0.3s ease;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shiba Inu Galactic Tap Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Основные стили */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Orbitron', sans-serif;
+            color: #fff;
+            text-align: center;
+            position: relative;
+            background: radial-gradient(circle, #0B3D91, #6A0D83);
+            touch-action: manipulation;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        /* Звёздное небо */
+        @keyframes twinkle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite;
+        }
+
+        /* Контейнер */
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Верхняя панель */
+        .top-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 0 0 20px 20px;
+            border: 2px solid #6A0D83;
+            backdrop-filter: blur(10px);
+            align-items: center;
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+            z-index: 1000;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
+        }
+
+        .panel-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            color: #fff;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+        }
+
+        .panel-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+        }
+
+        /* Кнопки */
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            padding: 12px 20px;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            color: #fff;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+        }
+
+        .action-btn:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+        }
+
+        .action-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Шиба */
+        .shiba-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .shiba {
+            width: 360px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            filter: drop-shadow(0 0 10px rgba(255, 111, 97, 0.5));
+            animation: fly 2s infinite;
+        }
+
+        @keyframes fly {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Нижняя панель */
+        .bottom-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            display: flex;
+            justify-content: space-around;
+            border-top: 2px solid #6A0D83;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        /* Модальные окна */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: rgba(11, 61, 145, 0.9);
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 90%;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .close {
+            float: right;
+            cursor: pointer;
+            font-size: 24px;
+            color: #FF6F61;
+            transition: transform 0.2s ease;
+        }
+
+        .close:hover {
+            transform: scale(1.1);
+        }
+
+        /* Колесо удачи */
+        .wheel-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .wheel-content {
+            position: relative;
+            text-align: center;
+        }
+
+        .wheel {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                #ff6f61 0% 10%,
+                #6A0D83 10% 20%,
+                #ffd700 20% 30%,
+                #6A0D83 30% 40%,
+                #0b3d91 40% 50%,
+                #ff6f61 50% 60%,
+                #6A0D83 60% 70%,
+                #ffd700 70% 80%,
+                #6A0D83 80% 90%,
+                #0b3d91 90% 100%
+            );
+            position: relative;
+            transition: transform 5s cubic-bezier(0.25, 0.1, 0.25, 1);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+        }
+
+        .reward {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform-origin: center;
+        }
+
+        .reward i {
+            font-size: 30px;
+            color: white;
+            transform: translateY(-100px);
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%) rotate(180deg);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 30px solid #6A0D83;
+            filter: drop-shadow(0 0 5px rgba(106, 13, 131, 0.8));
+        }
+
+        .spin-button {
+            margin-top: 20px;
+            padding: 10px 30px;
+            font-size: 18px;
+            background: linear-gradient(45deg, #6A0D83, #9A4D9E);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.8);
+        }
+
+        .spin-button:hover {
+            background: linear-gradient(45deg, #9A4D9E, #6A0D83);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+        }
+
+        .spin-button:active {
+            transform: scale(0.95);
+        }
+
+        .spin-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Кнопки под верхней панелью */
+        .header-buttons {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 1000;
+        }
+
+        .header-buttons .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            padding: 12px 20px;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            color: #fff;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-buttons .action-btn:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+        }
+
+        .header-buttons .icon {
+            font-size: 20px;
+            color: #ff6f61;
+        }
+
+        /* Кнопка "Назад" */
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            cursor: pointer;
+            font-size: 24px;
+            color: #6A0D83;
+            transition: transform 0.2s ease;
+            filter: drop-shadow(0 0 5px rgba(106, 13, 131, 0.8));
+        }
+
+        .back-button:hover {
+            transform: scale(1.1);
+        }
+
+        /* Анимация фона */
+        @keyframes gradientBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body {
+            background: linear-gradient(270deg, #0B3D91, #6A0D83, #9A4D9E);
+            background-size: 300% 300%;
+            animation: gradientBackground 10s ease infinite;
+        }
+
+        /* Стили для кнопки "Бусты" */
+        .boost-button {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+        }
+
+        .boost-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="white" /></svg>') repeat;
+            opacity: 0.3;
+            z-index: 1;
+            animation: stars 10s linear infinite;
+        }
+
+        @keyframes stars {
+            0% {
+                transform: translateY(0);
+            }
+            100% {
+                transform: translateY(-100%);
+            }
+        }
+
+        .rocket-icon {
+            font-size: 24px;
+            display: inline-block;
+            transform: rotate(-60deg);
+            margin-bottom: 5px;
+            z-index: 2;
+            color: #FF6F61;
+        }
+
+        .boost-text {
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .boost-button:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(106, 13, 131, 0.8);
+        }
+
+        .boost-button:active {
+            transform: scale(0.95);
+        }
+
+        /* Стили для кнопки "Магазин" */
+        .shop-button {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+        }
+
+        .shop-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="white" /></svg>') repeat;
+            opacity: 0.3;
+            z-index: 1;
+            animation: stars 10s linear infinite;
+        }
+
+        .shop-icon {
+            font-size: 24px;
+            display: inline-block;
+            margin-bottom: 5px;
+            z-index: 2;
+            color: #FF6F61;
+        }
+
+        .shop-text {
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .shop-button:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(106, 13, 131, 0.8);
+        }
+
+        .shop-button:active {
+            transform: scale(0.95);
+        }
+
+        /* Стили для кнопки "Друзья" */
+        .friends-button {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+        }
+
+        .friends-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="white" /></svg>') repeat;
+            opacity: 0.3;
+            z-index: 1;
+            animation: stars 10s linear infinite;
+        }
+
+        .friends-icon {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 5px;
+            z-index: 2;
+        }
+
+        .friends-text {
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .friends-button:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(106, 13, 131, 0.8);
+        }
+
+        .friends-button:active {
+            transform: scale(0.95);
+        }
+
+        /* Стили для кнопки "Клан" */
+        .clan-button {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+        }
+
+        .clan-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="white" /></svg>') repeat;
+            opacity: 0.3;
+            z-index: 1;
+            animation: stars 10s linear infinite;
+        }
+
+        .clan-icon {
+            font-size: 24px;
+            display: inline-block;
+            margin-bottom: 5px;
+            z-index: 2;
+            color: #FFD700;
+        }
+
+        .clan-text {
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .clan-button:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(106, 13, 131, 0.8);
+        }
+
+        .clan-button:active {
+            transform: scale(0.95);
+        }
+
+        /* Стили для кнопки "Рейтинг" */
+        .rating-button {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+        }
+
+        .rating-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="white" /></svg>') repeat;
+            opacity: 0.3;
+            z-index: 1;
+            animation: stars 10s linear infinite;
+        }
+
+        .rating-icon {
+            font-size: 24px;
+            display: inline-block;
+            margin-bottom: 5px;
+            z-index: 2;
+            color: #FFD700;
+        }
+
+        .rating-text {
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .rating-button:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(106, 13, 131, 0.8);
+        }
+
+        .rating-button:active {
+            transform: scale(0.95);
+        }
+
+        /* Стили для кнопки "Колесо Удачи" */
+        .wheel-button {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border: 2px solid #4e54c8;
+            border-radius: 10px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+        }
+
+        .wheel-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="white" /></svg>') repeat;
+            opacity: 0.3;
+            z-index: 1;
+            animation: stars 10s linear infinite;
+        }
+
+        .wheel-icon {
+            font-size: 24px;
+            display: inline-block;
+            margin-bottom: 5px;
+            z-index: 2;
+            animation: spin 5s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .wheel-text {
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .wheel-button:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(106, 13, 131, 0.8);
+        }
+
+        .wheel-button:active {
+            transform: scale(0.95);
+        }
+    </style>
 </head>
 <body>
-  <div id="particles-js"></div>
-
-  <div class="container">
-    <header>
-      <h1>Shiba Inu Tap Game</h1>
-      <div class="top-panel">
-        <div class="panel-item">
-          <i class="fas fa-coins icon"></i>
-          <span id="coins-panel">0</span>
-        </div>
-        <div class="panel-item">
-          <i class="fas fa-bolt icon"></i>
-          <span id="energy-panel">100</span>/<span id="max-energy-panel">100</span>
-        </div>
-        <div class="panel-item">
-          <i class="fas fa-level-up-alt icon"></i>
-          <span id="level-panel">1</span>
-        </div>
-        <div class="panel-item">
-          <i class="fas fa-wine-bottle icon"></i>
-          <span id="energy-drinks-panel">0</span>
-        </div>
-        <div class="panel-item">
-          <i class="fas fa-star icon"></i>
-          <span id="exp-panel">0</span>/10
-        </div>
-        <div class="panel-item">
-          <div class="progress-bar">
-            <div id="progress-panel" class="progress" style="width: 0%;"></div>
-          </div>
-        </div>
-      </div>
-      <div class="header-buttons">
-        <div class="action-btn" onclick="showModal('Кланы', 'Здесь будет информация о кланах.')">
-          <i class="fas fa-shield-alt icon"></i>
-          <span>Кланы</span>
-        </div>
-        <div class="action-btn" onclick="showModal('Рейтинг', 'Здесь будет рейтинг игроков.')">
-          <i class="fas fa-trophy icon"></i>
-          <span>Рейтинг</span>
-        </div>
-        <div class="action-btn small" onclick="showWheel()">
-          <i class="fas fa-gift icon"></i>
-          <span class="mt-2">Колесо удачи</span>
-        </div>
-      </div>
-    </header>
-
-    <div class="shiba-container">
-      <img src="https://cryptologos.cc/logos/shiba-inu-shib-logo.png" alt="Shiba Inu" class="shiba" onclick="animateShiba()">
-    </div>
-  </div>
-
-  <div class="bottom-panel">
-    <div class="action-btn" onclick="showBoostsModal()">
-      <i class="fas fa-bolt icon"></i>
-      <span class="mt-2">Бусты</span>
-    </div>
-    <div class="action-btn" onclick="showShopModal()">
-      <i class="fas fa-shopping-cart icon"></i>
-      <span class="mt-2">Магазин</span>
-    </div>
-    <div class="action-btn" onclick="showModal('Друзья', 'Приглашай друзей и получай бонусы!')">
-      <i class="fas fa-users icon"></i>
-      <span class="mt-2">Друзья</span>
-    </div>
-    <div class="action-btn" onclick="showModal('Airdrop', 'Получай случайные награды каждый день!')">
-      <i class="fas fa-parachute-box icon"></i>
-      <span class="mt-2">Airdrop</span>
-    </div>
-    <div class="action-btn" onclick="showFarmsModal()">
-      <i class="fas fa-network-wired icon"></i>
-      <span class="mt-2">Рои</span>
-    </div>
-  </div>
-
-  <!-- Модальное окно для бустов -->
-  <div class="boosts-modal" id="boosts-modal">
-    <div class="back-button" onclick="closeBoostsModal()">
-      <i class="fas fa-arrow-left"></i>
-    </div>
-    <div class="boosts-content">
-      <h2>Бусты</h2>
-      <div class="boosts-list">
-        <!-- Увеличение тапов -->
-        <div class="boost-card" onclick="buyTapMultiplier()">
-          <h3>Увеличение тапов</h3>
-          <p>Текущий множитель: x<span id="tap-multiplier">1</span></p>
-          <p class="boost-cost">Цена: <span id="tap-multiplier-cost">100</span> монет</p>
+    <canvas id="starCanvas"></canvas>
+    <div id="particles-js"></div>
+    <div class="container">
+        <!-- Верхняя панель -->
+        <div class="top-panel">
+            <div class="panel-item">
+                <div id="coin-icon" class="icon-3d"></div>
+                <span id="coins-panel">0</span>
+            </div>
+            <div class="panel-item">
+                <div id="energy-icon" class="icon-3d"></div>
+                <span id="energy-panel">100</span>/<span id="max-energy-panel">100</span>
+            </div>
+            <div class="panel-item">
+                <div id="level-icon" class="icon-3d"></div>
+                <span id="level-panel">1</span>
+            </div>
+            <div class="panel-item">
+                <i class="fas fa-wine-bottle icon"></i>
+                <span id="energy-drinks-panel">0</span>
+            </div>
+            <div class="panel-item">
+                <i class="fas fa-star icon"></i>
+                <span id="exp-panel">0</span>/10
+            </div>
         </div>
 
-        <!-- Увеличение энергии -->
-        <div class="boost-card" onclick="buyEnergyUpgrade()">
-          <h3>Увеличение энергии</h3>
-          <p>Текущий максимум: <span id="max-energy-boost">100</span></p>
-          <p class="boost-cost">Цена: <span id="energy-upgrade-cost">200</span> монет</p>
+        <!-- Кнопки под верхней панелью -->
+        <div class="header-buttons">
+            <button class="clan-button" onclick="showModal('Клан', 'Здесь будет информация о кланах.')">
+                <span class="clan-icon">🛡️</span>
+                <span class="clan-text">Клан</span>
+            </button>
+            <button class="rating-button" onclick="showModal('Рейтинг', 'Здесь будет рейтинг игроков.')">
+                <span class="rating-icon">🏆</span>
+                <span class="rating-text">Рейтинг</span>
+            </button>
+            <button class="wheel-button" onclick="showWheel()">
+                <span class="wheel-icon">🎡</span>
+                <span class="wheel-text">Колесо Удачи</span>
+            </button>
         </div>
 
-        <!-- Скорость восстановления энергии -->
-        <div class="boost-card" onclick="buyEnergyRegen()">
-          <h3>Скорость восстановления энергии</h3>
-          <p>Текущая скорость: 1 единица / <span id="energy-regen-speed">5</span> сек</p>
-          <p class="boost-cost">Цена: <span id="energy-regen-cost">500</span> монет</p>
+        <!-- Логотип Шибы -->
+        <div class="shiba-container">
+            <img src="https://cryptologos.cc/logos/shiba-inu-shib-logo.png" alt="Shiba Inu" class="shiba" onclick="animateShiba()">
         </div>
+    </div>
 
-        <!-- Робот -->
-        <div class="boost-card" onclick="buyRobot()">
-          <h3>Робот</h3>
-          <p>Автоматически добывает монеты.</p>
-          <p class="boost-cost">Цена: <span id="robot-cost">100000</span> монет</p>
-        </div>
-      </div>
-    </div>
-  </div>
+    <!-- Нижняя панель -->
+    <div class="bottom-panel">
+        <button class="boost-button" onclick="showBoostsModal()">
+            <span class="rocket-icon">🚀</span>
+            <span class="boost-text">Бусты</span>
+        </button>
+        <button class="shop-button" onclick="showShopModal()">
+            <span class="shop-icon">🛒</span>
+            <span class="shop-text">Магазин</span>
+        </button>
+        <button class="friends-button" onclick="showModal('Друзья', 'Приглашай друзей и получай бонусы!')">
+            <!-- Кастомная SVG-иконка с астронавтами -->
+            <svg class="friends-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+                <!-- Первый астронавт -->
+                <circle cx="20" cy="40" r="10" fill="#4e54c8"/> <!-- Тело -->
+                <circle cx="20" cy="22" r="8" fill="#fff"/> <!-- Шлем -->
+                <circle cx="20" cy="22" r="6" fill="#4e54c8"/> <!-- Стекло шлема -->
+                <!-- Антенна на шлеме -->
+                <line x1="20" y1="14" x2="20" y2="6" stroke="#4e54c8" stroke-width="2"/>
+                <circle cx="20" cy="6" r="2" fill="#4e54c8"/> <!-- Наконечник антенны -->
+                <!-- Руки первого астронавта -->
+                <line x1="6" y1="40" x2="16" y2="28" stroke="#4e54c8" stroke-width="2"/>
+                <line x1="34" y1="40" x2="24" y2="28" stroke="#4e54c8" stroke-width="2"/>
+                <!-- Ноги первого астронавта -->
+                <line x1="16" y1="50" x2="20" y2="62" stroke="#4e54c8" stroke-width="2"/>
+                <line x1="24" y1="50" x2="20" y2="62" stroke="#4e54c8" stroke-width="2"/>
 
-  <!-- Модальное окно для ферм -->
-  <div class="farms-modal" id="farms-modal">
-    <div class="back-button" onclick="closeFarmsModal()">
-      <i class="fas fa-arrow-left"></i>
+                <!-- Второй астронавт -->
+                <circle cx="44" cy="40" r="10" fill="#4e54c8"/> <!-- Тело -->
+                <circle cx="44" cy="22" r="8" fill="#fff"/> <!-- Шлем -->
+                <circle cx="44" cy="22" r="6" fill="#4e54c8"/> <!-- Стекло шлема -->
+                <!-- Антенна на шлеме -->
+                <line x1="44" y1="14" x2="44" y2="6" stroke="#4e54c8" stroke-width="2"/>
+                <circle cx="44" cy="6" r="2" fill="#4e54c8"/> <!-- Наконечник антенны -->
+                <!-- Руки второго астронавта -->
+                <line x1="36" y1="40" x2="44" y2="28" stroke="#4e54c8" stroke-width="2"/>
+                <line x1="52" y1="40" x2="44" y2="28" stroke="#4e54c8" stroke-width="2"/>
+                <!-- Ноги второго астронавта -->
+                <line x1="40" y1="50" x2="44" y2="62" stroke="#4e54c8" stroke-width="2"/>
+                <line x1="48" y1="50" x2="44" y2="62" stroke="#4e54c8" stroke-width="2"/>
+            </svg>
+            <span class="friends-text">Друзья</span>
+        </button>
+        <div class="action-btn" onclick="showModal('Airdrop', 'Получай случайные награды каждый день!')">
+            <i class="fas fa-parachute-box icon"></i>
+            <span class="mt-2">Airdrop</span>
+        </div>
+        <div class="action-btn" onclick="showFarmsModal()">
+            <i class="fas fa-network-wired icon"></i>
+            <span class="mt-2">Рои</span>
+        </div>
     </div>
-    <div class="farms-content">
-      <h2>Фермы</h2>
-      <div class="farms-list" id="farms-list">
-        <!-- Фермы будут добавлены динамически -->
-      </div>
-    </div>
-  </div>
 
-  <!-- Колесо удачи -->
-  <div class="wheel-container" id="wheel-container">
-    <div class="back-button" onclick="closeWheel()">
-      <i class="fas fa-arrow-left"></i>
+    <!-- Колесо удачи -->
+    <div class="wheel-container" id="wheel-container">
+        <div class="back-button" onclick="closeWheel()">
+            <i class="fas fa-arrow-left"></i>
+        </div>
+        <div class="wheel-content">
+            <div class="wheel" id="wheel">
+                <div class="reward" style="transform: rotate(18deg);">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <div class="reward" style="transform: rotate(54deg);">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <div class="reward" style="transform: rotate(90deg);">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <div class="reward" style="transform: rotate(126deg);">
+                    <i class="fas fa-wine-bottle"></i>
+                </div>
+                <div class="reward" style="transform: rotate(162deg);">
+                    <i class="fas fa-network-wired"></i>
+                </div>
+                <div class="reward" style="transform: rotate(198deg);">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div class="reward" style="transform: rotate(234deg);">
+                    <i class="fas fa-gem"></i>
+                </div>
+                <div class="reward" style="transform: rotate(270deg);">
+                    <i class="fas fa-battery-full"></i>
+                </div>
+                <div class="reward" style="transform: rotate(306deg);">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="reward" style="transform: rotate(342deg);">
+                    <i class="fas fa-gift"></i>
+                </div>
+            </div>
+            <div class="wheel-pointer"></div>
+            <button class="spin-button" onclick="spinWheel()">Крутить колесо</button>
+        </div>
     </div>
-    <div class="wheel-content">
-      <div class="wheel" id="wheel">
-        <div class="reward" style="transform: rotate(18deg);">
-          <i class="fas fa-coins"></i>
-        </div>
-        <div class="reward" style="transform: rotate(54deg);">
-          <i class="fas fa-bolt"></i>
-        </div>
-        <div class="reward" style="transform: rotate(90deg);">
-          <i class="fas fa-rocket"></i>
-        </div>
-        <div class="reward" style="transform: rotate(126deg);">
-          <i class="fas fa-wine-bottle"></i>
-        </div>
-        <div class="reward" style="transform: rotate(162deg);">
-          <i class="fas fa-network-wired"></i>
-        </div>
-        <div class="reward" style="transform: rotate(198deg);">
-          <i class="fas fa-crown"></i>
-        </div>
-        <div class="reward" style="transform: rotate(234deg);">
-          <i class="fas fa-gem"></i>
-        </div>
-        <div class="reward" style="transform: rotate(270deg);">
-          <i class="fas fa-battery-full"></i>
-        </div>
-        <div class="reward" style="transform: rotate(306deg);">
-          <i class="fas fa-star"></i>
-        </div>
-        <div class="reward" style="transform: rotate(342deg);">
-          <i class="fas fa-gift"></i>
-        </div>
-      </div>
-      <div class="wheel-pointer"></div>
-      <button class="spin-button" onclick="spinWheel()">Крутить колесо</button>
-    </div>
-  </div>
 
-  <!-- Остальные модальные окна и скрипты -->
-  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-  <script>
-    // Конфигурация для particles.js
-    particlesJS("particles-js", {
-      "particles": {
-        "number": {
-          "value": 80,
-          "density": {
-            "enable": true,
-            "value_area": 800
-          }
-        },
-        "color": {
-          "value": "#00D1FF"
-        },
-        "shape": {
-          "type": "circle",
-          "stroke": {
-            "width": 0,
-            "color": "#000000"
-          },
-          "polygon": {
-            "nb_sides": 5
-          }
-        },
-        "opacity": {
-          "value": 0.5,
-          "random": false,
-          "anim": {
-            "enable": false,
-            "speed": 1,
-            "opacity_min": 0.1,
-            "sync": false
-          }
-        },
-        "size": {
-          "value": 3,
-          "random": true,
-          "anim": {
-            "enable": false,
-            "speed": 40,
-            "size_min": 0.1,
-            "sync": false
-          }
-        },
-        "line_linked": {
-          "enable": true,
-          "distance": 150,
-          "color": "#00D1FF",
-          "opacity": 0.4,
-          "width": 1
-        },
-        "move": {
-          "enable": true,
-          "speed": 6,
-          "direction": "none",
-          "random": false,
-          "straight": false,
-          "out_mode": "out",
-          "bounce": false,
-          "attract": {
-            "enable": false,
-            "rotateX": 600,
-            "rotateY": 1200
-          }
+    <!-- Three.js для 3D-иконок -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Инициализация Three.js
+        const coinIcon = document.getElementById('coin-icon');
+        const energyIcon = document.getElementById('energy-icon');
+        const levelIcon = document.getElementById('level-icon');
+
+        // Сцена для монеты
+        const coinScene = new THREE.Scene();
+        const coinCamera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+        const coinRenderer = new THREE.WebGLRenderer({ alpha: true });
+        coinRenderer.setSize(24, 24);
+        coinIcon.appendChild(coinRenderer.domElement);
+
+        // Модель монеты
+        const coinGeometry = new THREE.CylinderGeometry(1, 1, 0.2, 32);
+        const coinMaterial = new THREE.MeshBasicMaterial({ color: 0xFFD700 });
+        const coinMesh = new THREE.Mesh(coinGeometry, coinMaterial);
+        coinScene.add(coinMesh);
+        coinCamera.position.z = 5;
+
+        // Анимация монеты
+        function animateCoin() {
+            requestAnimationFrame(animateCoin);
+            coinMesh.rotation.y += 0.02;
+            coinRenderer.render(coinScene, coinCamera);
         }
-      },
-      "interactivity": {
-        "detect_on": "canvas",
-        "events": {
-          "onhover": {
-            "enable": true,
-            "mode": "repulse"
-          },
-          "onclick": {
-            "enable": true,
-            "mode": "push"
-          },
-          "resize": true
-        },
-        "modes": {
-          "grab": {
-            "distance": 400,
-            "line_linked": {
-              "opacity": 1
+        animateCoin();
+
+        // Аналогично можно добавить 3D-иконки для энергии и уровня
+    </script>
+
+    <!-- Остальные скрипты -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // Конфигурация для particles.js
+        particlesJS("particles-js", {
+            "particles": {
+                "number": {
+                    "value": 80,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#6A0D83"
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    },
+                    "polygon": {
+                        "nb_sides": 5
+                    }
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": false,
+                    "anim": {
+                        "enable": false,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 3,
+                    "random": true,
+                    "anim": {
+                        "enable": false,
+                        "speed": 40,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#6A0D83",
+                    "opacity": 0.4,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 6,
+                    "direction": "none",
+                    "random": false,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": false,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "repulse"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 400,
+                        "line_linked": {
+                            "opacity": 1
+                        }
+                    },
+                    "bubble": {
+                        "distance": 400,
+                        "size": 40,
+                        "duration": 2,
+                        "opacity": 8,
+                        "speed": 3
+                    },
+                    "repulse": {
+                        "distance": 200,
+                        "duration": 0.4
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    },
+                    "remove": {
+                        "particles_nb": 2
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+
+        // Переменные игры
+        let coins = 0;
+        let level = 1;
+        let energy = 100;
+        let maxEnergy = 100;
+
+        // Обновление интерфейса
+        function updateUI() {
+            document.getElementById('coins-panel').textContent = coins;
+            document.getElementById('energy-panel').textContent = energy;
+            document.getElementById('max-energy-panel').textContent = maxEnergy;
+            document.getElementById('level-panel').textContent = level;
+        }
+
+        // Добавление монет
+        function addCoins() {
+            if (energy > 0) {
+                coins += 1;
+                energy--;
+                updateUI();
+            } else {
+                alert("Недостаточно энергии!");
             }
-          },
-          "bubble": {
-            "distance": 400,
-            "size": 40,
-            "duration": 2,
-            "opacity": 8,
-            "speed": 3
-          },
-          "repulse": {
-            "distance": 200,
-            "duration": 0.4
-          },
-          "push": {
-            "particles_nb": 4
-          },
-          "remove": {
-            "particles_nb": 2
-          }
-        }
-      },
-      "retina_detect": true
-    });
-
-    // Переменные игры
-    let coins = 0;
-    let level = 1;
-    let exp = 0;
-    let energy = 100;
-    let maxEnergy = 100;
-    let energyRegen = 1;
-    let clickMultiplier = 1;
-    let robotActive = false;
-    let robotIncome = 1;
-    let energyDrinks = 0;
-    let autoClickerActive = false;
-    let autoClickerCost = 500;
-    let swarms = 0;
-    let swarmCost = 1000;
-    let swarmIncome = 10;
-    let activeBoosts = {};
-    let arenaActive = false;
-    let arenaClicks = 0;
-
-    // Переменные для бустов
-    let tapMultiplier = 1;
-    let tapMultiplierCost = 100;
-    let maxEnergyBoost = 100;
-    let energyUpgradeCost = 200;
-    let energyRegenLevel = 1;
-    let energyRegenCost = 500;
-    let robotCost = 100000;
-
-    // Переменные для ферм
-    const farms = [
-      { id: 1, level: 0, cost: 1000, income: 10, requiredLevel: 0 },
-      { id: 2, level: 0, cost: 5000, income: 50, requiredLevel: 3 },
-      { id: 3, level: 0, cost: 10000, income: 100, requiredLevel: 6 },
-      { id: 4, level: 0, cost: 20000, income: 200, requiredLevel: 9 },
-      { id: 5, level: 0, cost: 50000, income: 500, requiredLevel: 12 }
-    ];
-
-    // Колесо удачи
-    const wheelContainer = document.getElementById('wheel-container');
-    const wheel = document.getElementById('wheel');
-    let isSpinning = false;
-
-    const rewards = [
-      { icon: "fas fa-coins", text: "50 монет", action: () => coins += 50 },
-      { icon: "fas fa-bolt", text: "20 энергии", action: () => energy += 20 },
-      { icon: "fas fa-rocket", text: "x2 доход", action: () => clickMultiplier *= 2 },
-      { icon: "fas fa-wine-bottle", text: "Энергетик", action: () => energyDrinks++ },
-      { icon: "fas fa-network-wired", text: "Рой", action: () => swarms++ },
-      { icon: "fas fa-crown", text: "Легендарный Шиба", action: () => alert("Вы получили Легендарного Шиба!") },
-      { icon: "fas fa-gem", text: "1000 монет", action: () => coins += 1000 },
-      { icon: "fas fa-battery-full", text: "Супер-энергия", action: () => maxEnergy += 50 },
-      { icon: "fas fa-star", text: "Звезда удачи", action: () => alert("Звезда удачи активирована!") },
-      { icon: "fas fa-gift", text: "Сюрприз", action: () => coins += Math.floor(Math.random() * 500) }
-    ];
-
-    const sectionAngles = [18, 54, 90, 126, 162, 198, 234, 270, 306, 342];
-
-    function showWheel() {
-      wheelContainer.style.display = 'flex';
-    }
-
-    function spinWheel() {
-      if (isSpinning) return;
-
-      const button = document.querySelector('.spin-button');
-      button.disabled = true;
-      isSpinning = true;
-
-      const randomRotation = 360 * 5 + Math.floor(Math.random() * 360);
-      wheel.style.transition = 'transform 5s cubic-bezier(0.25, 0.1, 0.25, 1)';
-      wheel.style.transform = `rotate(${randomRotation}deg)`;
-
-      setTimeout(() => {
-        const degrees = randomRotation % 360;
-        const pointerAngle = (360 - degrees) % 360;
-
-        let closestAngle = sectionAngles[0];
-        let minDifference = Math.abs(pointerAngle - closestAngle);
-
-        for (let i = 1; i < sectionAngles.length; i++) {
-          const difference = Math.abs(pointerAngle - sectionAngles[i]);
-          if (difference < minDifference) {
-            minDifference = difference;
-            closestAngle = sectionAngles[i];
-          }
         }
 
-        const rewardIndex = sectionAngles.indexOf(closestAngle);
-        const reward = rewards[rewardIndex];
-
-        reward.action();
-        alert(`Вы получили: ${reward.text}`);
-        updateUI();
-
-        button.disabled = false;
-        isSpinning = false;
-      }, 5000);
-    }
-
-    function closeWheel() {
-      wheelContainer.style.display = 'none';
-    }
-
-    // Анимация логотипа
-    function animateShiba() {
-      const shiba = document.querySelector('.shiba');
-      shiba.classList.add('jump');
-      setTimeout(() => {
-        shiba.classList.remove('jump');
-      }, 300);
-      shiba.classList.add('wag');
-      setTimeout(() => {
-        shiba.classList.remove('wag');
-      }, 500);
-      addCoins();
-    }
-
-    // Обновление интерфейса
-    function updateUI() {
-      document.getElementById('coins-panel').textContent = coins;
-      document.getElementById('energy-panel').textContent = energy;
-      document.getElementById('max-energy-panel').textContent = maxEnergy;
-      document.getElementById('level-panel').textContent = level;
-      document.getElementById('energy-drinks-panel').textContent = energyDrinks;
-      document.getElementById('exp-panel').textContent = exp;
-      document.getElementById('progress-panel').style.width = `${(exp / 10) * 100}%`;
-
-      // Обновляем значения в других местах (если нужно)
-      document.getElementById('coins').textContent = coins;
-      document.getElementById('level').textContent = level;
-      document.getElementById('energy').textContent = energy;
-      document.getElementById('max-energy').textContent = maxEnergy;
-      document.getElementById('energy-drinks').textContent = energyDrinks;
-      document.getElementById('progress').style.width = `${(exp / 10) * 100}%`;
-    }
-
-    // Добавление монет
-    function addCoins() {
-      if (energy > 0) {
-        coins += clickMultiplier * tapMultiplier;
-        energy--;
-        exp++;
-        if (exp >= 10) {
-          level++;
-          exp = 0;
-          alert(`🎉 Уровень ${level} достигнут!`);
-        }
-        updateUI();
-      } else {
-        alert("Недостаточно энергии!");
-      }
-    }
-
-    // Функции для бустов
-    function showBoostsModal() {
-      document.getElementById('boosts-modal').style.display = 'flex';
-      updateBoostsUI();
-    }
-
-    function closeBoostsModal() {
-      document.getElementById('boosts-modal').style.display = 'none';
-    }
-
-    function updateBoostsUI() {
-      document.getElementById('tap-multiplier').textContent = tapMultiplier;
-      document.getElementById('tap-multiplier-cost').textContent = tapMultiplierCost;
-      document.getElementById('max-energy-boost').textContent = maxEnergyBoost;
-      document.getElementById('energy-upgrade-cost').textContent = energyUpgradeCost;
-      document.getElementById('energy-regen-speed').textContent = 6 - energyRegenLevel;
-      document.getElementById('energy-regen-cost').textContent = energyRegenCost;
-      document.getElementById('robot-cost').textContent = robotCost;
-    }
-
-    function buyTapMultiplier() {
-      if (coins >= tapMultiplierCost) {
-        coins -= tapMultiplierCost;
-        tapMultiplier *= 2;
-        tapMultiplierCost *= 2;
-        updateUI();
-        updateBoostsUI();
-        alert("Множитель тапов увеличен!");
-      } else {
-        alert("Недостаточно монет!");
-      }
-    }
-
-    function buyEnergyUpgrade() {
-      if (coins >= energyUpgradeCost) {
-        coins -= energyUpgradeCost;
-        maxEnergy += 50;
-        maxEnergyBoost += 50;
-        energyUpgradeCost *= 2;
-        updateUI();
-        updateBoostsUI();
-        alert("Максимум энергии увеличен!");
-      } else {
-        alert("Недостаточно монет!");
-      }
-    }
-
-    function buyEnergyRegen() {
-      if (coins >= energyRegenCost && energyRegenLevel < 5) {
-        coins -= energyRegenCost;
-        energyRegenLevel++;
-        energyRegenCost *= 2;
-        updateEnergyRegen();
-        updateUI();
-        updateBoostsUI();
-        alert("Скорость восстановления энергии увеличена!");
-      } else {
-        alert("Недостаточно монет или достигнут максимальный уровень!");
-      }
-    }
-
-    function updateEnergyRegen() {
-      const regenInterval = 6000 - (energyRegenLevel * 1000);
-      clearInterval(energyRegenInterval);
-      energyRegenInterval = setInterval(() => {
-        if (energy < maxEnergy) {
-          energy++;
-          updateUI();
-        }
-      }, regenInterval);
-    }
-
-    function buyRobot() {
-      if (coins >= robotCost) {
-        coins -= robotCost;
-        robotActive = true;
-        updateUI();
-        updateBoostsUI();
-        alert("Робот куплен! Он будет автоматически добывать монеты.");
-        startRobot();
-      } else {
-        alert("Недостаточно монет!");
-      }
-    }
-
-    function startRobot() {
-      if (robotActive) {
-        setInterval(() => {
-          coins += 10;
-          updateUI();
-        }, 1000);
-      }
-    }
-
-    // Функции для ферм
-    function showFarmsModal() {
-      document.getElementById('farms-modal').style.display = 'flex';
-      updateFarmsUI();
-    }
-
-    function closeFarmsModal() {
-      document.getElementById('farms-modal').style.display = 'none';
-    }
-
-    function updateFarmsUI() {
-      const farmsList = document.getElementById('farms-list');
-      farmsList.innerHTML = '';
-
-      farms.forEach(farm => {
-        const farmCard = document.createElement('div');
-        farmCard.className = 'farm-card';
-        farmCard.innerHTML = `
-          <h3>Ферма ${farm.id}</h3>
-          <p>Уровень: ${farm.level}</p>
-          <p>Доход: ${farm.income} монет/сек</p>
-          <p class="farm-cost">Цена: ${farm.cost} монет</p>
-        `;
-
-        if (farm.level < 10 && level >= farm.requiredLevel) {
-          farmCard.onclick = () => upgradeFarm(farm.id);
-        } else {
-          farmCard.style.opacity = 0.5;
-          farmCard.style.cursor = 'not-allowed';
+        // Анимация Шибы
+        function animateShiba() {
+            const shiba = document.querySelector('.shiba');
+            shiba.classList.add('jump');
+            setTimeout(() => {
+                shiba.classList.remove('jump');
+            }, 300);
+            addCoins();
         }
 
-        farmsList.appendChild(farmCard);
-      });
-    }
+        // Колесо удачи
+        const wheelContainer = document.getElementById('wheel-container');
+        const wheel = document.getElementById('wheel');
+        let isSpinning = false;
 
-    function upgradeFarm(farmId) {
-      const farm = farms.find(f => f.id === farmId);
-      if (coins >= farm.cost && farm.level < 10) {
-        coins -= farm.cost;
-        farm.level++;
-        farm.cost *= 2;
-        farm.income *= 1.5;
-        updateUI();
-        updateFarmsUI();
-        alert(`Ферма ${farmId} улучшена до уровня ${farm.level}!`);
-      } else {
-        alert("Недостаточно монет или достигнут максимальный уровень фермы!");
-      }
-    }
+        const rewards = [
+            { icon: "fas fa-coins", text: "50 монет", action: () => coins += 50 },
+            { icon: "fas fa-bolt", text: "20 энергии", action: () => energy += 20 },
+            { icon: "fas fa-rocket", text: "x2 доход", action: () => clickMultiplier *= 2 },
+            { icon: "fas fa-wine-bottle", text: "Энергетик", action: () => energyDrinks++ },
+            { icon: "fas fa-network-wired", text: "Рой", action: () => swarms++ },
+            { icon: "fas fa-crown", text: "Легендарный Шиба", action: () => alert("Вы получили Легендарного Шиба!") },
+            { icon: "fas fa-gem", text: "1000 монет", action: () => coins += 1000 },
+            { icon: "fas fa-battery-full", text: "Супер-энергия", action: () => maxEnergy += 50 },
+            { icon: "fas fa-star", text: "Звезда удачи", action: () => alert("Звезда удачи активирована!") },
+            { icon: "fas fa-gift", text: "Сюрприз", action: () => coins += Math.floor(Math.random() * 500) }
+        ];
 
-    // Инициализация игры
-    window.onload = function() {
-      updateUI();
-    };
-  </script>
+        const sectionAngles = [18, 54, 90, 126, 162, 198, 234, 270, 306, 342];
+
+        function showWheel() {
+            wheelContainer.style.display = 'flex';
+            wheel.style.transform = 'rotate(0deg)'; // Сброс вращения при открытии
+        }
+
+        function spinWheel() {
+            if (isSpinning) return;
+
+            const button = document.querySelector('.spin-button');
+            button.disabled = true;
+            isSpinning = true;
+
+            const randomRotation = 360 * 5 + Math.floor(Math.random() * 360);
+            wheel.style.transition = 'transform 5s cubic-bezier(0.25, 0.1, 0.25, 1)';
+            wheel.style.transform = `rotate(${randomRotation}deg)`;
+
+            setTimeout(() => {
+                const degrees = randomRotation % 360;
+                const pointerAngle = (360 - degrees) % 360;
+
+                let closestAngle = sectionAngles[0];
+                let minDifference = Math.abs(pointerAngle - closestAngle);
+
+                for (let i = 1; i < sectionAngles.length; i++) {
+                    const difference = Math.abs(pointerAngle - sectionAngles[i]);
+                    if (difference < minDifference) {
+                        minDifference = difference;
+                        closestAngle = sectionAngles[i];
+                    }
+                }
+
+                const rewardIndex = sectionAngles.indexOf(closestAngle);
+                const reward = rewards[rewardIndex];
+
+                reward.action();
+                alert(`Вы получили: ${reward.text}`);
+                updateUI();
+
+                button.disabled = false;
+                isSpinning = false;
+            }, 5000);
+        }
+
+        function closeWheel() {
+            wheelContainer.style.display = 'none';
+        }
+
+        // Инициализация игры
+        window.onload = function() {
+            updateUI();
+        };
+    </script>
+
+    <!-- Скрипт для фона с мультяшными звёздами -->
+    <script>
+        // Получаем canvas и контекст
+        const canvas = document.getElementById("starCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // Устанавливаем размер canvas
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Направление движения звёзд (в радианах)
+        const direction = Math.PI / 4; // 45 градусов (движение вправо-вверх)
+        const speed = 0.5; // Скорость движения (пикселей за кадр)
+
+        // Создаём звёзды
+        function createStars(count) {
+            const stars = [];
+            for (let i = 0; i < count; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 3 + 2, // Размер звёзд (от 2 до 5 пикселей)
+                    color: `rgba(255, 255, 255, ${Math.random() * 0.5 + 0.5})`, // Белые звёзды с разной прозрачностью
+                    brightness: Math.random() * 0.5 + 0.5, // Начальная яркость
+                    speed: Math.random() * 0.02 + 0.01 // Скорость мигания
+                });
+            }
+            return stars;
+        }
+
+        const stars = createStars(100); // 100 звёзд
+
+        // Анимация звёзд
+        function animate() {
+            // Очищаем canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Рисуем звёзды
+            stars.forEach(star => {
+                // Изменяем яркость для мигания
+                star.brightness += star.speed;
+                if (star.brightness > 1 || star.brightness < 0.5) {
+                    star.speed *= -1; // Меняем направление мигания
+                }
+
+                // Обновляем координаты звёзд для движения
+                star.x += Math.cos(direction) * speed;
+                star.y += Math.sin(direction) * speed;
+
+                // Если звезда уходит за границы canvas, возвращаем её на противоположную сторону
+                if (star.x > canvas.width) star.x = 0;
+                if (star.x < 0) star.x = canvas.width;
+                if (star.y > canvas.height) star.y = 0;
+                if (star.y < 0) star.y = canvas.height;
+
+                // Рисуем звезду
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${star.brightness})`; // Белые звёзды
+                ctx.fill();
+            });
+
+            // Запускаем анимацию
+            requestAnimationFrame(animate);
+        }
+
+        // Запускаем анимацию
+        animate();
+    </script>
 </body>
 </html>
