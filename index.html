@@ -5,20 +5,48 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Shiba Inu Tap Game</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
+    /* Основные стили */
     body {
       margin: 0;
       font-family: 'Roboto', sans-serif;
-      color: white;
+      color: #CCD6F6;
       text-align: center;
       overflow: hidden;
-      background: linear-gradient(135deg, #1d1f27, #3a3d50);
+      position: relative;
+      background-color: #0A192F;
+      touch-action: manipulation; /* Отключаем масштабирование на мобильных устройствах */
+    }
+
+    #particles-js {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0A192F;
+      z-index: -1;
     }
 
     .container {
       max-width: 100%;
+      margin: 0 auto;
       padding: 10px;
-      box-sizing: border-box;
+      animation: fadeIn 1s ease-in-out;
+      position: relative;
+      z-index: 1;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     header {
@@ -27,9 +55,14 @@
     }
 
     .header-buttons {
+      position: absolute;
+      top: 10px;
+      left: 0;
+      right: 0;
       display: flex;
       justify-content: space-between;
-      margin-bottom: 10px;
+      padding: 0 10px;
+      z-index: 1000;
     }
 
     .header-buttons .action-btn {
@@ -38,70 +71,132 @@
       gap: 5px;
       cursor: pointer;
       padding: 8px 12px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 2px solid rgba(255, 255, 255, 0.2);
-      border-radius: 8px;
+      background: rgba(17, 34, 64, 0.8);
+      border: 2px solid #00D1FF;
+      border-radius: 10px;
+      transition: all 0.3s ease;
       font-size: 14px;
     }
 
+    .header-buttons .action-btn:hover {
+      background: rgba(0, 209, 255, 0.2);
+      transform: scale(1.05);
+      box-shadow: 0 0 10px rgba(0, 209, 255, 0.3);
+    }
+
     .header-buttons .icon {
-      width: 16px;
-      height: 16px;
+      font-size: 16px;
+      color: #00D1FF;
     }
 
     .shiba-container {
       margin: 10px 0;
+      position: relative;
     }
 
     .shiba {
-      width: 100px;
+      width: 120px; /* Уменьшим размер Шиба Ину для мобильных устройств */
       cursor: pointer;
       transition: transform 0.2s;
     }
 
-    .shiba:active {
-      transform: scale(1.1);
-    }
-
-    @keyframes bounce {
+    @keyframes jump {
       0%, 100% {
         transform: translateY(0);
       }
       50% {
-        transform: translateY(-10px);
+        transform: translateY(-20px);
       }
     }
 
-    .bounce-animation {
-      animation: bounce 0.3s ease;
+    @keyframes wag {
+      0%, 100% {
+        transform: rotate(0deg);
+      }
+      25% {
+        transform: rotate(10deg);
+      }
+      75% {
+        transform: rotate(-10deg);
+      }
     }
 
-    .actions {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      margin-top: 10px;
+    .shiba.jump {
+      animation: jump 0.3s ease;
     }
 
-    .action-btn {
+    .shiba.wag {
+      animation: wag 0.5s ease-in-out;
+    }
+
+    .coin-effect {
+      position: absolute;
+      font-size: 16px;
+      color: gold;
+      animation: floatUp 1s ease-out;
+    }
+
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-50px);
+      }
+    }
+
+    .bottom-panel {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(17, 34, 64, 0.9);
+      padding: 8px;
+      display: flex;
+      justify-content: space-around;
+      border-top: 2px solid #00D1FF;
+      z-index: 1000;
+      animation: slideUp 0.5s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(100%);
+      }
+      to {
+        transform: translateY(0);
+      }
+    }
+
+    .bottom-panel .action-btn {
       display: flex;
       flex-direction: column;
       align-items: center;
       cursor: pointer;
-      padding: 10px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 2px solid rgba(255, 255, 255, 0.2);
-      border-radius: 8px;
-      font-size: 14px;
+      padding: 8px;
+      background: rgba(0, 209, 255, 0.1);
+      border: 2px solid #00D1FF;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      width: 70px;
     }
 
-    .icon {
-      width: 30px;
-      height: 30px;
+    .bottom-panel .action-btn:hover {
+      background: rgba(0, 209, 255, 0.2);
+      transform: scale(1.05);
+      box-shadow: 0 0 10px rgba(0, 209, 255, 0.3);
     }
 
-    .mt-2 {
+    .bottom-panel .icon {
+      font-size: 20px;
+      color: #00D1FF;
+    }
+
+    .bottom-panel .mt-2 {
       margin-top: 5px;
+      font-size: 12px;
     }
 
     .modal {
@@ -114,21 +209,42 @@
       background: rgba(0, 0, 0, 0.7);
       justify-content: center;
       align-items: center;
+      animation: fadeInModal 0.3s ease;
       z-index: 1000;
     }
 
+    @keyframes fadeInModal {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
     .modal-content {
-      background: #2c2f3b;
-      padding: 15px;
+      background: #112240;
+      padding: 20px;
       border-radius: 10px;
       text-align: center;
       max-width: 90%;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(-20px);
+      }
+      to {
+        transform: translateY(0);
+      }
     }
 
     .close {
       float: right;
       cursor: pointer;
-      font-size: 20px;
+      font-size: 24px;
+      color: #00D1FF;
     }
 
     .progress-bar {
@@ -142,7 +258,7 @@
 
     .progress {
       height: 100%;
-      background: linear-gradient(90deg, #00ff88, #00b8ff);
+      background: linear-gradient(90deg, #00D1FF, #00B8FF);
       border-radius: 5px;
       transition: width 0.3s ease;
     }
@@ -151,11 +267,10 @@
       position: fixed;
       top: 10px;
       right: 10px;
-      background: #2c2f3b;
-      padding: 8px 16px;
-      border-radius: 8px;
+      background: #112240;
+      padding: 10px 20px;
+      border-radius: 10px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-      font-size: 14px;
       animation: slideInNotification 0.5s ease;
     }
 
@@ -167,27 +282,321 @@
         transform: translateX(0);
       }
     }
+
+    .boosts-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      justify-content: center;
+      align-items: center;
+      z-index: 1001;
+    }
+
+    .boosts-content {
+      background: #112240;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 90%;
+      animation: slideIn 0.3s ease;
+    }
+
+    .boosts-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .boost-card {
+      background: rgba(17, 34, 64, 0.8);
+      border: 2px solid #00D1FF;
+      border-radius: 10px;
+      padding: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .boost-card:hover {
+      background: rgba(0, 209, 255, 0.2);
+      transform: scale(1.02);
+      box-shadow: 0 0 10px rgba(0, 209, 255, 0.3);
+    }
+
+    .boost-card h3 {
+      margin: 0;
+      font-size: 16px;
+      color: #00D1FF;
+    }
+
+    .boost-card p {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+
+    .boost-cost {
+      color: #00D1FF;
+      font-weight: bold;
+    }
+
+    .wheel-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 1001;
+    }
+
+    .wheel {
+      width: 300px;
+      height: 300px;
+      position: relative;
+      border-radius: 50%;
+      background: radial-gradient(circle, #2a2a40, #1e1e2f);
+      box-shadow: 0 0 50px rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 5s cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+
+    .reward {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform-origin: center;
+      z-index: 3;
+    }
+
+    .reward i {
+      font-size: 30px;
+      color: white;
+      transform: translateY(-100px);
+      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+      transition: transform 0.3s ease;
+      background: linear-gradient(45deg, #00ffcc, #00b3ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .spin-button {
+      margin-top: 20px;
+      padding: 10px 30px;
+      font-size: 18px;
+      background: linear-gradient(45deg, #00ffcc, #00b3ff);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 0 20px rgba(0, 255, 204, 0.6);
+      font-weight: bold;
+    }
+
+    .spin-button:hover {
+      background: linear-gradient(45deg, #00b3ff, #00ffcc);
+      transform: scale(1.05);
+    }
+
+    .spin-button:disabled {
+      background: #444;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .back-button {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 24px;
+      color: #00D1FF;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .back-button:hover {
+      transform: scale(1.1);
+    }
+
+    .wheel-pointer {
+      position: absolute;
+      top: 120px;
+      left: 50%;
+      transform: translateX(-50%) rotate(180deg);
+      width: 30px;
+      height: 30px;
+      background: #00ffcc;
+      clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+      z-index: 4;
+      filter: drop-shadow(0 0 10px #00ffcc);
+    }
+
+    .wheel-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .farms-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      justify-content: center;
+      align-items: center;
+      z-index: 1001;
+    }
+
+    .farms-content {
+      background: #112240;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 90%;
+      animation: slideIn 0.3s ease;
+    }
+
+    .farms-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .farm-card {
+      background: rgba(17, 34, 64, 0.8);
+      border: 2px solid #00D1FF;
+      border-radius: 10px;
+      padding: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .farm-card:hover {
+      background: rgba(0, 209, 255, 0.2);
+      transform: scale(1.02);
+      box-shadow: 0 0 10px rgba(0, 209, 255, 0.3);
+    }
+
+    .farm-card h3 {
+      margin: 0;
+      font-size: 16px;
+      color: #00D1FF;
+    }
+
+    .farm-card p {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+
+    .farm-cost {
+      color: #00D1FF;
+      font-weight: bold;
+    }
+
+    /* Стили для верхней панели */
+    .top-panel {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+      padding: 8px;
+      background: rgba(17, 34, 64, 0.8);
+      border-radius: 10px;
+      border: 2px solid #00D1FF;
+      align-items: center;
+    }
+
+    .panel-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 14px;
+      color: #CCD6F6;
+    }
+
+    .panel-item .icon {
+      font-size: 16px;
+      color: #00D1FF;
+    }
+
+    /* Стили для прогресс-бара */
+    .progress-bar {
+      width: 80px;
+      height: 6px;
+      background: #444;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .progress {
+      height: 100%;
+      background: linear-gradient(90deg, #00D1FF, #00B8FF);
+      border-radius: 5px;
+      transition: width 0.3s ease;
+    }
   </style>
 </head>
 <body>
+  <div id="particles-js"></div>
+
   <div class="container">
     <header>
       <h1>Shiba Inu Tap Game</h1>
-      <p>💰 Монеты: <span id="coins">0</span></p>
-      <p>📈 Уровень: <span id="level">1</span></p>
-      <div class="progress-bar">
-        <div id="progress" class="progress" style="width: 0%;"></div>
+      <div class="top-panel">
+        <div class="panel-item">
+          <i class="fas fa-coins icon"></i>
+          <span id="coins-panel">0</span>
+        </div>
+        <div class="panel-item">
+          <i class="fas fa-bolt icon"></i>
+          <span id="energy-panel">100</span>/<span id="max-energy-panel">100</span>
+        </div>
+        <div class="panel-item">
+          <i class="fas fa-level-up-alt icon"></i>
+          <span id="level-panel">1</span>
+        </div>
+        <div class="panel-item">
+          <i class="fas fa-wine-bottle icon"></i>
+          <span id="energy-drinks-panel">0</span>
+        </div>
+        <div class="panel-item">
+          <i class="fas fa-star icon"></i>
+          <span id="exp-panel">0</span>/10
+        </div>
+        <div class="panel-item">
+          <div class="progress-bar">
+            <div id="progress-panel" class="progress" style="width: 0%;"></div>
+          </div>
+        </div>
       </div>
-
-      <!-- Кнопки Рейтинг и Кланы -->
       <div class="header-buttons">
         <div class="action-btn" onclick="showModal('Кланы', 'Здесь будет информация о кланах.')">
-          <img class="icon" src="https://img.icons8.com/ios-filled/50/ffffff/shield.png" alt="Clans">
+          <i class="fas fa-shield-alt icon"></i>
           <span>Кланы</span>
         </div>
         <div class="action-btn" onclick="showModal('Рейтинг', 'Здесь будет рейтинг игроков.')">
-          <img class="icon" src="https://img.icons8.com/ios-filled/50/ffffff/trophy.png" alt="Rating">
+          <i class="fas fa-trophy icon"></i>
           <span>Рейтинг</span>
+        </div>
+        <div class="action-btn small" onclick="showWheel()">
+          <i class="fas fa-gift icon"></i>
+          <span class="mt-2">Колесо удачи</span>
         </div>
       </div>
     </header>
@@ -195,113 +604,420 @@
     <div class="shiba-container">
       <img src="https://cryptologos.cc/logos/shiba-inu-shib-logo.png" alt="Shiba Inu" class="shiba" onclick="addCoins()">
     </div>
+  </div>
 
-    <div class="actions">
-      <div class="action-btn" onclick="showModal('Бусты', 'Купи буст для увеличения дохода!')">
-        <img class="icon" src="https://img.icons8.com/ios-filled/50/ffffff/flash-on.png" alt="Boosts">
-        <span class="mt-2">Бусты</span>
-      </div>
-      <div class="action-btn" onclick="showModal('Задания', 'Выполняй задания для получения наград!')">
-        <img class="icon" src="https://img.icons8.com/ios-filled/50/ffffff/book.png" alt="Tasks">
-        <span class="mt-2">Задания</span>
-      </div>
-      <div class="action-btn" onclick="showModal('Друзья', 'Приглашай друзей и получай бонусы!')">
-        <img class="icon" src="https://img.icons8.com/ios-filled/50/ffffff/user-group-man-man.png" alt="Friends">
-        <span class="mt-2">Друзья</span>
-      </div>
-      <div class="action-btn" onclick="showModal('Airdrop', 'Получай случайные награды каждый день!')">
-        <img class="icon" src="https://img.icons8.com/ios-filled/50/ffffff/parachute.png" alt="Airdrop">
-        <span class="mt-2">Airdrop</span>
+  <div class="bottom-panel">
+    <div class="action-btn" onclick="showBoostsModal()">
+      <i class="fas fa-bolt icon"></i>
+      <span class="mt-2">Бусты</span>
+    </div>
+    <div class="action-btn" onclick="showShopModal()">
+      <i class="fas fa-shopping-cart icon"></i>
+      <span class="mt-2">Магазин</span>
+    </div>
+    <div class="action-btn" onclick="showModal('Друзья', 'Приглашай друзей и получай бонусы!')">
+      <i class="fas fa-users icon"></i>
+      <span class="mt-2">Друзья</span>
+    </div>
+    <div class="action-btn" onclick="showModal('Airdrop', 'Получай случайные награды каждый день!')">
+      <i class="fas fa-parachute-box icon"></i>
+      <span class="mt-2">Airdrop</span>
+    </div>
+    <div class="action-btn" onclick="showFarmsModal()">
+      <i class="fas fa-network-wired icon"></i>
+      <span class="mt-2">Рои</span>
+    </div>
+  </div>
+
+  <!-- Модальное окно для бустов -->
+  <div class="boosts-modal" id="boosts-modal">
+    <div class="back-button" onclick="closeBoostsModal()">
+      <i class="fas fa-arrow-left"></i>
+    </div>
+    <div class="boosts-content">
+      <h2>Бусты</h2>
+      <div class="boosts-list">
+        <!-- Увеличение тапов -->
+        <div class="boost-card" onclick="buyTapMultiplier()">
+          <h3>Увеличение тапов</h3>
+          <p>Текущий множитель: x<span id="tap-multiplier">1</span></p>
+          <p class="boost-cost">Цена: <span id="tap-multiplier-cost">100</span> монет</p>
+        </div>
+
+        <!-- Увеличение энергии -->
+        <div class="boost-card" onclick="buyEnergyUpgrade()">
+          <h3>Увеличение энергии</h3>
+          <p>Текущий максимум: <span id="max-energy-boost">100</span></p>
+          <p class="boost-cost">Цена: <span id="energy-upgrade-cost">200</span> монет</p>
+        </div>
+
+        <!-- Скорость восстановления энергии -->
+        <div class="boost-card" onclick="buyEnergyRegen()">
+          <h3>Скорость восстановления энергии</h3>
+          <p>Текущая скорость: 1 единица / <span id="energy-regen-speed">5</span> сек</p>
+          <p class="boost-cost">Цена: <span id="energy-regen-cost">500</span> монет</p>
+        </div>
+
+        <!-- Робот -->
+        <div class="boost-card" onclick="buyRobot()">
+          <h3>Робот</h3>
+          <p>Автоматически добывает монеты.</p>
+          <p class="boost-cost">Цена: <span id="robot-cost">100000</span> монет</p>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Модальное окно -->
-  <div id="modal" class="modal">
-    <div class="modal-content">
-      <span class="close" onclick="closeModal()">&times;</span>
-      <h2 id="modal-title"></h2>
-      <p id="modal-text"></p>
+  <!-- Модальное окно для ферм -->
+  <div class="farms-modal" id="farms-modal">
+    <div class="back-button" onclick="closeFarmsModal()">
+      <i class="fas fa-arrow-left"></i>
+    </div>
+    <div class="farms-content">
+      <h2>Фермы</h2>
+      <div class="farms-list" id="farms-list">
+        <!-- Фермы будут добавлены динамически -->
+      </div>
     </div>
   </div>
 
-  <!-- Уведомление -->
-  <div id="notification" class="notification" style="display: none;">+1 монета!</div>
+  <!-- Колесо удачи -->
+  <div class="wheel-container" id="wheel-container">
+    <div class="back-button" onclick="closeWheel()">
+      <i class="fas fa-arrow-left"></i>
+    </div>
+    <div class="wheel-content">
+      <div class="wheel" id="wheel">
+        <div class="reward" style="transform: rotate(18deg);">
+          <i class="fas fa-coins"></i>
+        </div>
+        <div class="reward" style="transform: rotate(54deg);">
+          <i class="fas fa-bolt"></i>
+        </div>
+        <div class="reward" style="transform: rotate(90deg);">
+          <i class="fas fa-rocket"></i>
+        </div>
+        <div class="reward" style="transform: rotate(126deg);">
+          <i class="fas fa-wine-bottle"></i>
+        </div>
+        <div class="reward" style="transform: rotate(162deg);">
+          <i class="fas fa-network-wired"></i>
+        </div>
+        <div class="reward" style="transform: rotate(198deg);">
+          <i class="fas fa-crown"></i>
+        </div>
+        <div class="reward" style="transform: rotate(234deg);">
+          <i class="fas fa-gem"></i>
+        </div>
+        <div class="reward" style="transform: rotate(270deg);">
+          <i class="fas fa-battery-full"></i>
+        </div>
+        <div class="reward" style="transform: rotate(306deg);">
+          <i class="fas fa-star"></i>
+        </div>
+        <div class="reward" style="transform: rotate(342deg);">
+          <i class="fas fa-gift"></i>
+        </div>
+      </div>
+      <div class="wheel-pointer"></div>
+      <button class="spin-button" onclick="spinWheel()">Крутить колесо</button>
+    </div>
+  </div>
 
+  <!-- Остальные модальные окна и скрипты -->
+  <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
   <script>
+    // Переменные игры
     let coins = 0;
     let level = 1;
     let exp = 0;
-    let boostMultiplier = 1;
+    let energy = 100;
+    let maxEnergy = 100;
+    let energyRegen = 1;
+    let clickMultiplier = 1;
+    let robotActive = false;
+    let robotIncome = 1;
+    let energyDrinks = 0;
+    let autoClickerActive = false;
+    let autoClickerCost = 500;
+    let swarms = 0;
+    let swarmCost = 1000;
+    let swarmIncome = 10;
+    let activeBoosts = {};
+    let arenaActive = false;
+    let arenaClicks = 0;
 
-    // Загрузка игры
-    function loadGame() {
-      coins = parseInt(localStorage.getItem('coins')) || 0;
-      level = parseInt(localStorage.getItem('level')) || 1;
-      exp = parseInt(localStorage.getItem('exp')) || 0;
-      updateUI();
+    // Переменные для бустов
+    let tapMultiplier = 1;
+    let tapMultiplierCost = 100;
+    let maxEnergyBoost = 100;
+    let energyUpgradeCost = 200;
+    let energyRegenLevel = 1;
+    let energyRegenCost = 500;
+    let robotCost = 100000;
+
+    // Переменные для ферм
+    const farms = [
+      { id: 1, level: 0, cost: 1000, income: 10, requiredLevel: 0 },
+      { id: 2, level: 0, cost: 5000, income: 50, requiredLevel: 3 },
+      { id: 3, level: 0, cost: 10000, income: 100, requiredLevel: 6 },
+      { id: 4, level: 0, cost: 20000, income: 200, requiredLevel: 9 },
+      { id: 5, level: 0, cost: 50000, income: 500, requiredLevel: 12 }
+    ];
+
+    // Колесо удачи
+    const wheelContainer = document.getElementById('wheel-container');
+    const wheel = document.getElementById('wheel');
+    let isSpinning = false;
+
+    const rewards = [
+      { icon: "fas fa-coins", text: "50 монет", action: () => coins += 50 },
+      { icon: "fas fa-bolt", text: "20 энергии", action: () => energy += 20 },
+      { icon: "fas fa-rocket", text: "x2 доход", action: () => clickMultiplier *= 2 },
+      { icon: "fas fa-wine-bottle", text: "Энергетик", action: () => energyDrinks++ },
+      { icon: "fas fa-network-wired", text: "Рой", action: () => swarms++ },
+      { icon: "fas fa-crown", text: "Легендарный Шиба", action: () => alert("Вы получили Легендарного Шиба!") },
+      { icon: "fas fa-gem", text: "1000 монет", action: () => coins += 1000 },
+      { icon: "fas fa-battery-full", text: "Супер-энергия", action: () => maxEnergy += 50 },
+      { icon: "fas fa-star", text: "Звезда удачи", action: () => alert("Звезда удачи активирована!") },
+      { icon: "fas fa-gift", text: "Сюрприз", action: () => coins += Math.floor(Math.random() * 500) }
+    ];
+
+    const sectionAngles = [18, 54, 90, 126, 162, 198, 234, 270, 306, 342];
+
+    function showWheel() {
+      wheelContainer.style.display = 'flex';
     }
 
-    // Сохранение игры
-    function saveGame() {
-      localStorage.setItem('coins', coins);
-      localStorage.setItem('level', level);
-      localStorage.setItem('exp', exp);
+    function spinWheel() {
+      if (isSpinning) return;
+
+      const button = document.querySelector('.spin-button');
+      button.disabled = true;
+      isSpinning = true;
+
+      const randomRotation = 360 * 5 + Math.floor(Math.random() * 360);
+      wheel.style.transition = 'transform 5s cubic-bezier(0.25, 0.1, 0.25, 1)';
+      wheel.style.transform = `rotate(${randomRotation}deg)`;
+
+      setTimeout(() => {
+        const degrees = randomRotation % 360;
+        const pointerAngle = (360 - degrees) % 360;
+
+        let closestAngle = sectionAngles[0];
+        let minDifference = Math.abs(pointerAngle - closestAngle);
+
+        for (let i = 1; i < sectionAngles.length; i++) {
+          const difference = Math.abs(pointerAngle - sectionAngles[i]);
+          if (difference < minDifference) {
+            minDifference = difference;
+            closestAngle = sectionAngles[i];
+          }
+        }
+
+        const rewardIndex = sectionAngles.indexOf(closestAngle);
+        const reward = rewards[rewardIndex];
+
+        reward.action();
+        alert(`Вы получили: ${reward.text}`);
+        updateUI();
+
+        button.disabled = false;
+        isSpinning = false;
+      }, 5000);
     }
 
-    // Добавление монет
-    function addCoins() {
-      coins += boostMultiplier;
-      exp++;
-      if (exp >= 10) {
-        level++;
-        exp = 0;
-        showNotification(`🎉 Уровень ${level} достигнут!`);
-      }
-      updateUI();
-      saveGame();
-
-      // Анимация прыжка
-      const shiba = document.querySelector('.shiba');
-      shiba.classList.add('bounce-animation');
-      shiba.addEventListener('animationend', () => {
-        shiba.classList.remove('bounce-animation');
-      }, { once: true });
-
-      // Уведомление
-      showNotification(`+${boostMultiplier} монета!`);
+    function closeWheel() {
+      wheelContainer.style.display = 'none';
     }
 
     // Обновление интерфейса
     function updateUI() {
+      document.getElementById('coins-panel').textContent = coins;
+      document.getElementById('energy-panel').textContent = energy;
+      document.getElementById('max-energy-panel').textContent = maxEnergy;
+      document.getElementById('level-panel').textContent = level;
+      document.getElementById('energy-drinks-panel').textContent = energyDrinks;
+      document.getElementById('exp-panel').textContent = exp;
+      document.getElementById('progress-panel').style.width = `${(exp / 10) * 100}%`;
+
+      // Обновляем значения в других местах (если нужно)
       document.getElementById('coins').textContent = coins;
       document.getElementById('level').textContent = level;
+      document.getElementById('energy').textContent = energy;
+      document.getElementById('max-energy').textContent = maxEnergy;
+      document.getElementById('energy-drinks').textContent = energyDrinks;
       document.getElementById('progress').style.width = `${(exp / 10) * 100}%`;
     }
 
-    // Модальное окно
-    function showModal(title, text) {
-      document.getElementById('modal-title').textContent = title;
-      document.getElementById('modal-text').textContent = text;
-      document.getElementById('modal').style.display = 'flex';
+    // Добавление монет
+    function addCoins() {
+      if (energy > 0) {
+        coins += clickMultiplier * tapMultiplier;
+        energy--;
+        exp++;
+        if (exp >= 10) {
+          level++;
+          exp = 0;
+          alert(`🎉 Уровень ${level} достигнут!`);
+        }
+        updateUI();
+      } else {
+        alert("Недостаточно энергии!");
+      }
     }
 
-    function closeModal() {
-      document.getElementById('modal').style.display = 'none';
+    // Функции для бустов
+    function showBoostsModal() {
+      document.getElementById('boosts-modal').style.display = 'flex';
+      updateBoostsUI();
     }
 
-    // Уведомление
-    function showNotification(message) {
-      const notification = document.getElementById('notification');
-      notification.textContent = message;
-      notification.style.display = 'block';
-      setTimeout(() => {
-        notification.style.display = 'none';
-      }, 2000);
+    function closeBoostsModal() {
+      document.getElementById('boosts-modal').style.display = 'none';
     }
 
-    // Загрузка при старте
-    window.onload = loadGame;
+    function updateBoostsUI() {
+      document.getElementById('tap-multiplier').textContent = tapMultiplier;
+      document.getElementById('tap-multiplier-cost').textContent = tapMultiplierCost;
+      document.getElementById('max-energy-boost').textContent = maxEnergyBoost;
+      document.getElementById('energy-upgrade-cost').textContent = energyUpgradeCost;
+      document.getElementById('energy-regen-speed').textContent = 6 - energyRegenLevel;
+      document.getElementById('energy-regen-cost').textContent = energyRegenCost;
+      document.getElementById('robot-cost').textContent = robotCost;
+    }
+
+    function buyTapMultiplier() {
+      if (coins >= tapMultiplierCost) {
+        coins -= tapMultiplierCost;
+        tapMultiplier *= 2;
+        tapMultiplierCost *= 2;
+        updateUI();
+        updateBoostsUI();
+        alert("Множитель тапов увеличен!");
+      } else {
+        alert("Недостаточно монет!");
+      }
+    }
+
+    function buyEnergyUpgrade() {
+      if (coins >= energyUpgradeCost) {
+        coins -= energyUpgradeCost;
+        maxEnergy += 50;
+        maxEnergyBoost += 50;
+        energyUpgradeCost *= 2;
+        updateUI();
+        updateBoostsUI();
+        alert("Максимум энергии увеличен!");
+      } else {
+        alert("Недостаточно монет!");
+      }
+    }
+
+    function buyEnergyRegen() {
+      if (coins >= energyRegenCost && energyRegenLevel < 5) {
+        coins -= energyRegenCost;
+        energyRegenLevel++;
+        energyRegenCost *= 2;
+        updateEnergyRegen();
+        updateUI();
+        updateBoostsUI();
+        alert("Скорость восстановления энергии увеличена!");
+      } else {
+        alert("Недостаточно монет или достигнут максимальный уровень!");
+      }
+    }
+
+    function updateEnergyRegen() {
+      const regenInterval = 6000 - (energyRegenLevel * 1000);
+      clearInterval(energyRegenInterval);
+      energyRegenInterval = setInterval(() => {
+        if (energy < maxEnergy) {
+          energy++;
+          updateUI();
+        }
+      }, regenInterval);
+    }
+
+    function buyRobot() {
+      if (coins >= robotCost) {
+        coins -= robotCost;
+        robotActive = true;
+        updateUI();
+        updateBoostsUI();
+        alert("Робот куплен! Он будет автоматически добывать монеты.");
+        startRobot();
+      } else {
+        alert("Недостаточно монет!");
+      }
+    }
+
+    function startRobot() {
+      if (robotActive) {
+        setInterval(() => {
+          coins += 10;
+          updateUI();
+        }, 1000);
+      }
+    }
+
+    // Функции для ферм
+    function showFarmsModal() {
+      document.getElementById('farms-modal').style.display = 'flex';
+      updateFarmsUI();
+    }
+
+    function closeFarmsModal() {
+      document.getElementById('farms-modal').style.display = 'none';
+    }
+
+    function updateFarmsUI() {
+      const farmsList = document.getElementById('farms-list');
+      farmsList.innerHTML = '';
+
+      farms.forEach(farm => {
+        const farmCard = document.createElement('div');
+        farmCard.className = 'farm-card';
+        farmCard.innerHTML = `
+          <h3>Ферма ${farm.id}</h3>
+          <p>Уровень: ${farm.level}</p>
+          <p>Доход: ${farm.income} монет/сек</p>
+          <p class="farm-cost">Цена: ${farm.cost} монет</p>
+        `;
+
+        if (farm.level < 10 && level >= farm.requiredLevel) {
+          farmCard.onclick = () => upgradeFarm(farm.id);
+        } else {
+          farmCard.style.opacity = 0.5;
+          farmCard.style.cursor = 'not-allowed';
+        }
+
+        farmsList.appendChild(farmCard);
+      });
+    }
+
+    function upgradeFarm(farmId) {
+      const farm = farms.find(f => f.id === farmId);
+      if (coins >= farm.cost && farm.level < 10) {
+        coins -= farm.cost;
+        farm.level++;
+        farm.cost *= 2;
+        farm.income *= 1.5;
+        updateUI();
+        updateFarmsUI();
+        alert(`Ферма ${farmId} улучшена до уровня ${farm.level}!`);
+      } else {
+        alert("Недостаточно монет или достигнут максимальный уровень фермы!");
+      }
+    }
+
+    // Инициализация игры
+    window.onload = function() {
+      updateUI();
+      particlesJS.load('particles-js', 'particles.json', function() {
+        console.log('Particles.js loaded!');
+      });
+    };
   </script>
 </body>
 </html>
