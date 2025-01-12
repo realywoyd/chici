@@ -92,6 +92,9 @@
     .shiba-container {
       margin: 10px 0;
       position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .shiba {
@@ -102,6 +105,7 @@
       margin-bottom: 20px; /* Добавили отступ снизу */
     }
 
+    /* Анимация прыжка */
     @keyframes jump {
       0%, 100% {
         transform: translateY(0);
@@ -111,6 +115,7 @@
       }
     }
 
+    /* Анимация виляния */
     @keyframes wag {
       0%, 100% {
         transform: rotate(0deg);
@@ -129,6 +134,13 @@
 
     .shiba.wag {
       animation: wag 0.5s ease-in-out;
+    }
+
+    /* Адаптация для мобильных устройств */
+    @media (max-width: 768px) {
+      .shiba {
+        width: 180px; /* Уменьшаем размер в 2 раза */
+      }
     }
 
     .coin-effect {
@@ -604,7 +616,7 @@
     </header>
 
     <div class="shiba-container">
-      <img src="https://cryptologos.cc/logos/shiba-inu-shib-logo.png" alt="Shiba Inu" class="shiba" onclick="addCoins()">
+      <img src="https://cryptologos.cc/logos/shiba-inu-shib-logo.png" alt="Shiba Inu" class="shiba" onclick="animateShiba()">
     </div>
   </div>
 
@@ -729,6 +741,113 @@
   <!-- Остальные модальные окна и скрипты -->
   <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
   <script>
+    // Конфигурация для particles.js
+    particlesJS("particles-js", {
+      "particles": {
+        "number": {
+          "value": 80,
+          "density": {
+            "enable": true,
+            "value_area": 800
+          }
+        },
+        "color": {
+          "value": "#00D1FF"
+        },
+        "shape": {
+          "type": "circle",
+          "stroke": {
+            "width": 0,
+            "color": "#000000"
+          },
+          "polygon": {
+            "nb_sides": 5
+          }
+        },
+        "opacity": {
+          "value": 0.5,
+          "random": false,
+          "anim": {
+            "enable": false,
+            "speed": 1,
+            "opacity_min": 0.1,
+            "sync": false
+          }
+        },
+        "size": {
+          "value": 3,
+          "random": true,
+          "anim": {
+            "enable": false,
+            "speed": 40,
+            "size_min": 0.1,
+            "sync": false
+          }
+        },
+        "line_linked": {
+          "enable": true,
+          "distance": 150,
+          "color": "#00D1FF",
+          "opacity": 0.4,
+          "width": 1
+        },
+        "move": {
+          "enable": true,
+          "speed": 6,
+          "direction": "none",
+          "random": false,
+          "straight": false,
+          "out_mode": "out",
+          "bounce": false,
+          "attract": {
+            "enable": false,
+            "rotateX": 600,
+            "rotateY": 1200
+          }
+        }
+      },
+      "interactivity": {
+        "detect_on": "canvas",
+        "events": {
+          "onhover": {
+            "enable": true,
+            "mode": "repulse"
+          },
+          "onclick": {
+            "enable": true,
+            "mode": "push"
+          },
+          "resize": true
+        },
+        "modes": {
+          "grab": {
+            "distance": 400,
+            "line_linked": {
+              "opacity": 1
+            }
+          },
+          "bubble": {
+            "distance": 400,
+            "size": 40,
+            "duration": 2,
+            "opacity": 8,
+            "speed": 3
+          },
+          "repulse": {
+            "distance": 200,
+            "duration": 0.4
+          },
+          "push": {
+            "particles_nb": 4
+          },
+          "remove": {
+            "particles_nb": 2
+          }
+        }
+      },
+      "retina_detect": true
+    });
+
     // Переменные игры
     let coins = 0;
     let level = 1;
@@ -831,6 +950,20 @@
 
     function closeWheel() {
       wheelContainer.style.display = 'none';
+    }
+
+    // Анимация логотипа
+    function animateShiba() {
+      const shiba = document.querySelector('.shiba');
+      shiba.classList.add('jump');
+      setTimeout(() => {
+        shiba.classList.remove('jump');
+      }, 300);
+      shiba.classList.add('wag');
+      setTimeout(() => {
+        shiba.classList.remove('wag');
+      }, 500);
+      addCoins();
     }
 
     // Обновление интерфейса
@@ -1016,9 +1149,6 @@
     // Инициализация игры
     window.onload = function() {
       updateUI();
-      particlesJS.load('particles-js', 'particles.json', function() {
-        console.log('Particles.js loaded!');
-      });
     };
   </script>
 </body>
