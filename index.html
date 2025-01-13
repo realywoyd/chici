@@ -228,7 +228,7 @@
         }
 
         .modal-content {
-            background: rgba(11, 61, 145, 0.9);
+            background: radial-gradient(circle, #0B3D91, #6A0D83);
             padding: 20px;
             border-radius: 20px;
             text-align: center;
@@ -263,7 +263,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.7);
             justify-content: center;
             align-items: center;
             z-index: 1001;
@@ -271,8 +271,13 @@
         }
 
         .wheel-content {
-            position: relative;
+            background: radial-gradient(circle, #0B3D91, #6A0D83);
+            padding: 20px;
+            border-radius: 20px;
             text-align: center;
+            max-width: 90%;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
         }
 
         .wheel {
@@ -697,45 +702,46 @@
     </div>
 
     <!-- Колесо удачи -->
-    <div class="wheel-container" id="wheel-container">
-        <div class="back-button" onclick="closeWheel()">
-            <i class="fas fa-arrow-left"></i>
-        </div>
-        <div class="wheel-content">
-            <div class="wheel" id="wheel">
-                <div class="reward" style="transform: rotate(18deg);">
-                    <i class="fas fa-coins"></i>
+    <div id="wheel-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('wheel-modal')">&times;</span>
+            <h2>Колесо Удачи</h2>
+            <div class="wheel-content">
+                <div class="wheel" id="wheel">
+                    <div class="reward" style="transform: rotate(18deg);">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <div class="reward" style="transform: rotate(54deg);">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="reward" style="transform: rotate(90deg);">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div class="reward" style="transform: rotate(126deg);">
+                        <i class="fas fa-wine-bottle"></i>
+                    </div>
+                    <div class="reward" style="transform: rotate(162deg);">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                    <div class="reward" style="transform: rotate(198deg);">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <div class="reward" style="transform: rotate(234deg);">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <div class="reward" style="transform: rotate(270deg);">
+                        <i class="fas fa-battery-full"></i>
+                    </div>
+                    <div class="reward" style="transform: rotate(306deg);">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="reward" style="transform: rotate(342deg);">
+                        <i class="fas fa-gift"></i>
+                    </div>
                 </div>
-                <div class="reward" style="transform: rotate(54deg);">
-                    <i class="fas fa-bolt"></i>
-                </div>
-                <div class="reward" style="transform: rotate(90deg);">
-                    <i class="fas fa-rocket"></i>
-                </div>
-                <div class="reward" style="transform: rotate(126deg);">
-                    <i class="fas fa-wine-bottle"></i>
-                </div>
-                <div class="reward" style="transform: rotate(162deg);">
-                    <i class="fas fa-network-wired"></i>
-                </div>
-                <div class="reward" style="transform: rotate(198deg);">
-                    <i class="fas fa-crown"></i>
-                </div>
-                <div class="reward" style="transform: rotate(234deg);">
-                    <i class="fas fa-gem"></i>
-                </div>
-                <div class="reward" style="transform: rotate(270deg);">
-                    <i class="fas fa-battery-full"></i>
-                </div>
-                <div class="reward" style="transform: rotate(306deg);">
-                    <i class="fas fa-star"></i>
-                </div>
-                <div class="reward" style="transform: rotate(342deg);">
-                    <i class="fas fa-gift"></i>
-                </div>
+                <div class="wheel-pointer"></div>
+                <button class="spin-button" onclick="spinWheel()">Крутить колесо</button>
             </div>
-            <div class="wheel-pointer"></div>
-            <button class="spin-button" onclick="spinWheel()">Крутить колесо</button>
         </div>
     </div>
 
@@ -754,8 +760,8 @@
     </div>
 
     <!-- Модальное окно бустов -->
-    <div id="boosts-modal" class="boosts-modal">
-        <div class="boosts-content">
+    <div id="boosts-modal" class="modal">
+        <div class="modal-content">
             <span class="close" onclick="closeModal('boosts-modal')">&times;</span>
             <h2>Бусты</h2>
             <div id="boosts-list">
@@ -1047,10 +1053,100 @@
             modal.style.display = 'flex';
         }
 
+        // Показ модального окна колеса удачи
+        function showWheel() {
+            const modal = document.getElementById('wheel-modal');
+            modal.style.display = 'flex';
+        }
+
         // Закрытие модального окна
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             modal.style.display = 'none';
+        }
+
+        // Переключение языка
+        function toggleLanguage() {
+            const toggle = document.getElementById('language-toggle');
+            if (toggle.checked) {
+                // Переключение на английский
+                document.querySelector('.clan-text').textContent = 'Clan';
+                document.querySelector('.rating-text').textContent = 'Rating';
+                document.querySelector('.wheel-text').textContent = 'Wheel of Fortune';
+                document.querySelector('.boost-text').textContent = 'Boosts';
+                document.querySelector('.shop-text').textContent = 'Shop';
+                document.querySelector('.friends-text').textContent = 'Friends';
+                document.querySelector('.airdrop-text').textContent = 'Airdrop';
+                document.querySelector('.roi-text').textContent = 'Swarms';
+            } else {
+                // Переключение на русский
+                document.querySelector('.clan-text').textContent = 'Клан';
+                document.querySelector('.rating-text').textContent = 'Рейтинг';
+                document.querySelector('.wheel-text').textContent = 'Колесо Удачи';
+                document.querySelector('.boost-text').textContent = 'Бусты';
+                document.querySelector('.shop-text').textContent = 'Магазин';
+                document.querySelector('.friends-text').textContent = 'Друзья';
+                document.querySelector('.airdrop-text').textContent = 'Airdrop';
+                document.querySelector('.roi-text').textContent = 'Рои';
+            }
+        }
+
+        // Колесо удачи
+        const wheel = document.getElementById('wheel');
+        let isSpinning = false;
+
+        const rewards = [
+            { icon: "fas fa-coins", text: "50 монет", action: () => coins += 50 },
+            { icon: "fas fa-bolt", text: "20 энергии", action: () => energy += 20 },
+            { icon: "fas fa-rocket", text: "x2 доход", action: () => clickMultiplier *= 2 },
+            { icon: "fas fa-wine-bottle", text: "Энергетик", action: () => energyDrinks++ },
+            { icon: "fas fa-network-wired", text: "Рой", action: () => swarms++ },
+            { icon: "fas fa-crown", text: "Легендарный Шиба", action: () => alert("Вы получили Легендарного Шиба!") },
+            { icon: "fas fa-gem", text: "1000 монет", action: () => coins += 1000 },
+            { icon: "fas fa-battery-full", text: "Супер-энергия", action: () => maxEnergy += 50 },
+            { icon: "fas fa-star", text: "Звезда удачи", action: () => alert("Звезда удачи активирована!") },
+            { icon: "fas fa-gift", text: "Сюрприз", action: () => coins += Math.floor(Math.random() * 500) }
+        ];
+
+        const sectionAngles = [18, 54, 90, 126, 162, 198, 234, 270, 306, 342];
+
+        function spinWheel() {
+            if (isSpinning) return;
+
+            const button = document.querySelector('.spin-button');
+            button.disabled = true;
+            isSpinning = true;
+
+            const randomRotation = 360 * 5 + Math.floor(Math.random() * 360);
+            wheel.style.transition = 'transform 5s cubic-bezier(0.25, 0.1, 0.25, 1)';
+            wheel.style.transform = `rotate(${randomRotation}deg)`;
+
+            setTimeout(() => {
+                const degrees = randomRotation % 360;
+                const pointerAngle = (360 - degrees) % 360;
+
+                let closestAngle = sectionAngles[0];
+                let minDifference = Math.abs(pointerAngle - closestAngle);
+
+                for (let i = 1; i < sectionAngles.length; i++) {
+                    const difference = Math.abs(pointerAngle - sectionAngles[i]);
+                    if (difference < minDifference) {
+                        minDifference = difference;
+                        closestAngle = sectionAngles[i];
+                    }
+                }
+
+                const rewardIndex = sectionAngles.indexOf(closestAngle);
+                const reward = rewards[rewardIndex];
+
+                reward.action();
+                alert(`Вы получили: ${reward.text}`);
+                updateUI();
+                saveGame();
+
+                button.disabled = false;
+                isSpinning = false;
+            }, 5000);
         }
 
         // Инициализация игры
