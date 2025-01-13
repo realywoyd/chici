@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shiba Inu Galactic Tap Game</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -1003,7 +1003,7 @@
                 </svg>
                 <span class="friends-text">Друзья</span>
             </button>
-            <button class="airdrop-button" onclick="showAirdropModal()">
+            <button class="airdrop-button" onclick="connectTelegramWallet()">
                 <span class="airdrop-icon">🪂</span>
                 <span class="airdrop-text">Airdrop</span>
             </button>
@@ -1534,14 +1534,20 @@
         function connectTelegramWallet() {
             if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
                 const webApp = Telegram.WebApp;
-                webApp.expand(); // Разворачиваем приложение на весь экран
 
+                // Разворачиваем приложение на весь экран
+                webApp.expand();
+
+                // Получаем данные пользователя
                 const user = webApp.initDataUnsafe.user;
                 if (user) {
                     const userId = user.id;
                     const username = user.username || `User${userId}`;
                     alert(`Кошелёк Telegram пользователя ${username} подключен!`);
                     console.log("Данные пользователя:", user);
+
+                    // Здесь можно добавить логику для работы с кошельком
+                    // Например, отправить запрос на сервер для регистрации кошелька
                 } else {
                     alert("Ошибка: Пользователь Telegram не найден.");
                 }
@@ -1669,7 +1675,7 @@
                 updateUI();
                 updateLanguage(); // Устанавливаем язык по умолчанию
 
-                // Проверяем, запущена ли игра через Telegram
+                // Проверяем, запущена ли игра через Telegram Mini Apps
                 if (typeof Telegram === 'undefined' || !Telegram.WebApp) {
                     // Скрываем кнопку подключения кошелька
                     const connectWalletButton = document.querySelector('.connect-wallet-button');
@@ -1743,5 +1749,5 @@
 
         animate();
     </script>
-<script> </body>
+</body>
 </html>
