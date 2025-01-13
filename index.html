@@ -634,6 +634,60 @@
             margin-bottom: 20px;
         }
 
+        /* Панель для бесплатных бустов */
+        .free-boosts-panel {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .free-boosts-panel .boost-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .free-boosts-panel .boost-item button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+        }
+
+        .free-boosts-panel .boost-item button:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+        }
+
+        .free-boosts-panel .boost-item button:active {
+            transform: scale(0.95);
+        }
+
+        .free-boosts-panel .boost-item button .boost-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .free-boosts-panel .boost-item button .boost-uses {
+            font-size: 12px;
+            color: #fff;
+        }
+
+        /* Список бустов */
         .boost-item {
             display: flex;
             justify-content: space-between;
@@ -805,7 +859,8 @@
             height: 20px;
             font-size: 20px; /* Размер эмодзи */
             text-align: center;
-            animation: fall 5s linear forwards; /* Анимация падения */
+            animation: fall linear forwards; /* Анимация падения */
+            z-index: 1000; /* Чтобы монеты были поверх других элементов */
         }
 
         @keyframes fall {
@@ -987,6 +1042,18 @@
             <div class="modal-content">
                 <span class="close" onclick="closeModal('boosts-modal')">&times;</span>
                 <h2>Бусты</h2>
+
+                <!-- Панель для бесплатного буста -->
+                <div class="free-boosts-panel">
+                    <div class="boost-item">
+                        <button onclick="activateFreeTapBoost()">
+                            <span class="boost-icon">🚀</span>
+                            <span class="boost-uses">3/3</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Список остальных бустов -->
                 <div id="boosts-list">
                     <!-- Бусты будут добавляться сюда -->
                 </div>
@@ -1183,6 +1250,7 @@
             document.getElementById('energy-panel').textContent = energy;
             document.getElementById('max-energy-panel').textContent = maxEnergy;
             document.getElementById('level-panel').textContent = level;
+            updateBoostsModal(); // Обновляем модальное окно бустов
         }
 
         // Добавление монет
@@ -1276,12 +1344,13 @@
                 clickMultiplier *= randomMultiplier;
                 boosts.freeTapBoost.usesLeft--;
 
-                // Анимация падающих монет
-                createFallingCoins();
+                // Запуск анимации падающих монет
+                startFallingCoins();
 
                 // Сброс буста через 10 секунд
                 setTimeout(() => {
                     clickMultiplier /= randomMultiplier;
+                    stopFallingCoins(); // Остановка создания монет
                     updateUI();
                 }, 10000);
 
@@ -1293,22 +1362,36 @@
             }
         }
 
-        // Создание анимации падающих монет
-        function createFallingCoins() {
-            const coinCount = 50; // Количество монет
-            for (let i = 0; i < coinCount; i++) {
-                const coin = document.createElement('div');
-                coin.className = 'coin';
-                coin.textContent = '💰'; // Эмодзи монеты
-                coin.style.left = `${Math.random() * 100}vw`; // Случайная позиция по горизонтали
-                coin.style.animationDuration = `${Math.random() * 2 + 3}s`; // Случайная скорость падения
-                document.body.appendChild(coin);
+        // Запуск анимации падающих монет
+        function startFallingCoins() {
+            const coinInterval = setInterval(() => {
+                createCoin();
+            }, 200); // Создаем новую монету каждые 200 мс
 
-                // Удаление монеты после завершения анимации
-                coin.addEventListener('animationend', () => {
-                    coin.remove();
-                });
-            }
+            // Останавливаем создание монет через 10 секунд
+            setTimeout(() => {
+                clearInterval(coinInterval);
+            }, 10000);
+        }
+
+        // Создание одной монеты
+        function createCoin() {
+            const coin = document.createElement('div');
+            coin.className = 'coin';
+            coin.textContent = '💰'; // Эмодзи монеты
+            coin.style.left = `${Math.random() * 100}vw`; // Случайная позиция по горизонтали
+            coin.style.animationDuration = `${Math.random() * 2 + 3}s`; // Случайная скорость падения
+            document.body.appendChild(coin);
+
+            // Удаление монеты после завершения анимации
+            coin.addEventListener('animationend', () => {
+                coin.remove();
+            });
+        }
+
+        // Остановка создания монет (если нужно)
+        function stopFallingCoins() {
+            // В данном случае интервал уже очищен в startFallingCoins, но можно добавить дополнительные действия, если нужно
         }
 
         // Обновление модального окна бустов
@@ -1316,7 +1399,13 @@
             const boostsList = document.getElementById('boosts-list');
             boostsList.innerHTML = '';
 
+            // Обновляем количество использований бесплатного буста
+            const freeBoostUses = document.querySelector('.free-boosts-panel .boost-uses');
+            freeBoostUses.textContent = `${boosts.freeTapBoost.usesLeft}/3`;
+
             for (const [boostType, boost] of Object.entries(boosts)) {
+                if (boostType === 'freeTapBoost') continue; // Пропускаем бесплатный буст
+
                 const boostItem = document.createElement('div');
                 boostItem.className = 'boost-item';
 
@@ -1329,14 +1418,12 @@
                     boostText = `Скорость восстановления энергии: 1 ед. в ${energyRecoveryRate / 1000} сек (Уровень ${boost.level})`;
                 } else if (boostType === 'autoClicker') {
                     boostText = `Робот`;
-                } else if (boostType === 'freeTapBoost') {
-                    boostText = `Бесплатный буст на тапы (Осталось: ${boost.usesLeft})`;
                 }
 
                 boostItem.innerHTML = `
                     <span>${boostText}</span>
-                    <button onclick="${boostType === 'freeTapBoost' ? 'activateFreeTapBoost()' : `buyBoost('${boostType}')`}" ${boostType !== 'freeTapBoost' && coins < boost.cost ? 'disabled' : ''}>
-                        ${boostType === 'freeTapBoost' ? 'Активировать' : `Купить за ${boost.cost} монет`}
+                    <button onclick="buyBoost('${boostType}')" ${coins < boost.cost ? 'disabled' : ''}>
+                        Купить за ${boost.cost} монет
                     </button>
                 `;
                 boostsList.appendChild(boostItem);
