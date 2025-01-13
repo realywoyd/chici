@@ -95,6 +95,7 @@
             border-radius: 10px;
             transition: all 0.3s ease;
             box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+            position: relative;
         }
 
         .panel-item:hover {
@@ -103,27 +104,46 @@
             box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
         }
 
-        /* Иконка настроек */
-        .settings-icon {
-            font-size: 12px;
-            cursor: pointer;
+        /* Всплывающие подсказки */
+        [data-tooltip] {
+            position: relative;
+        }
+
+        [data-tooltip]:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
             color: #fff;
-            padding: 4px;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-            background: rgba(106, 13, 131, 0.2);
-            border: 1px solid #6A0D83;
-            box-shadow: 0 0 5px rgba(106, 13, 131, 0.5);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 1000;
         }
 
-        .settings-icon:hover {
-            background: rgba(106, 13, 131, 0.3);
-            transform: scale(1.1);
-            box-shadow: 0 0 15px rgba(106, 13, 131, 0.8);
-        }
+        /* Адаптивность */
+        @media (max-width: 600px) {
+            .panel-items-left {
+                flex-direction: column;
+                align-items: flex-start;
+            }
 
-        .settings-icon:active {
-            transform: scale(0.95);
+            .panel-item {
+                font-size: 6px;
+                padding: 6px 10px;
+            }
+
+            .shiba {
+                width: 150px;
+            }
+
+            .bottom-panel button {
+                font-size: 10px;
+                padding: 6px 10px;
+            }
         }
 
         /* Шиба */
@@ -600,49 +620,49 @@
         <div class="top-panel">
             <!-- Левая часть панели -->
             <div class="panel-items-left">
-                <div class="panel-item">
+                <div class="panel-item" data-tooltip="Ваши монеты">
                     <i class="fas fa-coins"></i>
                     <span id="coins-panel">0</span>
                 </div>
-                <div class="panel-item">
+                <div class="panel-item" data-tooltip="Энергия">
                     <i class="fas fa-bolt"></i>
                     <span id="energy-panel">100</span>/<span id="max-energy-panel">100</span>
                 </div>
-                <div class="panel-item">
+                <div class="panel-item" data-tooltip="Уровень">
                     <i class="fas fa-level-up-alt"></i>
                     <span id="level-panel">1</span>
                 </div>
-                <div class="panel-item">
+                <div class="panel-item" data-tooltip="Энергетики">
                     <i class="fas fa-wine-bottle"></i>
                     <span id="energy-drinks-panel">0</span>
                 </div>
-                <div class="panel-item">
+                <div class="panel-item" data-tooltip="Опыт">
                     <i class="fas fa-star"></i>
                     <span id="exp-panel">0</span>/10
                 </div>
             </div>
 
             <!-- Правая часть панели (иконка настроек) -->
-            <div class="settings-icon" onclick="showSettingsModal()">⚙️</div>
+            <div class="settings-icon" onclick="showSettingsModal()" data-tooltip="Настройки">⚙️</div>
         </div>
 
         <!-- Кнопки под верхней панелью -->
         <div class="header-buttons">
             <!-- Кнопка "Клан" слева -->
-            <button class="clan-button" onclick="showModal('Клан', 'Здесь будет информация о кланах.')">
+            <button class="clan-button" onclick="showModal('Клан', 'Здесь будет информация о кланах.')" data-tooltip="Клан">
                 <span class="clan-icon">🛡️</span>
                 <span class="clan-text">Клан</span>
             </button>
 
             <!-- Кнопка "Рейтинг" справа -->
             <div class="vertical-buttons">
-                <button class="rating-button" onclick="showModal('Рейтинг', 'Здесь будет рейтинг игроков.')">
+                <button class="rating-button" onclick="showModal('Рейтинг', 'Здесь будет рейтинг игроков.')" data-tooltip="Рейтинг">
                     <span class="rating-icon">🏆</span>
                     <span class="rating-text">Рейтинг</span>
                 </button>
 
                 <!-- Кнопка "Колесо Удачи" под кнопкой "Рейтинг" -->
-                <button class="wheel-button" onclick="showWheel()">
+                <button class="wheel-button" onclick="showWheel()" data-tooltip="Колесо Удачи">
                     <span class="wheel-icon">🎡</span>
                     <span class="wheel-text">Колесо Удачи</span>
                 </button>
@@ -657,15 +677,15 @@
 
     <!-- Нижняя панель -->
     <div class="bottom-panel">
-        <button class="boost-button" onclick="showBoostsModal()">
+        <button class="boost-button" onclick="showBoostsModal()" data-tooltip="Бусты">
             <span class="rocket-icon">🚀</span>
             <span class="boost-text">Бусты</span>
         </button>
-        <button class="shop-button" onclick="showShopModal()">
+        <button class="shop-button" onclick="showShopModal()" data-tooltip="Магазин">
             <span class="shop-icon">🛒</span>
             <span class="shop-text">Магазин</span>
         </button>
-        <button class="friends-button" onclick="showModal('Друзья', 'Приглашай друзей и получай бонусы!')">
+        <button class="friends-button" onclick="showModal('Друзья', 'Приглашай друзей и получай бонусы!')" data-tooltip="Друзья">
             <svg class="friends-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
                 <!-- Первый астронавт -->
                 <circle cx="20" cy="40" r="10" fill="#4e54c8"/>
@@ -691,11 +711,11 @@
             </svg>
             <span class="friends-text">Друзья</span>
         </button>
-        <button class="airdrop-button" onclick="showModal('Airdrop', 'Получай случайные награды каждый день!')">
+        <button class="airdrop-button" onclick="showModal('Airdrop', 'Получай случайные награды каждый день!')" data-tooltip="Airdrop">
             <span class="airdrop-icon">🪂</span>
             <span class="airdrop-text">Airdrop</span>
         </button>
-        <button class="roi-button" onclick="showFarmsModal()">
+        <button class="roi-button" onclick="showFarmsModal()" data-tooltip="Рои">
             <i class="fas fa-network-wired"></i>
             <span class="roi-text">Рои</span>
         </button>
@@ -749,12 +769,12 @@
     <div id="settings-modal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeModal('settings-modal')">&times;</span>
-            <h2>Настройки</h2>
+            <h2 id="settings-title">Настройки</h2>
             <div class="language-switch">
-                <label for="language-toggle">RU</label>
+                <label for="language-toggle" id="label-ru">RU</label>
                 <input type="checkbox" id="language-toggle" onchange="toggleLanguage()">
                 <label for="language-toggle" class="slider"></label>
-                <label for="language-toggle">ENG</label>
+                <label for="language-toggle" id="label-en">ENG</label>
             </div>
         </div>
     </div>
@@ -1066,28 +1086,37 @@
         }
 
         // Переключение языка
+        let currentLanguage = 'ru'; // По умолчанию язык - русский
+
         function toggleLanguage() {
             const toggle = document.getElementById('language-toggle');
-            if (toggle.checked) {
-                // Переключение на английский
-                document.querySelector('.clan-text').textContent = 'Clan';
-                document.querySelector('.rating-text').textContent = 'Rating';
-                document.querySelector('.wheel-text').textContent = 'Wheel of Fortune';
-                document.querySelector('.boost-text').textContent = 'Boosts';
-                document.querySelector('.shop-text').textContent = 'Shop';
-                document.querySelector('.friends-text').textContent = 'Friends';
-                document.querySelector('.airdrop-text').textContent = 'Airdrop';
-                document.querySelector('.roi-text').textContent = 'Swarms';
-            } else {
-                // Переключение на русский
-                document.querySelector('.clan-text').textContent = 'Клан';
-                document.querySelector('.rating-text').textContent = 'Рейтинг';
-                document.querySelector('.wheel-text').textContent = 'Колесо Удачи';
-                document.querySelector('.boost-text').textContent = 'Бусты';
-                document.querySelector('.shop-text').textContent = 'Магазин';
-                document.querySelector('.friends-text').textContent = 'Друзья';
-                document.querySelector('.airdrop-text').textContent = 'Airdrop';
-                document.querySelector('.roi-text').textContent = 'Рои';
+            currentLanguage = toggle.checked ? 'en' : 'ru'; // Определяем текущий язык
+            updateLanguage(); // Обновляем текст на странице
+        }
+
+        function updateLanguage() {
+            const elementsToTranslate = {
+                'coins-panel': { ru: 'Монеты', en: 'Coins' },
+                'energy-panel': { ru: 'Энергия', en: 'Energy' },
+                'level-panel': { ru: 'Уровень', en: 'Level' },
+                'clan-text': { ru: 'Клан', en: 'Clan' },
+                'rating-text': { ru: 'Рейтинг', en: 'Rating' },
+                'wheel-text': { ru: 'Колесо Удачи', en: 'Wheel of Fortune' },
+                'boost-text': { ru: 'Бусты', en: 'Boosts' },
+                'shop-text': { ru: 'Магазин', en: 'Shop' },
+                'friends-text': { ru: 'Друзья', en: 'Friends' },
+                'airdrop-text': { ru: 'Airdrop', en: 'Airdrop' },
+                'roi-text': { ru: 'Рои', en: 'Swarms' },
+                'settings-title': { ru: 'Настройки', en: 'Settings' },
+                'label-ru': { ru: 'RU', en: 'RU' },
+                'label-en': { ru: 'ENG', en: 'ENG' }
+            };
+
+            for (const [selector, translations] of Object.entries(elementsToTranslate)) {
+                const element = document.querySelector(selector);
+                if (element) {
+                    element.textContent = translations[currentLanguage];
+                }
             }
         }
 
@@ -1153,6 +1182,7 @@
         window.onload = function() {
             loadGame();
             updateUI();
+            updateLanguage(); // Устанавливаем язык по умолчанию
         };
     </script>
 
