@@ -1938,30 +1938,34 @@
         }
 
         // Покупка спина за 1$
-        function buySpin() {
+        async function buySpin() {
             if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
                 const tg = Telegram.WebApp;
 
-                // Сумма в наноТОН (1$ ≈ 3.3 TON ≈ 3_300_000_000 наноТОН)
-                const amount = 3_300_000_000; // 1$ в наноТОН
+                // Получаем текущий курс TON/USD
+                const tonPrice = await getTonPrice();
+                if (!tonPrice) {
+                    alert('Не удалось получить курс TON. Попробуйте позже.');
+                    return;
+                }
+
+                // Рассчитываем сумму в наноТОН для 1$
+                const amountInNanoTon = calculateNanoTonForDollar(tonPrice);
+
                 const description = "Покупка спина на Колесе Удачи";
 
-                // Данные для оплаты
-                const paymentData = {
-                    amount: amount,
+                // Создаем инвойс
+                const invoice = {
                     currency: 'TON',
+                    amount: amountInNanoTon.toString(), // Сумма в наноТОН
                     description: description,
                 };
 
-                // Отправка запроса на оплату
-                tg.sendData(JSON.stringify(paymentData));
-
-                // Обработка ответа от кошелька
-                tg.onEvent('invoiceClosed', (eventData) => {
-                    if (eventData.status === 'paid') {
+                // Открываем инвойс
+                tg.openInvoice(invoice, (status) => {
+                    if (status === 'paid') {
                         alert('Оплата прошла успешно! Вы получили дополнительный спин.');
-                        // Добавляем спин для Колеса Удачи
-                        addSpin();
+                        addSpin(); // Добавляем спин
                     } else {
                         alert('Оплата отменена или не удалась.');
                     }
@@ -1969,6 +1973,26 @@
             } else {
                 alert('Эта функция доступна только в Telegram Mini Apps.');
             }
+        }
+
+        // Функция для получения текущего курса TON/USD через CoinGecko
+        async function getTonPrice() {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd');
+                const data = await response.json();
+                return data['the-open-network'].usd;
+            } catch (error) {
+                console.error('Ошибка при получении курса TON:', error);
+                return null;
+            }
+        }
+
+        // Функция для расчета суммы в наноТОН для 1$
+        function calculateNanoTonForDollar(tonPrice) {
+            const dollars = 1; // Сумма в долларах
+            const tonAmount = dollars / tonPrice; // Сумма в TON
+            const nanoTonAmount = tonAmount * 1_000_000_000; // Сумма в наноТОН
+            return Math.round(nanoTonAmount); // Округляем до целого числа
         }
 
         // Добавление спина
