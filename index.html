@@ -124,28 +124,6 @@
             z-index: 1000;
         }
 
-        /* Адаптивность */
-        @media (max-width: 600px) {
-            .panel-items-left {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .panel-item {
-                font-size: 6px;
-                padding: 6px 10px;
-            }
-
-            .shiba {
-                width: 150px;
-            }
-
-            .bottom-panel button {
-                font-size: 10px;
-                padding: 6px 10px;
-            }
-        }
-
         /* Шиба */
         .shiba-container {
             position: fixed;
@@ -609,6 +587,61 @@
             background: #ccc;
             cursor: not-allowed;
             transform: none;
+        }
+
+        /* Адаптивность для мобильных устройств */
+        @media (max-width: 600px) {
+            /* Верхняя панель */
+            .top-panel {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 10px;
+            }
+
+            .panel-items-left {
+                flex-direction: row;
+                gap: 5px;
+                flex-wrap: wrap;
+            }
+
+            .panel-item {
+                font-size: 6px;
+                padding: 6px 10px;
+            }
+
+            .settings-icon {
+                margin-top: 10px;
+            }
+
+            /* Кнопки под верхней панелью */
+            .header-buttons {
+                top: 100px; /* Отступ от верхней панели */
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .vertical-buttons {
+                flex-direction: row;
+                gap: 10px;
+            }
+
+            /* Шиба */
+            .shiba {
+                width: 150px;
+            }
+
+            /* Нижняя панель */
+            .bottom-panel {
+                flex-wrap: wrap;
+                gap: 10px;
+                padding: 10px;
+            }
+
+            .bottom-panel button {
+                font-size: 10px;
+                padding: 6px 10px;
+            }
         }
     </style>
 </head>
