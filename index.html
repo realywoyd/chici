@@ -152,7 +152,6 @@
             border-radius: 10px;
             transition: all 0.3s ease;
             box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
-            position: relative;
         }
 
         .panel-item:hover {
@@ -1302,6 +1301,7 @@
                 <h2>Донат</h2>
                 <div class="donate-content">
                     <p>Поддержите игру и получите дополнительный спин на Колесе Удачи!</p>
+                    <p>Ваш адрес кошелька TON: <strong id="wallet-address-display"></strong></p>
                     <button class="buy-spin-button" onclick="buySpin()">
                         <span class="buy-spin-icon">🎡</span>
                         <span class="buy-spin-text">Купить спин за 1$</span>
@@ -1931,6 +1931,10 @@
         function showDonateModal() {
             const modal = document.getElementById('donate-modal');
             modal.style.display = 'flex';
+
+            // Отображаем ваш адрес кошелька в модальном окне
+            const walletAddressDisplay = document.getElementById('wallet-address-display');
+            walletAddressDisplay.textContent = yourWalletAddress;
         }
 
         // Покупка спина за 1$
