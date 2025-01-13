@@ -962,7 +962,8 @@
 
             <!-- Логотип Шибы -->
             <div class="shiba-container">
-                <img src="https://cryptologos.cc/logos/shiba-inu-shib-logo.png" alt="Shiba Inu" class="shiba" onclick="animateShiba(event)">
+                <img src="https://cryptologos.cc/logos/shiba-inu-shib-logo.png" alt="Shiba Inu" class="shiba" 
+                     ontouchstart="handleMultiTouch(event)" onclick="animateShiba(event)">
             </div>
         </div>
 
@@ -1002,7 +1003,7 @@
                 </svg>
                 <span class="friends-text">Друзья</span>
             </button>
-            <button class="airdrop-button" onclick="showModal('Airdrop', 'Получай случайные награды каждый день!')">
+            <button class="airdrop-button" onclick="showAirdropModal()">
                 <span class="airdrop-icon">🪂</span>
                 <span class="airdrop-text">Airdrop</span>
             </button>
@@ -1075,6 +1076,21 @@
                 <!-- Список остальных бустов -->
                 <div id="boosts-list">
                     <!-- Бусты будут добавляться сюда -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно Airdrop -->
+        <div id="airdrop-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('airdrop-modal')">&times;</span>
+                <h2>Airdrop</h2>
+                <div class="airdrop-content">
+                    <p class="coming-soon">Coming soon...</p>
+                    <button class="connect-wallet-button" onclick="connectTelegramWallet()">
+                        <i class="fab fa-telegram"></i>
+                        Подключить Telegram Кошелёк
+                    </button>
                 </div>
             </div>
         </div>
@@ -1287,10 +1303,21 @@
             }
         }
 
+        // Обработка мультитача
+        function handleMultiTouch(event) {
+            event.preventDefault(); // Предотвращаем стандартное поведение (например, масштабирование)
+            const touches = event.touches; // Получаем все касания
+
+            // Обрабатываем каждое касание
+            for (let i = 0; i < touches.length; i++) {
+                const touch = touches[i];
+                animateShiba(touch); // Анимируем Шибу для каждого касания
+            }
+        }
+
         // Анимация Шибы
         function animateShiba(event) {
             const shiba = document.querySelector('.shiba');
-            const shibaContainer = document.querySelector('.shiba-container');
 
             // Анимация удара
             shiba.classList.add('hit');
@@ -1300,12 +1327,12 @@
             const coinEffect = document.createElement('div');
             coinEffect.className = 'coin-effect';
             coinEffect.textContent = `+${1 * clickMultiplier}`;
-            coinEffect.style.left = `${event.clientX}px`;
-            coinEffect.style.top = `${event.clientY}px`;
+            coinEffect.style.left = `${event.clientX || event.touches[0].clientX}px`; // Поддержка и мыши, и тач-событий
+            coinEffect.style.top = `${event.clientY || event.touches[0].clientY}px`;
             document.body.appendChild(coinEffect);
             setTimeout(() => coinEffect.remove(), 1000);
 
-            addCoins();
+            addCoins(); // Добавляем монеты
         }
 
         // Восстановление энергии
@@ -1396,7 +1423,7 @@
         function showBoostNotification() {
             const notification = document.createElement('div');
             notification.className = 'boost-notification';
-            notification.textContent = 'Буст активирован! Энергия не тратится.';
+            notification.textContent = 'Буст активирован! Тапы усилены!';
             document.body.appendChild(notification);
 
             setTimeout(() => {
@@ -1491,10 +1518,36 @@
             modal.style.display = 'flex';
         }
 
+        // Показ модального окна Airdrop
+        function showAirdropModal() {
+            const modal = document.getElementById('airdrop-modal');
+            modal.style.display = 'flex';
+        }
+
         // Закрытие модального окна
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             modal.style.display = 'none';
+        }
+
+        // Подключение Telegram Кошелька
+        function connectTelegramWallet() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                const webApp = Telegram.WebApp;
+                webApp.expand(); // Разворачиваем приложение на весь экран
+
+                const user = webApp.initDataUnsafe.user;
+                if (user) {
+                    const userId = user.id;
+                    const username = user.username || `User${userId}`;
+                    alert(`Кошелёк Telegram пользователя ${username} подключен!`);
+                    console.log("Данные пользователя:", user);
+                } else {
+                    alert("Ошибка: Пользователь Telegram не найден.");
+                }
+            } else {
+                alert("Ошибка: Telegram Web App не доступен. Откройте приложение через Telegram.");
+            }
         }
 
         // Переключение языка
