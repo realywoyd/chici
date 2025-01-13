@@ -78,17 +78,17 @@
 
         .panel-items-left {
             display: flex;
-            flex-direction: row; /* Элементы в ряд */
-            gap: 10px; /* Расстояние между элементами */
-            align-items: center; /* Выравнивание по центру по вертикали */
-            flex-wrap: wrap; /* Если элементов много, они переносятся на новую строку */
+            flex-direction: row;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
         }
 
         .panel-item {
             display: flex;
             align-items: center;
             gap: 5px;
-            font-size: 14px;
+            font-size: 7px;
             color: #fff;
             padding: 8px 12px;
             background: rgba(255, 255, 255, 0.1);
@@ -105,15 +105,15 @@
 
         /* Иконка настроек */
         .settings-icon {
-            font-size: 24px;
+            font-size: 12px;
             cursor: pointer;
             color: #fff;
-            padding: 8px;
+            padding: 4px;
             border-radius: 50%;
             transition: all 0.3s ease;
             background: rgba(106, 13, 131, 0.2);
-            border: 2px solid #6A0D83;
-            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+            border: 1px solid #6A0D83;
+            box-shadow: 0 0 5px rgba(106, 13, 131, 0.5);
         }
 
         .settings-icon:hover {
@@ -170,6 +170,47 @@
         @keyframes slideUp {
             from { transform: translateY(100%); }
             to { transform: translateY(0); }
+        }
+
+        /* Стили для кнопок нижней панели */
+        .bottom-panel button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+        }
+
+        .bottom-panel button:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+        }
+
+        .bottom-panel button:active {
+            transform: scale(0.95);
+        }
+
+        .bottom-panel button i {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .bottom-panel button svg {
+            width: 16px;
+            height: 16px;
+            margin-bottom: 4px;
         }
 
         /* Модальные окна */
@@ -327,246 +368,11 @@
             z-index: 1000;
         }
 
-        .header-buttons .action-btn {
+        /* Контейнер для кнопок справа */
+        .vertical-buttons {
             display: flex;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-            padding: 10px 15px;
-            background: rgba(106, 13, 131, 0.2);
-            border: 2px solid #6A0D83;
-            border-radius: 20px;
-            transition: all 0.3s ease;
-            font-size: 12px;
-            color: #fff;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .header-buttons .action-btn:hover {
-            background: rgba(106, 13, 131, 0.3);
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
-        }
-
-        .header-buttons .icon {
-            font-size: 18px;
-            color: #ff6f61;
-        }
-
-        /* Кнопка "Назад" */
-        .back-button {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            cursor: pointer;
-            font-size: 24px;
-            color: #6A0D83;
-            transition: transform 0.2s ease;
-            filter: drop-shadow(0 0 5px rgba(106, 13, 131, 0.8));
-        }
-
-        .back-button:hover {
-            transform: scale(1.1);
-        }
-
-        /* Анимация фона */
-        @keyframes gradientBackground {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        body {
-            background: linear-gradient(270deg, #0B3D91, #6A0D83, #9A4D9E);
-            background-size: 300% 300%;
-            animation: gradientBackground 10s ease infinite;
-        }
-
-        /* Стили для кнопки "Бусты" */
-        .boost-button {
-            display: inline-flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 16px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 12px;
-            font-weight: bold;
-            color: #fff;
-            background: rgba(106, 13, 131, 0.2);
-            border: 2px solid #6A0D83;
-            border-radius: 20px;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
-        }
-
-        .boost-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="white" /></svg>') repeat;
-            opacity: 0.3;
-            z-index: 1;
-            animation: stars 10s linear infinite;
-        }
-
-        @keyframes stars {
-            0% {
-                transform: translateY(0);
-            }
-            100% {
-                transform: translateY(-100%);
-            }
-        }
-
-        .rocket-icon {
-            font-size: 20px;
-            display: inline-block;
-            transform: rotate(-60deg);
-            margin-bottom: 5px;
-            z-index: 2;
-            color: #FF6F61;
-        }
-
-        .boost-text {
-            font-size: 10px;
-            font-weight: bold;
-            z-index: 2;
-        }
-
-        .boost-button:hover {
-            background: rgba(106, 13, 131, 0.3);
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(106, 13, 131, 0.8);
-        }
-
-        .boost-button:active {
-            transform: scale(0.95);
-        }
-
-        /* Стили для кнопки "Магазин" */
-        .shop-button {
-            display: inline-flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 16px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 12px;
-            font-weight: bold;
-            color: #fff;
-            background: rgba(106, 13, 131, 0.2);
-            border: 2px solid #6A0D83;
-            border-radius: 20px;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
-        }
-
-        .shop-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="white" /></svg>') repeat;
-            opacity: 0.3;
-            z-index: 1;
-            animation: stars 10s linear infinite;
-        }
-
-        .shop-icon {
-            font-size: 20px;
-            display: inline-block;
-            margin-bottom: 5px;
-            z-index: 2;
-            color: #FF6F61;
-        }
-
-        .shop-text {
-            font-size: 10px;
-            font-weight: bold;
-            z-index: 2;
-        }
-
-        .shop-button:hover {
-            background: rgba(106, 13, 131, 0.3);
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(106, 13, 131, 0.8);
-        }
-
-        .shop-button:active {
-            transform: scale(0.95);
-        }
-
-        /* Стили для кнопки "Друзья" */
-        .friends-button {
-            display: inline-flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 16px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 12px;
-            font-weight: bold;
-            color: #fff;
-            background: rgba(106, 13, 131, 0.2);
-            border: 2px solid #6A0D83;
-            border-radius: 20px;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
-        }
-
-        .friends-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="white" /></svg>') repeat;
-            opacity: 0.3;
-            z-index: 1;
-            animation: stars 10s linear infinite;
-        }
-
-        .friends-icon {
-            width: 30px;
-            height: 30px;
-            margin-bottom: 5px;
-            z-index: 2;
-        }
-
-        .friends-text {
-            font-size: 10px;
-            font-weight: bold;
-            z-index: 2;
-        }
-
-        .friends-button:hover {
-            background: rgba(106, 13, 131, 0.3);
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(106, 13, 131, 0.8);
-        }
-
-        .friends-button:active {
-            transform: scale(0.95);
+            gap: 10px;
         }
 
         /* Стили для кнопки "Клан" */
@@ -591,43 +397,6 @@
             box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
         }
 
-        .clan-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="white" /></svg>') repeat;
-            opacity: 0.3;
-            z-index: 1;
-            animation: stars 10s linear infinite;
-        }
-
-        .clan-icon {
-            font-size: 20px;
-            display: inline-block;
-            margin-bottom: 5px;
-            z-index: 2;
-            color: #FFD700;
-        }
-
-        .clan-text {
-            font-size: 10px;
-            font-weight: bold;
-            z-index: 2;
-        }
-
-        .clan-button:hover {
-            background: rgba(106, 13, 131, 0.3);
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(106, 13, 131, 0.8);
-        }
-
-        .clan-button:active {
-            transform: scale(0.95);
-        }
-
         /* Стили для кнопки "Рейтинг" */
         .rating-button {
             display: inline-flex;
@@ -648,43 +417,6 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             backdrop-filter: blur(10px);
             box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
-        }
-
-        .rating-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="white" /></svg>') repeat;
-            opacity: 0.3;
-            z-index: 1;
-            animation: stars 10s linear infinite;
-        }
-
-        .rating-icon {
-            font-size: 20px;
-            display: inline-block;
-            margin-bottom: 5px;
-            z-index: 2;
-            color: #FFD700;
-        }
-
-        .rating-text {
-            font-size: 10px;
-            font-weight: bold;
-            z-index: 2;
-        }
-
-        .rating-button:hover {
-            background: rgba(106, 13, 131, 0.3);
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(106, 13, 131, 0.8);
-        }
-
-        .rating-button:active {
-            transform: scale(0.95);
         }
 
         /* Стили для кнопки "Колесо Удачи" */
@@ -709,100 +441,17 @@
             box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
         }
 
-        .wheel-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="white" /></svg>') repeat;
-            opacity: 0.3;
-            z-index: 1;
-            animation: stars 10s linear infinite;
+        /* Анимация фона */
+        @keyframes gradientBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
-        .wheel-icon {
-            font-size: 20px;
-            display: inline-block;
-            margin-bottom: 5px;
-            z-index: 2;
-            color: #FF6F61;
-        }
-
-        .wheel-text {
-            font-size: 10px;
-            font-weight: bold;
-            z-index: 2;
-        }
-
-        .wheel-button:hover {
-            background: rgba(106, 13, 131, 0.3);
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(106, 13, 131, 0.8);
-        }
-
-        .wheel-button:active {
-            transform: scale(0.95);
-        }
-
-        /* Стили для кнопки "Airdrop" */
-        .airdrop-button {
-            display: inline-flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 16px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 12px;
-            font-weight: bold;
-            color: #fff;
-            background: rgba(106, 13, 131, 0.2);
-            border: 2px solid #6A0D83;
-            border-radius: 20px;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
-        }
-
-        .airdrop-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="white" /></svg>') repeat;
-            opacity: 0.3;
-            z-index: 1;
-            animation: stars 10s linear infinite;
-        }
-
-        .airdrop-icon {
-            font-size: 20px;
-            display: inline-block;
-            margin-bottom: 5px;
-            z-index: 2;
-            color: #FF6F61;
-        }
-
-        .airdrop-text {
-            font-size: 10px;
-            font-weight: bold;
-            z-index: 2;
-        }
-
-        .airdrop-button:hover {
-            background: rgba(106, 13, 131, 0.3);
-            transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(106, 13, 131, 0.8);
-        }
-
-        .airdrop-button:active {
-            transform: scale(0.95);
+        body {
+            background: linear-gradient(270deg, #0B3D91, #6A0D83, #9A4D9E);
+            background-size: 300% 300%;
+            animation: gradientBackground 10s ease infinite;
         }
     </style>
 </head>
@@ -815,23 +464,23 @@
             <!-- Левая часть панели -->
             <div class="panel-items-left">
                 <div class="panel-item">
-                    <div id="coin-icon" class="icon-3d"></div>
+                    <i class="fas fa-coins"></i>
                     <span id="coins-panel">0</span>
                 </div>
                 <div class="panel-item">
-                    <div id="energy-icon" class="icon-3d"></div>
+                    <i class="fas fa-bolt"></i>
                     <span id="energy-panel">100</span>/<span id="max-energy-panel">100</span>
                 </div>
                 <div class="panel-item">
-                    <div id="level-icon" class="icon-3d"></div>
+                    <i class="fas fa-level-up-alt"></i>
                     <span id="level-panel">1</span>
                 </div>
                 <div class="panel-item">
-                    <i class="fas fa-wine-bottle icon"></i>
+                    <i class="fas fa-wine-bottle"></i>
                     <span id="energy-drinks-panel">0</span>
                 </div>
                 <div class="panel-item">
-                    <i class="fas fa-star icon"></i>
+                    <i class="fas fa-star"></i>
                     <span id="exp-panel">0</span>/10
                 </div>
             </div>
@@ -880,33 +529,26 @@
             <span class="shop-text">Магазин</span>
         </button>
         <button class="friends-button" onclick="showModal('Друзья', 'Приглашай друзей и получай бонусы!')">
-            <!-- Кастомная SVG-иконка с астронавтами -->
             <svg class="friends-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
                 <!-- Первый астронавт -->
-                <circle cx="20" cy="40" r="10" fill="#4e54c8"/> <!-- Тело -->
-                <circle cx="20" cy="22" r="8" fill="#fff"/> <!-- Шлем -->
-                <circle cx="20" cy="22" r="6" fill="#4e54c8"/> <!-- Стекло шлема -->
-                <!-- Антенна на шлеме -->
+                <circle cx="20" cy="40" r="10" fill="#4e54c8"/>
+                <circle cx="20" cy="22" r="8" fill="#fff"/>
+                <circle cx="20" cy="22" r="6" fill="#4e54c8"/>
                 <line x1="20" y1="14" x2="20" y2="6" stroke="#4e54c8" stroke-width="2"/>
-                <circle cx="20" cy="6" r="2" fill="#4e54c8"/> <!-- Наконечник антенны -->
-                <!-- Руки первого астронавта -->
+                <circle cx="20" cy="6" r="2" fill="#4e54c8"/>
                 <line x1="6" y1="40" x2="16" y2="28" stroke="#4e54c8" stroke-width="2"/>
                 <line x1="34" y1="40" x2="24" y2="28" stroke="#4e54c8" stroke-width="2"/>
-                <!-- Ноги первого астронавта -->
                 <line x1="16" y1="50" x2="20" y2="62" stroke="#4e54c8" stroke-width="2"/>
                 <line x1="24" y1="50" x2="20" y2="62" stroke="#4e54c8" stroke-width="2"/>
 
                 <!-- Второй астронавт -->
-                <circle cx="44" cy="40" r="10" fill="#4e54c8"/> <!-- Тело -->
-                <circle cx="44" cy="22" r="8" fill="#fff"/> <!-- Шлем -->
-                <circle cx="44" cy="22" r="6" fill="#4e54c8"/> <!-- Стекло шлема -->
-                <!-- Антенна на шлеме -->
+                <circle cx="44" cy="40" r="10" fill="#4e54c8"/>
+                <circle cx="44" cy="22" r="8" fill="#fff"/>
+                <circle cx="44" cy="22" r="6" fill="#4e54c8"/>
                 <line x1="44" y1="14" x2="44" y2="6" stroke="#4e54c8" stroke-width="2"/>
-                <circle cx="44" cy="6" r="2" fill="#4e54c8"/> <!-- Наконечник антенны -->
-                <!-- Руки второго астронавта -->
+                <circle cx="44" cy="6" r="2" fill="#4e54c8"/>
                 <line x1="36" y1="40" x2="44" y2="28" stroke="#4e54c8" stroke-width="2"/>
                 <line x1="52" y1="40" x2="44" y2="28" stroke="#4e54c8" stroke-width="2"/>
-                <!-- Ноги второго астронавта -->
                 <line x1="40" y1="50" x2="44" y2="62" stroke="#4e54c8" stroke-width="2"/>
                 <line x1="48" y1="50" x2="44" y2="62" stroke="#4e54c8" stroke-width="2"/>
             </svg>
@@ -917,7 +559,7 @@
             <span class="airdrop-text">Airdrop</span>
         </button>
         <div class="action-btn" onclick="showFarmsModal()">
-            <i class="fas fa-network-wired icon"></i>
+            <i class="fas fa-network-wired"></i>
             <span class="mt-2">Рои</span>
         </div>
     </div>
@@ -965,40 +607,7 @@
         </div>
     </div>
 
-    <!-- Three.js для 3D-иконок -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script>
-        // Инициализация Three.js
-        const coinIcon = document.getElementById('coin-icon');
-        const energyIcon = document.getElementById('energy-icon');
-        const levelIcon = document.getElementById('level-icon');
-
-        // Сцена для монеты
-        const coinScene = new THREE.Scene();
-        const coinCamera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
-        const coinRenderer = new THREE.WebGLRenderer({ alpha: true });
-        coinRenderer.setSize(24, 24);
-        coinIcon.appendChild(coinRenderer.domElement);
-
-        // Модель монеты
-        const coinGeometry = new THREE.CylinderGeometry(1, 1, 0.2, 32);
-        const coinMaterial = new THREE.MeshBasicMaterial({ color: 0xFFD700 });
-        const coinMesh = new THREE.Mesh(coinGeometry, coinMaterial);
-        coinScene.add(coinMesh);
-        coinCamera.position.z = 5;
-
-        // Анимация монеты
-        function animateCoin() {
-            requestAnimationFrame(animateCoin);
-            coinMesh.rotation.y += 0.02;
-            coinRenderer.render(coinScene, coinCamera);
-        }
-        animateCoin();
-
-        // Аналогично можно добавить 3D-иконки для энергии и уровня
-    </script>
-
-    <!-- Остальные скрипты -->
+    <!-- Скрипты -->
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
         // Конфигурация для particles.js
@@ -1165,7 +774,7 @@
 
         function showWheel() {
             wheelContainer.style.display = 'flex';
-            wheel.style.transform = 'rotate(0deg)'; // Сброс вращения при открытии
+            wheel.style.transform = 'rotate(0deg)';
         }
 
         function spinWheel() {
@@ -1223,71 +832,58 @@
 
     <!-- Скрипт для фона с мультяшными звёздами -->
     <script>
-        // Получаем canvas и контекст
         const canvas = document.getElementById("starCanvas");
         const ctx = canvas.getContext("2d");
 
-        // Устанавливаем размер canvas
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        // Направление движения звёзд (в радианах)
-        const direction = Math.PI / 4; // 45 градусов (движение вправо-вверх)
-        const speed = 0.5; // Скорость движения (пикселей за кадр)
+        const direction = Math.PI / 4;
+        const speed = 0.5;
 
-        // Создаём звёзды
         function createStars(count) {
             const stars = [];
             for (let i = 0; i < count; i++) {
                 stars.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
-                    radius: Math.random() * 3 + 2, // Размер звёзд (от 2 до 5 пикселей)
-                    color: `rgba(255, 255, 255, ${Math.random() * 0.5 + 0.5})`, // Белые звёзды с разной прозрачностью
-                    brightness: Math.random() * 0.5 + 0.5, // Начальная яркость
-                    speed: Math.random() * 0.02 + 0.01 // Скорость мигания
+                    radius: Math.random() * 3 + 2,
+                    color: `rgba(255, 255, 255, ${Math.random() * 0.5 + 0.5})`,
+                    brightness: Math.random() * 0.5 + 0.5,
+                    speed: Math.random() * 0.02 + 0.01
                 });
             }
             return stars;
         }
 
-        const stars = createStars(100); // 100 звёзд
+        const stars = createStars(100);
 
-        // Анимация звёзд
         function animate() {
-            // Очищаем canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Рисуем звёзды
             stars.forEach(star => {
-                // Изменяем яркость для мигания
                 star.brightness += star.speed;
                 if (star.brightness > 1 || star.brightness < 0.5) {
-                    star.speed *= -1; // Меняем направление мигания
+                    star.speed *= -1;
                 }
 
-                // Обновляем координаты звёзд для движения
                 star.x += Math.cos(direction) * speed;
                 star.y += Math.sin(direction) * speed;
 
-                // Если звезда уходит за границы canvas, возвращаем её на противоположную сторону
                 if (star.x > canvas.width) star.x = 0;
                 if (star.x < 0) star.x = canvas.width;
                 if (star.y > canvas.height) star.y = 0;
                 if (star.y < 0) star.y = canvas.height;
 
-                // Рисуем звезду
                 ctx.beginPath();
                 ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255, 255, 255, ${star.brightness})`; // Белые звёзды
+                ctx.fillStyle = `rgba(255, 255, 255, ${star.brightness})`;
                 ctx.fill();
             });
 
-            // Запускаем анимацию
             requestAnimationFrame(animate);
         }
 
-        // Запускаем анимацию
         animate();
     </script>
 </body>
