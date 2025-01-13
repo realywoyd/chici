@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Shiba Inu Galactic Tap Game</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -59,14 +59,13 @@
             left: 0;
             right: 0;
             display: flex;
-            justify-content: center;
-            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
             padding: 8px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 0 0 20px 20px;
             border: 2px solid #6A0D83;
             backdrop-filter: blur(10px);
-            align-items: center;
             box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
             z-index: 1000;
             animation: slideDown 0.5s ease-out;
@@ -75,6 +74,14 @@
         @keyframes slideDown {
             from { transform: translateY(-100%); }
             to { transform: translateY(0); }
+        }
+
+        .panel-items-left {
+            display: flex;
+            flex-direction: row; /* Элементы в ряд */
+            gap: 10px; /* Расстояние между элементами */
+            align-items: center; /* Выравнивание по центру по вертикали */
+            flex-wrap: wrap; /* Если элементов много, они переносятся на новую строку */
         }
 
         .panel-item {
@@ -96,30 +103,26 @@
             box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
         }
 
-        /* Кнопки */
-        .action-btn {
-            display: flex;
-            align-items: center;
-            gap: 5px;
+        /* Иконка настроек */
+        .settings-icon {
+            font-size: 24px;
             cursor: pointer;
-            padding: 12px 20px;
+            color: #fff;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
             background: rgba(106, 13, 131, 0.2);
             border: 2px solid #6A0D83;
-            border-radius: 20px;
-            transition: all 0.3s ease;
-            font-size: 14px;
-            color: #fff;
-            backdrop-filter: blur(10px);
             box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
         }
 
-        .action-btn:hover {
+        .settings-icon:hover {
             background: rgba(106, 13, 131, 0.3);
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(106, 13, 131, 0.8);
         }
 
-        .action-btn:active {
+        .settings-icon:active {
             transform: scale(0.95);
         }
 
@@ -135,7 +138,7 @@
         }
 
         .shiba {
-            width: 360px;
+            width: 200px;
             cursor: pointer;
             transition: transform 0.2s;
             filter: drop-shadow(0 0 10px rgba(255, 111, 97, 0.5));
@@ -232,8 +235,8 @@
         }
 
         .wheel {
-            width: 300px;
-            height: 300px;
+            width: 250px;
+            height: 250px;
             border-radius: 50%;
             background: conic-gradient(
                 from 0deg,
@@ -264,9 +267,9 @@
         }
 
         .reward i {
-            font-size: 30px;
+            font-size: 24px;
             color: white;
-            transform: translateY(-100px);
+            transform: translateY(-80px);
             filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
         }
 
@@ -285,8 +288,8 @@
 
         .spin-button {
             margin-top: 20px;
-            padding: 10px 30px;
-            font-size: 18px;
+            padding: 10px 20px;
+            font-size: 16px;
             background: linear-gradient(45deg, #6A0D83, #9A4D9E);
             color: white;
             border: none;
@@ -320,7 +323,7 @@
             right: 0;
             display: flex;
             justify-content: space-between;
-            padding: 0 20px;
+            padding: 0 10px;
             z-index: 1000;
         }
 
@@ -329,12 +332,12 @@
             align-items: center;
             gap: 5px;
             cursor: pointer;
-            padding: 12px 20px;
+            padding: 10px 15px;
             background: rgba(106, 13, 131, 0.2);
             border: 2px solid #6A0D83;
             border-radius: 20px;
             transition: all 0.3s ease;
-            font-size: 14px;
+            font-size: 12px;
             color: #fff;
             backdrop-filter: blur(10px);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -347,7 +350,7 @@
         }
 
         .header-buttons .icon {
-            font-size: 20px;
+            font-size: 18px;
             color: #ff6f61;
         }
 
@@ -386,9 +389,9 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 10px 20px;
+            padding: 8px 16px;
             font-family: 'Orbitron', sans-serif;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: bold;
             color: #fff;
             background: rgba(106, 13, 131, 0.2);
@@ -425,7 +428,7 @@
         }
 
         .rocket-icon {
-            font-size: 24px;
+            font-size: 20px;
             display: inline-block;
             transform: rotate(-60deg);
             margin-bottom: 5px;
@@ -434,7 +437,7 @@
         }
 
         .boost-text {
-            font-size: 12px;
+            font-size: 10px;
             font-weight: bold;
             z-index: 2;
         }
@@ -455,9 +458,9 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 10px 20px;
+            padding: 8px 16px;
             font-family: 'Orbitron', sans-serif;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: bold;
             color: #fff;
             background: rgba(106, 13, 131, 0.2);
@@ -485,7 +488,7 @@
         }
 
         .shop-icon {
-            font-size: 24px;
+            font-size: 20px;
             display: inline-block;
             margin-bottom: 5px;
             z-index: 2;
@@ -493,7 +496,7 @@
         }
 
         .shop-text {
-            font-size: 12px;
+            font-size: 10px;
             font-weight: bold;
             z-index: 2;
         }
@@ -514,9 +517,9 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 10px 20px;
+            padding: 8px 16px;
             font-family: 'Orbitron', sans-serif;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: bold;
             color: #fff;
             background: rgba(106, 13, 131, 0.2);
@@ -544,14 +547,14 @@
         }
 
         .friends-icon {
-            width: 40px;
-            height: 40px;
+            width: 30px;
+            height: 30px;
             margin-bottom: 5px;
             z-index: 2;
         }
 
         .friends-text {
-            font-size: 12px;
+            font-size: 10px;
             font-weight: bold;
             z-index: 2;
         }
@@ -572,9 +575,9 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 10px 20px;
+            padding: 8px 16px;
             font-family: 'Orbitron', sans-serif;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: bold;
             color: #fff;
             background: rgba(106, 13, 131, 0.2);
@@ -602,7 +605,7 @@
         }
 
         .clan-icon {
-            font-size: 24px;
+            font-size: 20px;
             display: inline-block;
             margin-bottom: 5px;
             z-index: 2;
@@ -610,7 +613,7 @@
         }
 
         .clan-text {
-            font-size: 12px;
+            font-size: 10px;
             font-weight: bold;
             z-index: 2;
         }
@@ -631,9 +634,9 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 10px 20px;
+            padding: 8px 16px;
             font-family: 'Orbitron', sans-serif;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: bold;
             color: #fff;
             background: rgba(106, 13, 131, 0.2);
@@ -661,7 +664,7 @@
         }
 
         .rating-icon {
-            font-size: 24px;
+            font-size: 20px;
             display: inline-block;
             margin-bottom: 5px;
             z-index: 2;
@@ -669,7 +672,7 @@
         }
 
         .rating-text {
-            font-size: 12px;
+            font-size: 10px;
             font-weight: bold;
             z-index: 2;
         }
@@ -690,14 +693,14 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 10px 20px;
+            padding: 8px 16px;
             font-family: 'Orbitron', sans-serif;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: bold;
             color: #fff;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            border: 2px solid #4e54c8;
-            border-radius: 10px;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
             cursor: pointer;
             position: relative;
             overflow: hidden;
@@ -720,24 +723,15 @@
         }
 
         .wheel-icon {
-            font-size: 24px;
+            font-size: 20px;
             display: inline-block;
             margin-bottom: 5px;
             z-index: 2;
-            animation: spin 5s linear infinite;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
+            color: #FF6F61;
         }
 
         .wheel-text {
-            font-size: 12px;
+            font-size: 10px;
             font-weight: bold;
             z-index: 2;
         }
@@ -751,6 +745,65 @@
         .wheel-button:active {
             transform: scale(0.95);
         }
+
+        /* Стили для кнопки "Airdrop" */
+        .airdrop-button {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+        }
+
+        .airdrop-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="white" /></svg>') repeat;
+            opacity: 0.3;
+            z-index: 1;
+            animation: stars 10s linear infinite;
+        }
+
+        .airdrop-icon {
+            font-size: 20px;
+            display: inline-block;
+            margin-bottom: 5px;
+            z-index: 2;
+            color: #FF6F61;
+        }
+
+        .airdrop-text {
+            font-size: 10px;
+            font-weight: bold;
+            z-index: 2;
+        }
+
+        .airdrop-button:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(106, 13, 131, 0.8);
+        }
+
+        .airdrop-button:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
 <body>
@@ -759,42 +812,55 @@
     <div class="container">
         <!-- Верхняя панель -->
         <div class="top-panel">
-            <div class="panel-item">
-                <div id="coin-icon" class="icon-3d"></div>
-                <span id="coins-panel">0</span>
+            <!-- Левая часть панели -->
+            <div class="panel-items-left">
+                <div class="panel-item">
+                    <div id="coin-icon" class="icon-3d"></div>
+                    <span id="coins-panel">0</span>
+                </div>
+                <div class="panel-item">
+                    <div id="energy-icon" class="icon-3d"></div>
+                    <span id="energy-panel">100</span>/<span id="max-energy-panel">100</span>
+                </div>
+                <div class="panel-item">
+                    <div id="level-icon" class="icon-3d"></div>
+                    <span id="level-panel">1</span>
+                </div>
+                <div class="panel-item">
+                    <i class="fas fa-wine-bottle icon"></i>
+                    <span id="energy-drinks-panel">0</span>
+                </div>
+                <div class="panel-item">
+                    <i class="fas fa-star icon"></i>
+                    <span id="exp-panel">0</span>/10
+                </div>
             </div>
-            <div class="panel-item">
-                <div id="energy-icon" class="icon-3d"></div>
-                <span id="energy-panel">100</span>/<span id="max-energy-panel">100</span>
-            </div>
-            <div class="panel-item">
-                <div id="level-icon" class="icon-3d"></div>
-                <span id="level-panel">1</span>
-            </div>
-            <div class="panel-item">
-                <i class="fas fa-wine-bottle icon"></i>
-                <span id="energy-drinks-panel">0</span>
-            </div>
-            <div class="panel-item">
-                <i class="fas fa-star icon"></i>
-                <span id="exp-panel">0</span>/10
-            </div>
+
+            <!-- Правая часть панели (иконка настроек) -->
+            <div class="settings-icon" onclick="showSettingsModal()">⚙️</div>
         </div>
 
         <!-- Кнопки под верхней панелью -->
         <div class="header-buttons">
+            <!-- Кнопка "Клан" слева -->
             <button class="clan-button" onclick="showModal('Клан', 'Здесь будет информация о кланах.')">
                 <span class="clan-icon">🛡️</span>
                 <span class="clan-text">Клан</span>
             </button>
-            <button class="rating-button" onclick="showModal('Рейтинг', 'Здесь будет рейтинг игроков.')">
-                <span class="rating-icon">🏆</span>
-                <span class="rating-text">Рейтинг</span>
-            </button>
-            <button class="wheel-button" onclick="showWheel()">
-                <span class="wheel-icon">🎡</span>
-                <span class="wheel-text">Колесо Удачи</span>
-            </button>
+
+            <!-- Кнопка "Рейтинг" справа -->
+            <div class="vertical-buttons">
+                <button class="rating-button" onclick="showModal('Рейтинг', 'Здесь будет рейтинг игроков.')">
+                    <span class="rating-icon">🏆</span>
+                    <span class="rating-text">Рейтинг</span>
+                </button>
+
+                <!-- Кнопка "Колесо Удачи" под кнопкой "Рейтинг" -->
+                <button class="wheel-button" onclick="showWheel()">
+                    <span class="wheel-icon">🎡</span>
+                    <span class="wheel-text">Колесо Удачи</span>
+                </button>
+            </div>
         </div>
 
         <!-- Логотип Шибы -->
@@ -846,10 +912,10 @@
             </svg>
             <span class="friends-text">Друзья</span>
         </button>
-        <div class="action-btn" onclick="showModal('Airdrop', 'Получай случайные награды каждый день!')">
-            <i class="fas fa-parachute-box icon"></i>
-            <span class="mt-2">Airdrop</span>
-        </div>
+        <button class="airdrop-button" onclick="showModal('Airdrop', 'Получай случайные награды каждый день!')">
+            <span class="airdrop-icon">🪂</span>
+            <span class="airdrop-text">Airdrop</span>
+        </button>
         <div class="action-btn" onclick="showFarmsModal()">
             <i class="fas fa-network-wired icon"></i>
             <span class="mt-2">Рои</span>
@@ -1142,6 +1208,11 @@
 
         function closeWheel() {
             wheelContainer.style.display = 'none';
+        }
+
+        // Функция для открытия настроек
+        function showSettingsModal() {
+            alert("Здесь будут настройки игры!");
         }
 
         // Инициализация игры
