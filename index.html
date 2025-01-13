@@ -150,19 +150,15 @@
             50% { transform: translateY(-20px); }
         }
 
-        /* Анимация клика */
-        .click-effect {
-            position: absolute;
-            width: 50px;
-            height: 50px;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            animation: clickAnimation 0.5s ease-out;
+        /* Анимация удара */
+        @keyframes hit {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.9); }
+            100% { transform: scale(1); }
         }
 
-        @keyframes clickAnimation {
-            0% { transform: scale(0); opacity: 1; }
-            100% { transform: scale(2); opacity: 0; }
+        .shiba.hit {
+            animation: hit 0.2s ease-out;
         }
 
         /* Анимация добычи монет */
@@ -171,6 +167,7 @@
             font-size: 20px;
             color: gold;
             animation: coinAnimation 1s ease-out;
+            z-index: 100; /* Отображается перед Шибой */
         }
 
         @keyframes coinAnimation {
@@ -1048,22 +1045,14 @@
             const shiba = document.querySelector('.shiba');
             const shibaContainer = document.querySelector('.shiba-container');
 
-            // Анимация прыжка
-            shiba.classList.add('jump');
-            setTimeout(() => {
-                shiba.classList.remove('jump');
-            }, 300);
-
-            // Вспышка
-            const flash = document.createElement('div');
-            flash.className = 'flash-effect';
-            shibaContainer.appendChild(flash);
-            setTimeout(() => flash.remove(), 500);
+            // Анимация удара
+            shiba.classList.add('hit');
+            setTimeout(() => shiba.classList.remove('hit'), 200);
 
             // Анимация добычи монет
             const coinEffect = document.createElement('div');
             coinEffect.className = 'coin-effect';
-            coinEffect.textContent = `+${1 * clickMultiplier} монета`;
+            coinEffect.textContent = `+${1 * clickMultiplier}`;
             coinEffect.style.left = `${event.clientX}px`;
             coinEffect.style.top = `${event.clientY}px`;
             document.body.appendChild(coinEffect);
