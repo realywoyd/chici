@@ -593,8 +593,8 @@
         @media (max-width: 600px) {
             /* Верхняя панель */
             .top-panel {
-                flex-direction: column;
-                align-items: flex-start;
+                flex-direction: row;
+                align-items: center;
                 padding: 10px;
             }
 
@@ -610,20 +610,21 @@
             }
 
             .settings-icon {
-                margin-top: 10px;
+                margin-left: auto; /* Перемещаем кнопку настроек вправо */
             }
 
             /* Кнопки под верхней панелью */
             .header-buttons {
-                top: 100px; /* Отступ от верхней панели */
+                top: 60px; /* Отступ от верхней панели */
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 10px;
             }
 
             .vertical-buttons {
-                flex-direction: row;
+                flex-direction: column;
                 gap: 10px;
+                align-items: flex-end; /* Кнопки справа */
             }
 
             /* Шиба */
@@ -687,7 +688,7 @@
                 <span class="clan-text">Клан</span>
             </button>
 
-            <!-- Кнопка "Рейтинг" справа -->
+            <!-- Кнопка "Рейтинг" и "Колесо Удачи" справа -->
             <div class="vertical-buttons">
                 <button class="rating-button" onclick="showModal('Рейтинг', 'Здесь будет рейтинг игроков.')" data-tooltip="Рейтинг">
                     <span class="rating-icon">🏆</span>
