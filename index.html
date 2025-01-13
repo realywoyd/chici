@@ -72,7 +72,6 @@
         }
 
         /* Остальные стили игры */
-        /* Убираем синий фон при нажатии на кнопки */
         button {
             -webkit-tap-highlight-color: transparent; /* Убирает синее выделение на мобильных устройствах */
             outline: none; /* Убирает обводку при фокусе */
@@ -871,6 +870,26 @@
                 transform: translateY(100vh); /* Падение вниз за пределы экрана */
             }
         }
+
+        /* Уведомление о бусте */
+        .boost-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(106, 13, 131, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            z-index: 10000;
+            animation: fadeInOut 3s ease-in-out;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            10%, 90% { opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -1194,6 +1213,7 @@
         let energyRecoveryRate = 5000; // Время восстановления энергии в миллисекундах
         let autoClickerActive = false;
         let autoClickerInterval;
+        let isFreeTapBoostActive = false; // Флаг для отслеживания активности буста
 
         // Бусты
         const boosts = {
@@ -1255,9 +1275,11 @@
 
         // Добавление монет
         function addCoins() {
-            if (energy > 0) {
+            if (isFreeTapBoostActive || energy > 0) { // Если буст активен или есть энергия
                 coins += 1 * clickMultiplier;
-                energy--;
+                if (!isFreeTapBoostActive) { // Если буст не активен, тратим энергию
+                    energy--;
+                }
                 updateUI();
                 saveGame();
             } else {
@@ -1343,6 +1365,13 @@
                 const randomMultiplier = Math.floor(Math.random() * 49) + 2; // Случайный множитель от 2 до 50
                 clickMultiplier *= randomMultiplier;
                 boosts.freeTapBoost.usesLeft--;
+                isFreeTapBoostActive = true; // Активируем буст
+
+                // Закрываем модальное окно с бустами
+                closeModal('boosts-modal');
+
+                // Показываем уведомление
+                showBoostNotification();
 
                 // Запуск анимации падающих монет
                 startFallingCoins();
@@ -1350,6 +1379,7 @@
                 // Сброс буста через 10 секунд
                 setTimeout(() => {
                     clickMultiplier /= randomMultiplier;
+                    isFreeTapBoostActive = false; // Деактивируем буст
                     stopFallingCoins(); // Остановка создания монет
                     updateUI();
                 }, 10000);
@@ -1360,6 +1390,18 @@
             } else {
                 alert("Вы использовали все бесплатные бусты на сегодня!");
             }
+        }
+
+        // Показ уведомления о бусте
+        function showBoostNotification() {
+            const notification = document.createElement('div');
+            notification.className = 'boost-notification';
+            notification.textContent = 'Буст активирован! Энергия не тратится.';
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000); // Уведомление исчезнет через 3 секунды
         }
 
         // Запуск анимации падающих монет
