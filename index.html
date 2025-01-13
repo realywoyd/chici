@@ -891,6 +891,88 @@
             0%, 100% { opacity: 0; }
             10%, 90% { opacity: 1; }
         }
+
+        /* Стили для модального окна Airdrop */
+        #airdrop-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .airdrop-content {
+            background: radial-gradient(circle, #0B3D91, #6A0D83);
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 90%;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .airdrop-content h2 {
+            margin-bottom: 20px;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .coming-soon {
+            font-size: 18px;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        .connect-wallet-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+        }
+
+        .connect-wallet-button:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+        }
+
+        .connect-wallet-button:active {
+            transform: scale(0.95);
+        }
+
+        .connect-wallet-button i {
+            font-size: 20px;
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -1004,7 +1086,7 @@
                 </svg>
                 <span class="friends-text">Друзья</span>
             </button>
-            <button class="airdrop-button" onclick="connectTelegramWallet()">
+            <button class="airdrop-button" onclick="showAirdropModal()">
                 <span class="airdrop-icon">🪂</span>
                 <span class="airdrop-text">Airdrop</span>
             </button>
@@ -1536,22 +1618,29 @@
             if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
                 const webApp = Telegram.WebApp;
 
-                // Разворачиваем приложение на весь экран
-                webApp.expand();
+                // Открываем интерфейс кошелька
+                webApp.openWallet(
+                    'https://your-app.com/wallet-success', // URL для успешного подключения
+                    (status) => {
+                        if (status === 'opened') {
+                            console.log("Кошелёк открыт для подключения.");
+                        } else if (status === 'closed') {
+                            console.log("Кошелёк закрыт пользователем.");
+                        }
+                    }
+                );
 
-                // Получаем данные пользователя
-                const user = webApp.initDataUnsafe.user;
-                if (user) {
-                    const userId = user.id;
-                    const username = user.username || `User${userId}`;
-                    alert(`Кошелёк Telegram пользователя ${username} подключен!`);
-                    console.log("Данные пользователя:", user);
+                // Обработка успешного подключения
+                webApp.onEvent('walletConnected', (data) => {
+                    console.log("Кошелёк подключен:", data);
+                    alert("Кошелёк успешно подключен!");
+                });
 
-                    // Здесь можно добавить логику для работы с кошельком
-                    // Например, отправить запрос на сервер для регистрации кошелька
-                } else {
-                    alert("Ошибка: Пользователь Telegram не найден.");
-                }
+                // Обработка ошибок
+                webApp.onEvent('walletError', (error) => {
+                    console.error("Ошибка подключения кошелька:", error);
+                    alert("Ошибка подключения кошелька.");
+                });
             } else {
                 alert("Ошибка: Telegram Web App не доступен. Откройте приложение через Telegram.");
             }
