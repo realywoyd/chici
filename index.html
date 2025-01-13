@@ -356,6 +356,69 @@
             transform: none;
         }
 
+        /* Кнопка "Назад" в колесе удачи */
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            cursor: pointer;
+            color: #fff;
+            font-size: 24px;
+            transition: transform 0.2s ease;
+        }
+
+        .back-button:hover {
+            transform: scale(1.1);
+        }
+
+        /* Переключатель языков */
+        .language-switch {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .language-switch label {
+            margin: 0 10px;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .language-switch input[type="checkbox"] {
+            display: none;
+        }
+
+        .language-switch .slider {
+            width: 60px;
+            height: 30px;
+            background-color: #6A0D83;
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .language-switch .slider:before {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background-color: #fff;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s ease;
+        }
+
+        .language-switch input[type="checkbox"]:checked + .slider {
+            background-color: #0B3D91;
+        }
+
+        .language-switch input[type="checkbox"]:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
         /* Кнопки под верхней панелью */
         .header-buttons {
             position: fixed;
@@ -558,10 +621,10 @@
             <span class="airdrop-icon">🪂</span>
             <span class="airdrop-text">Airdrop</span>
         </button>
-        <div class="action-btn" onclick="showFarmsModal()">
+        <button class="roi-button" onclick="showFarmsModal()">
             <i class="fas fa-network-wired"></i>
-            <span class="mt-2">Рои</span>
-        </div>
+            <span class="roi-text">Рои</span>
+        </button>
     </div>
 
     <!-- Колесо удачи -->
@@ -604,6 +667,20 @@
             </div>
             <div class="wheel-pointer"></div>
             <button class="spin-button" onclick="spinWheel()">Крутить колесо</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно настроек -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('settings-modal')">&times;</span>
+            <h2>Настройки</h2>
+            <div class="language-switch">
+                <label for="language-toggle">RU</label>
+                <input type="checkbox" id="language-toggle" onchange="toggleLanguage()">
+                <label for="language-toggle" class="slider"></label>
+                <label for="language-toggle">ENG</label>
+            </div>
         </div>
     </div>
 
@@ -821,7 +898,40 @@
 
         // Функция для открытия настроек
         function showSettingsModal() {
-            alert("Здесь будут настройки игры!");
+            const modal = document.getElementById('settings-modal');
+            modal.style.display = 'flex';
+        }
+
+        // Функция для закрытия модального окна
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'none';
+        }
+
+        // Переключение языка
+        function toggleLanguage() {
+            const toggle = document.getElementById('language-toggle');
+            if (toggle.checked) {
+                // Переключение на английский
+                document.querySelector('.clan-text').textContent = 'Clan';
+                document.querySelector('.rating-text').textContent = 'Rating';
+                document.querySelector('.wheel-text').textContent = 'Wheel of Fortune';
+                document.querySelector('.boost-text').textContent = 'Boosts';
+                document.querySelector('.shop-text').textContent = 'Shop';
+                document.querySelector('.friends-text').textContent = 'Friends';
+                document.querySelector('.airdrop-text').textContent = 'Airdrop';
+                document.querySelector('.roi-text').textContent = 'Swarms';
+            } else {
+                // Переключение на русский
+                document.querySelector('.clan-text').textContent = 'Клан';
+                document.querySelector('.rating-text').textContent = 'Рейтинг';
+                document.querySelector('.wheel-text').textContent = 'Колесо Удачи';
+                document.querySelector('.boost-text').textContent = 'Бусты';
+                document.querySelector('.shop-text').textContent = 'Магазин';
+                document.querySelector('.friends-text').textContent = 'Друзья';
+                document.querySelector('.airdrop-text').textContent = 'Airdrop';
+                document.querySelector('.roi-text').textContent = 'Рои';
+            }
         }
 
         // Инициализация игры
