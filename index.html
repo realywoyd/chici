@@ -1170,11 +1170,21 @@
                 <h2>Airdrop</h2>
                 <div class="airdrop-content">
                     <p class="coming-soon">Coming soon...</p>
-                    <button class="connect-wallet-button" onclick="connectTelegramWallet()">
+                    <button class="connect-wallet-button" onclick="showWalletInputModal()">
                         <i class="fab fa-telegram"></i>
-                        Подключить Telegram Кошелёк
+                        Подключить Кошелёк
                     </button>
                 </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно для ручного ввода адреса кошелька -->
+        <div id="wallet-input-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('wallet-input-modal')">&times;</span>
+                <h2>Подключение кошелька</h2>
+                <input type="text" id="wallet-address" placeholder="Введите адрес вашего кошелька">
+                <button onclick="saveWalletAddress()">Сохранить</button>
             </div>
         </div>
 
@@ -1607,47 +1617,28 @@
             modal.style.display = 'flex';
         }
 
+        // Показ модального окна для ручного ввода адреса кошелька
+        function showWalletInputModal() {
+            const modal = document.getElementById('wallet-input-modal');
+            modal.style.display = 'flex';
+        }
+
         // Закрытие модального окна
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             modal.style.display = 'none';
         }
 
-        // Подключение Telegram Кошелька
-        function connectTelegramWallet() {
-            if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
-                const webApp = Telegram.WebApp;
-
-                // Проверяем, поддерживается ли метод openWallet
-                if (webApp.openWallet) {
-                    // Открываем интерфейс кошелька
-                    webApp.openWallet(
-                        'https://d994-51-77-20-113.ngrok-free.app/wallet-success', // Используйте ngrok URL
-                        (status) => {
-                            if (status === 'opened') {
-                                console.log("Кошелёк открыт для подключения.");
-                            } else if (status === 'closed') {
-                                console.log("Кошелёк закрыт пользователем.");
-                            }
-                        }
-                    );
-
-                    // Обработка успешного подключения
-                    webApp.onEvent('walletConnected', (data) => {
-                        console.log("Кошелёк подключен:", data);
-                        alert("Кошелёк успешно подключен!");
-                    });
-
-                    // Обработка ошибок
-                    webApp.onEvent('walletError', (error) => {
-                        console.error("Ошибка подключения кошелька:", error);
-                        alert("Ошибка подключения кошелька.");
-                    });
-                } else {
-                    alert("Метод openWallet не поддерживается в этой версии Telegram.");
-                }
+        // Сохранение адреса кошелька
+        function saveWalletAddress() {
+            const walletAddress = document.getElementById('wallet-address').value;
+            if (walletAddress) {
+                alert(`Кошелёк подключен: ${walletAddress}`);
+                // Сохраните адрес кошелька в localStorage или отправьте на сервер
+                localStorage.setItem('walletAddress', walletAddress);
+                closeModal('wallet-input-modal');
             } else {
-                alert("Ошибка: Telegram Web App не доступен. Откройте приложение через Telegram.");
+                alert("Пожалуйста, введите адрес кошелька.");
             }
         }
 
