@@ -1618,29 +1618,34 @@
             if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
                 const webApp = Telegram.WebApp;
 
-                // Открываем интерфейс кошелька
-                webApp.openWallet(
-                    'https://your-app.com/wallet-success', // URL для успешного подключения
-                    (status) => {
-                        if (status === 'opened') {
-                            console.log("Кошелёк открыт для подключения.");
-                        } else if (status === 'closed') {
-                            console.log("Кошелёк закрыт пользователем.");
+                // Проверяем, поддерживается ли метод openWallet
+                if (webApp.openWallet) {
+                    // Открываем интерфейс кошелька
+                    webApp.openWallet(
+                        'https://d994-51-77-20-113.ngrok-free.app/wallet-success', // Используйте ngrok URL
+                        (status) => {
+                            if (status === 'opened') {
+                                console.log("Кошелёк открыт для подключения.");
+                            } else if (status === 'closed') {
+                                console.log("Кошелёк закрыт пользователем.");
+                            }
                         }
-                    }
-                );
+                    );
 
-                // Обработка успешного подключения
-                webApp.onEvent('walletConnected', (data) => {
-                    console.log("Кошелёк подключен:", data);
-                    alert("Кошелёк успешно подключен!");
-                });
+                    // Обработка успешного подключения
+                    webApp.onEvent('walletConnected', (data) => {
+                        console.log("Кошелёк подключен:", data);
+                        alert("Кошелёк успешно подключен!");
+                    });
 
-                // Обработка ошибок
-                webApp.onEvent('walletError', (error) => {
-                    console.error("Ошибка подключения кошелька:", error);
-                    alert("Ошибка подключения кошелька.");
-                });
+                    // Обработка ошибок
+                    webApp.onEvent('walletError', (error) => {
+                        console.error("Ошибка подключения кошелька:", error);
+                        alert("Ошибка подключения кошелька.");
+                    });
+                } else {
+                    alert("Метод openWallet не поддерживается в этой версии Telegram.");
+                }
             } else {
                 alert("Ошибка: Telegram Web App не доступен. Откройте приложение через Telegram.");
             }
