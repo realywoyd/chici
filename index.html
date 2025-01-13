@@ -141,6 +141,8 @@
             transition: transform 0.2s;
             filter: drop-shadow(0 0 10px rgba(255, 111, 97, 0.5));
             animation: fly 2s infinite;
+            -webkit-tap-highlight-color: transparent; /* Убирает синее выделение на мобильных устройствах */
+            user-select: none; /* Запрещает выделение текста */
         }
 
         @keyframes fly {
@@ -161,6 +163,19 @@
         @keyframes clickAnimation {
             0% { transform: scale(0); opacity: 1; }
             100% { transform: scale(2); opacity: 0; }
+        }
+
+        /* Анимация добычи монет */
+        .coin-effect {
+            position: absolute;
+            font-size: 20px;
+            color: gold;
+            animation: coinAnimation 1s ease-out;
+        }
+
+        @keyframes coinAnimation {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-50px); }
         }
 
         /* Нижняя панель */
@@ -722,7 +737,7 @@
 
         <!-- Логотип Шибы -->
         <div class="shiba-container">
-            <img src="https://cryptologos.cc/logos/shiba-inu-shib-logo.png" alt="Shiba Inu" class="shiba" onclick="animateShiba()">
+            <img src="https://cryptologos.cc/logos/shiba-inu-shib-logo.png" alt="Shiba Inu" class="shiba" onclick="animateShiba(event)">
         </div>
     </div>
 
@@ -1029,7 +1044,7 @@
         }
 
         // Анимация Шибы
-        function animateShiba() {
+        function animateShiba(event) {
             const shiba = document.querySelector('.shiba');
             const shibaContainer = document.querySelector('.shiba-container');
 
@@ -1045,15 +1060,14 @@
             shibaContainer.appendChild(flash);
             setTimeout(() => flash.remove(), 500);
 
-            // Частицы
-            for (let i = 0; i < 5; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = `${Math.random() * 100}%`;
-                particle.style.top = `${Math.random() * 100}%`;
-                shibaContainer.appendChild(particle);
-                setTimeout(() => particle.remove(), 1000);
-            }
+            // Анимация добычи монет
+            const coinEffect = document.createElement('div');
+            coinEffect.className = 'coin-effect';
+            coinEffect.textContent = `+${1 * clickMultiplier} монета`;
+            coinEffect.style.left = `${event.clientX}px`;
+            coinEffect.style.top = `${event.clientY}px`;
+            document.body.appendChild(coinEffect);
+            setTimeout(() => coinEffect.remove(), 1000);
 
             addCoins();
         }
