@@ -1743,51 +1743,5 @@
 
         animate();
     </script>
-<script>
-    // Проверяем, запущена ли игра через Telegram Mini Apps
-    if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
-        const webApp = Telegram.WebApp;
-
-        // Разворачиваем приложение на весь экран
-        webApp.expand();
-
-        // Получаем данные пользователя
-        const user = webApp.initDataUnsafe.user;
-        if (user) {
-            const userId = user.id;
-            const username = user.username || `User${userId}`;
-            console.log("Пользователь Telegram:", username);
-        } else {
-            console.log("Пользователь Telegram не найден.");
-        }
-
-        // Пример обработки события закрытия приложения
-        webApp.onEvent('viewportChanged', () => {
-            console.log("Viewport changed:", webApp.viewportHeight);
-        });
-
-        // Пример отправки данных в Telegram
-        function sendDataToTelegram(data) {
-            webApp.sendData(JSON.stringify(data));
-        }
-    } else {
-        console.log("Игра запущена вне Telegram Mini Apps.");
-    }
-</script>function connectTelegramWallet() {
-    if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
-        const webApp = Telegram.WebApp;
-
-        // Получаем данные пользователя
-        const user = webApp.initDataUnsafe.user;
-        if (user) {
-            const userId = user.id;
-            const username = user.username || `User${userId}`;
-            alert(`Кошелёк Telegram пользователя ${username} подключен!`);
-        } else {
-            alert("Ошибка: Пользователь Telegram не найден.");
-        }
-    } else {
-        alert("Ошибка: Telegram Web App не доступен. Откройте приложение через Telegram.");
-    }
-}</body>
+<script> </body>
 </html>
