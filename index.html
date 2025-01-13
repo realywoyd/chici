@@ -307,6 +307,7 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            animation: fadeIn 0.3s ease-out;
         }
 
         .modal-content {
@@ -973,6 +974,87 @@
             from { transform: translateY(20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
+
+        /* Стили для кнопки "Донат" */
+        .donate-button {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+            margin-top: 10px; /* Отступ от кнопки "Клан" */
+        }
+
+        .donate-button:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+        }
+
+        .donate-button:active {
+            transform: scale(0.95);
+        }
+
+        .donate-icon {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .donate-text {
+            font-size: 12px;
+        }
+
+        /* Стили для модального окна доната */
+        .donate-content {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .buy-spin-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background: linear-gradient(45deg, #6A0D83, #9A4D9E);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+        }
+
+        .buy-spin-button:hover {
+            background: linear-gradient(45deg, #9A4D9E, #6A0D83);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+        }
+
+        .buy-spin-button:active {
+            transform: scale(0.95);
+        }
+
+        .buy-spin-icon {
+            font-size: 20px;
+        }
     </style>
 </head>
 <body>
@@ -1026,6 +1108,12 @@
                 <button class="clan-button" onclick="showModal('Клан', 'Здесь будет информация о кланах.')">
                     <span class="clan-icon">🛡️</span>
                     <span class="clan-text">Клан</span>
+                </button>
+
+                <!-- Кнопка "Донат" под кнопкой "Клан" -->
+                <button class="donate-button" onclick="showDonateModal()">
+                    <span class="donate-icon">💎</span>
+                    <span class="donate-text">Донат</span>
                 </button>
 
                 <!-- Кнопки "Рейтинг" и "Колесо Удачи" справа -->
@@ -1093,6 +1181,11 @@
             <button class="roi-button" onclick="showFarmsModal()">
                 <i class="fas fa-network-wired"></i>
                 <span class="roi-text">Рои</span>
+            </button>
+            <!-- Кнопка Донат -->
+            <button class="donate-button" onclick="requestPayment(1000000000, 'Донат на поддержку игры')">
+                <span class="donate-icon">💎</span>
+                <span class="donate-text">Донат</span>
             </button>
         </div>
 
@@ -1198,6 +1291,21 @@
                     <input type="checkbox" id="language-toggle" onchange="toggleLanguage()">
                     <div class="slider"></div>
                     <label for="language-toggle">ENG</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно для доната -->
+        <div id="donate-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('donate-modal')">&times;</span>
+                <h2>Донат</h2>
+                <div class="donate-content">
+                    <p>Поддержите игру и получите дополнительный спин на Колесе Удачи!</p>
+                    <button class="buy-spin-button" onclick="buySpin()">
+                        <span class="buy-spin-icon">🎡</span>
+                        <span class="buy-spin-text">Купить спин за 1$</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -1762,7 +1870,11 @@
                 updateLanguage(); // Устанавливаем язык по умолчанию
 
                 // Проверяем, запущена ли игра через Telegram Mini Apps
-                if (typeof Telegram === 'undefined' || !Telegram.WebApp) {
+                if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
+                    const tg = Telegram.WebApp;
+                    tg.ready(); // Готовим Mini App к работе
+                    tg.expand(); // Разворачиваем приложение на весь экран
+                } else {
                     // Скрываем кнопку подключения кошелька
                     const connectWalletButton = document.querySelector('.connect-wallet-button');
                     if (connectWalletButton) {
@@ -1777,6 +1889,90 @@
                 }
             }
         };
+
+        // Функция для обработки доната через Telegram Mini Apps
+        function requestPayment(amount, description) {
+            if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
+                const tg = Telegram.WebApp;
+
+                // Данные для оплаты
+                const paymentData = {
+                    amount: amount, // Сумма в наноТОН (1 TON = 1_000_000_000 наноТОН)
+                    currency: 'TON', // Валюта
+                    description: description, // Описание платежа
+                };
+
+                // Отправка запроса на оплату
+                tg.sendData(JSON.stringify(paymentData));
+
+                // Обработка ответа от кошелька
+                tg.onEvent('invoiceClosed', (eventData) => {
+                    if (eventData.status === 'paid') {
+                        alert('Оплата прошла успешно!');
+                        // Добавьте логику для начисления доната в игре
+                        handleDonationSuccess();
+                    } else {
+                        alert('Оплата отменена или не удалась.');
+                    }
+                });
+            } else {
+                alert('Эта функция доступна только в Telegram Mini Apps.');
+            }
+        }
+
+        // Обработка успешного доната
+        function handleDonationSuccess() {
+            coins += 1000; // Начисляем 1000 монет
+            updateUI(); // Обновляем интерфейс
+            alert('Спасибо за поддержку! Вы получили 1000 монет.');
+        }
+
+        // Показ модального окна для доната
+        function showDonateModal() {
+            const modal = document.getElementById('donate-modal');
+            modal.style.display = 'flex';
+        }
+
+        // Покупка спина за 1$
+        function buySpin() {
+            if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
+                const tg = Telegram.WebApp;
+
+                // Сумма в наноТОН (1$ ≈ 3.3 TON ≈ 3_300_000_000 наноТОН)
+                const amount = 3_300_000_000; // 1$ в наноТОН
+                const description = "Покупка спина на Колесе Удачи";
+
+                // Данные для оплаты
+                const paymentData = {
+                    amount: amount,
+                    currency: 'TON',
+                    description: description,
+                };
+
+                // Отправка запроса на оплату
+                tg.sendData(JSON.stringify(paymentData));
+
+                // Обработка ответа от кошелька
+                tg.onEvent('invoiceClosed', (eventData) => {
+                    if (eventData.status === 'paid') {
+                        alert('Оплата прошла успешно! Вы получили дополнительный спин.');
+                        // Добавляем спин для Колеса Удачи
+                        addSpin();
+                    } else {
+                        alert('Оплата отменена или не удалась.');
+                    }
+                });
+            } else {
+                alert('Эта функция доступна только в Telegram Mini Apps.');
+            }
+        }
+
+        // Добавление спина
+        function addSpin() {
+            const spinButton = document.querySelector('.spin-button');
+            spinButton.disabled = false; // Разблокируем кнопку спина
+            alert('Вы получили дополнительный спин!');
+        }
     </script>
 
     <!-- Скрипт для фона с мультяшными звёздами -->
