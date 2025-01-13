@@ -148,6 +148,21 @@
             50% { transform: translateY(-20px); }
         }
 
+        /* Анимация клика */
+        .click-effect {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: clickAnimation 0.5s ease-out;
+        }
+
+        @keyframes clickAnimation {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
         /* Нижняя панель */
         .bottom-panel {
             position: fixed;
@@ -1016,10 +1031,30 @@
         // Анимация Шибы
         function animateShiba() {
             const shiba = document.querySelector('.shiba');
+            const shibaContainer = document.querySelector('.shiba-container');
+
+            // Анимация прыжка
             shiba.classList.add('jump');
             setTimeout(() => {
                 shiba.classList.remove('jump');
             }, 300);
+
+            // Вспышка
+            const flash = document.createElement('div');
+            flash.className = 'flash-effect';
+            shibaContainer.appendChild(flash);
+            setTimeout(() => flash.remove(), 500);
+
+            // Частицы
+            for (let i = 0; i < 5; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                shibaContainer.appendChild(particle);
+                setTimeout(() => particle.remove(), 1000);
+            }
+
             addCoins();
         }
 
