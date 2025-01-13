@@ -21,6 +21,12 @@
             touch-action: manipulation;
         }
 
+        /* Убираем синий фон при нажатии на кнопки */
+        button {
+            -webkit-tap-highlight-color: transparent; /* Убирает синее выделение на мобильных устройствах */
+            outline: none; /* Убирает обводку при фокусе */
+        }
+
         canvas {
             position: absolute;
             top: 0;
