@@ -1532,7 +1532,7 @@
 
         // Подключение Telegram Кошелька
         function connectTelegramWallet() {
-            if (window.Telegram && window.Telegram.WebApp) {
+            if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
                 const webApp = Telegram.WebApp;
                 webApp.expand(); // Разворачиваем приложение на весь экран
 
@@ -1668,6 +1668,21 @@
                 loadGame();
                 updateUI();
                 updateLanguage(); // Устанавливаем язык по умолчанию
+
+                // Проверяем, запущена ли игра через Telegram
+                if (typeof Telegram === 'undefined' || !Telegram.WebApp) {
+                    // Скрываем кнопку подключения кошелька
+                    const connectWalletButton = document.querySelector('.connect-wallet-button');
+                    if (connectWalletButton) {
+                        connectWalletButton.style.display = 'none';
+                    }
+
+                    // Выводим сообщение или скрываем другие элементы
+                    const airdropContent = document.querySelector('.airdrop-content');
+                    if (airdropContent) {
+                        airdropContent.innerHTML = '<p>Эта функция доступна только в Telegram Mini Apps.</p>';
+                    }
+                }
             }
         };
     </script>
