@@ -200,6 +200,7 @@
             animation: fly 2s infinite;
             -webkit-tap-highlight-color: transparent; /* Убирает синее выделение на мобильных устройствах */
             user-select: none; /* Запрещает выделение текста */
+            touch-action: manipulation; /* Улучшает отзывчивость на касания */
         }
 
         @keyframes fly {
@@ -1163,7 +1164,17 @@
         }
 
         // Анимация Шибы
-        function animateShiba(event) {
+        const shiba = document.querySelector('.shiba');
+
+        shiba.addEventListener('touchstart', (event) => {
+            event.preventDefault(); // Предотвращаем стандартное поведение
+            const touches = event.touches.length; // Количество касаний
+            for (let i = 0; i < touches; i++) {
+                animateShiba(event.touches[i]); // Анимируем и добавляем монеты для каждого касания
+            }
+        });
+
+        function animateShiba(touch) {
             const shiba = document.querySelector('.shiba');
             const shibaContainer = document.querySelector('.shiba-container');
 
@@ -1175,12 +1186,12 @@
             const coinEffect = document.createElement('div');
             coinEffect.className = 'coin-effect';
             coinEffect.textContent = `+${1 * clickMultiplier}`;
-            coinEffect.style.left = `${event.clientX}px`;
-            coinEffect.style.top = `${event.clientY}px`;
+            coinEffect.style.left = `${touch.clientX}px`;
+            coinEffect.style.top = `${touch.clientY}px`;
             document.body.appendChild(coinEffect);
             setTimeout(() => coinEffect.remove(), 1000);
 
-            addCoins();
+            addCoins(); // Добавляем монеты
         }
 
         // Восстановление энергии
