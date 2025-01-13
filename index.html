@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+    <button onclick="showTelegramLogin()">Подключить Telegram Кошелёк</button>
+
+<script>
+    function showTelegramLogin() {
+        const widget = document.createElement('script');
+        widget.src = 'https://telegram.org/js/telegram-widget.js?7';
+        widget.setAttribute('data-telegram-login', 'SHIBA');
+        widget.setAttribute('data-size', 'large');
+        widget.setAttribute('data-radius', '14');
+        widget.setAttribute('data-auth-url', 'https://d994-51-77-20-113.ngrok-free.app');
+        widget.setAttribute('data-request-access', 'write');
+        document.body.appendChild(widget);
+    }
+</script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
