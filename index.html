@@ -1262,21 +1262,11 @@
                 <h2>Airdrop</h2>
                 <div class="airdrop-content">
                     <p class="coming-soon">Coming soon...</p>
-                    <button class="connect-wallet-button" onclick="showWalletInputModal()">
+                    <button class="connect-wallet-button" onclick="connectWallet()">
                         <i class="fab fa-telegram"></i>
                         Подключить Кошелёк
                     </button>
                 </div>
-            </div>
-        </div>
-
-        <!-- Модальное окно для ручного ввода адреса кошелька -->
-        <div id="wallet-input-modal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal('wallet-input-modal')">&times;</span>
-                <h2>Подключение кошелька</h2>
-                <input type="text" id="wallet-address" placeholder="Введите адрес вашего кошелька">
-                <button onclick="saveWalletAddress()">Сохранить</button>
             </div>
         </div>
 
@@ -1725,29 +1715,51 @@
             modal.style.display = 'flex';
         }
 
-        // Показ модального окна для ручного ввода адреса кошелька
-        function showWalletInputModal() {
-            const modal = document.getElementById('wallet-input-modal');
-            modal.style.display = 'flex';
+        // Функция для подключения кошелька через Telegram Wallet
+        function connectWallet() {
+            if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
+                const tg = Telegram.WebApp;
+
+                // Проверка поддержки кошелька
+                if (!tg.openWallet) {
+                    alert('Ваша версия Telegram не поддерживает подключение кошелька.');
+                    return;
+                }
+
+                // Открываем интерфейс кошелька
+                tg.openWallet({
+                    amount: 0, // Сумма 0 для подключения кошелька
+                    currency: 'TON', // Валюта
+                    description: 'Подключение кошелька', // Описание
+                }, (status) => {
+                    if (status === 'paid') {
+                        // Кошелёк успешно подключён
+                        alert('Кошелёк успешно подключён!');
+                        // Получаем адрес кошелька (если доступно)
+                        const walletAddress = tg.initDataUnsafe.user?.wallet_address;
+                        if (walletAddress) {
+                            localStorage.setItem('walletAddress', walletAddress);
+                            console.log('Адрес кошелька:', walletAddress);
+
+                            // Отображаем адрес кошелька
+                            const walletAddressDisplay = document.getElementById('wallet-address-display');
+                            if (walletAddressDisplay) {
+                                walletAddressDisplay.textContent = walletAddress;
+                            }
+                        }
+                    } else {
+                        alert('Подключение кошелька отменено или не удалось.');
+                    }
+                });
+            } else {
+                alert('Эта функция доступна только в Telegram Mini Apps.');
+            }
         }
 
         // Закрытие модального окна
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             modal.style.display = 'none';
-        }
-
-        // Сохранение адреса кошелька
-        function saveWalletAddress() {
-            const walletAddress = document.getElementById('wallet-address').value;
-            if (walletAddress) {
-                alert(`Кошелёк подключен: ${walletAddress}`);
-                // Сохраните адрес кошелька в localStorage или отправьте на сервер
-                localStorage.setItem('walletAddress', walletAddress);
-                closeModal('wallet-input-modal');
-            } else {
-                alert("Пожалуйста, введите адрес кошелька.");
-            }
         }
 
         // Переключение языка
@@ -1934,7 +1946,7 @@
 
             // Отображаем ваш адрес кошелька в модальном окне
             const walletAddressDisplay = document.getElementById('wallet-address-display');
-            walletAddressDisplay.textContent = yourWalletAddress;
+            walletAddressDisplay.textContent = localStorage.getItem('walletAddress') || 'Не подключён';
         }
 
         // Покупка спина за 1$
