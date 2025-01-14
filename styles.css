@@ -57,9 +57,46 @@ body, html {
     transition: width 0.5s ease;
 }
 
-/* Основной контейнер игры */
+/* Основной контейнер игры (скрыт до завершения загрузки) */
 .game-container {
-    display: none;
+    display: none; /* Скрыт до завершения загрузки */
+}
+
+/* Остальные стили игры */
+button {
+    -webkit-tap-highlight-color: transparent; /* Убирает синее выделение на мобильных устройствах */
+    outline: none; /* Убирает обводку при фокусе */
+}
+
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+/* Звёздное небо */
+@keyframes twinkle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+.star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle 2s infinite;
+}
+
+/* Контейнер */
+.container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 10px;
+    position: relative;
+    z-index: 1;
 }
 
 /* Верхняя панель */
@@ -78,29 +115,59 @@ body, html {
     backdrop-filter: blur(10px);
     box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
     z-index: 1000;
+    animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(0); }
 }
 
 .panel-items-left {
     display: flex;
+    flex-direction: row;
     gap: 10px;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .panel-item {
     display: flex;
     align-items: center;
     gap: 5px;
-    font-size: 14px;
+    font-size: 7px;
     color: #fff;
     padding: 8px 12px;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
 }
 
 .panel-item:hover {
     background: rgba(255, 255, 255, 0.2);
     transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+}
+
+/* Всплывающие подсказки */
+[data-tooltip] {
+    position: relative;
+}
+
+[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
 }
 
 /* Шиба */
@@ -109,18 +176,49 @@ body, html {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .shiba {
     width: 200px;
     cursor: pointer;
     transition: transform 0.2s;
+    filter: drop-shadow(0 0 10px rgba(255, 111, 97, 0.5));
     animation: fly 2s infinite;
+    -webkit-tap-highlight-color: transparent; /* Убирает синее выделение на мобильных устройствах */
+    user-select: none; /* Запрещает выделение текста */
 }
 
 @keyframes fly {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-20px); }
+}
+
+/* Анимация удара */
+@keyframes hit {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.9); }
+    100% { transform: scale(1); }
+}
+
+.shiba.hit {
+    animation: hit 0.2s ease-out;
+}
+
+/* Анимация добычи монет */
+.coin-effect {
+    position: absolute;
+    font-size: 20px;
+    color: gold;
+    animation: coinAnimation 1s ease-out;
+    z-index: 100; /* Отображается перед Шибой */
+}
+
+@keyframes coinAnimation {
+    0% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-50px); }
 }
 
 /* Нижняя панель */
@@ -135,26 +233,55 @@ body, html {
     justify-content: space-around;
     border-top: 2px solid #6A0D83;
     z-index: 1000;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+    animation: slideUp 0.5s ease-out;
 }
 
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+/* Стили для кнопок нижней панели */
 .bottom-panel button {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 8px 12px;
+    font-family: 'Orbitron', sans-serif;
     font-size: 12px;
+    font-weight: bold;
     color: #fff;
     background: rgba(106, 13, 131, 0.2);
     border: 2px solid #6A0D83;
     border-radius: 20px;
     cursor: pointer;
     transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
 }
 
 .bottom-panel button:hover {
     background: rgba(106, 13, 131, 0.3);
     transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+}
+
+.bottom-panel button:active {
+    transform: scale(0.95);
+}
+
+.bottom-panel button i {
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.bottom-panel button svg {
+    width: 16px;
+    height: 16px;
+    margin-bottom: 4px;
 }
 
 /* Модальные окна */
@@ -169,6 +296,7 @@ body, html {
     justify-content: center;
     align-items: center;
     z-index: 1000;
+    animation: fadeIn 0.3s ease-out;
 }
 
 .modal-content {
@@ -177,6 +305,14 @@ body, html {
     border-radius: 20px;
     text-align: center;
     max-width: 90%;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
 }
 
 .close {
@@ -184,9 +320,38 @@ body, html {
     cursor: pointer;
     font-size: 24px;
     color: #FF6F61;
+    transition: transform 0.2s ease;
+}
+
+.close:hover {
+    transform: scale(1.1);
 }
 
 /* Колесо удачи */
+.wheel-container {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.wheel-content {
+    background: radial-gradient(circle, #0B3D91, #6A0D83);
+    padding: 20px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 90%;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+}
+
 .wheel {
     width: 250px;
     height: 250px;
@@ -206,18 +371,37 @@ body, html {
     );
     position: relative;
     transition: transform 5s cubic-bezier(0.25, 0.1, 0.25, 1);
+    box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+}
+
+.reward {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform-origin: center;
+}
+
+.reward i {
+    font-size: 24px;
+    color: white;
+    transform: translateY(-80px);
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
 }
 
 .wheel-pointer {
     position: absolute;
     top: -20px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) rotate(180deg);
     width: 0;
     height: 0;
     border-left: 15px solid transparent;
     border-right: 15px solid transparent;
     border-bottom: 30px solid #6A0D83;
+    filter: drop-shadow(0 0 5px rgba(106, 13, 131, 0.8));
 }
 
 .spin-button {
@@ -229,9 +413,632 @@ body, html {
     border: none;
     border-radius: 50px;
     cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 0 10px rgba(106, 13, 131, 0.8);
+}
+
+.spin-button:hover {
+    background: linear-gradient(45deg, #9A4D9E, #6A0D83);
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+}
+
+.spin-button:active {
+    transform: scale(0.95);
 }
 
 .spin-button:disabled {
     background: #ccc;
     cursor: not-allowed;
+    transform: none;
+}
+
+/* Кнопка "Назад" в колесе удачи */
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    cursor: pointer;
+    color: #fff;
+    font-size: 24px;
+    transition: transform 0.2s ease;
+}
+
+.back-button:hover {
+    transform: scale(1.1);
+}
+
+/* Переключатель языков */
+.language-switch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.language-switch label {
+    margin: 0 10px;
+    font-size: 16px;
+    color: #fff;
+}
+
+.language-switch input[type="checkbox"] {
+    display: none;
+}
+
+.language-switch .slider {
+    width: 60px;
+    height: 30px;
+    background-color: #6A0D83;
+    border-radius: 15px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.language-switch .slider:before {
+    content: '';
+    position: absolute;
+    width: 26px;
+    height: 26px;
+    background-color: #fff;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.3s ease;
+}
+
+.language-switch input[type="checkbox"]:checked + .slider {
+    background-color: #0B3D91;
+}
+
+.language-switch input[type="checkbox"]:checked + .slider:before {
+    transform: translateX(30px);
+}
+
+/* Кнопки под верхней панелью */
+.header-buttons {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+    z-index: 1000;
+}
+
+/* Контейнер для кнопок справа */
+.vertical-buttons-right {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-end; /* Выравнивание по правому краю */
+}
+
+/* Стили для кнопки "Клан" */
+.clan-button {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+    background: rgba(106, 13, 131, 0.2);
+    border: 2px solid #6A0D83;
+    border-radius: 20px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+}
+
+/* Стили для кнопки "Рейтинг" */
+.rating-button {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+    background: rgba(106, 13, 131, 0.2);
+    border: 2px solid #6A0D83;
+    border-radius: 20px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+}
+
+/* Стили для кнопки "Колесо Удачи" */
+.wheel-button {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+    background: rgba(106, 13, 131, 0.2);
+    border: 2px solid #6A0D83;
+    border-radius: 20px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+}
+
+/* Анимация фона */
+@keyframes gradientBackground {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+body {
+    background: linear-gradient(270deg, #0B3D91, #6A0D83, #9A4D9E);
+    background-size: 300% 300%;
+    animation: gradientBackground 10s ease infinite;
+}
+
+/* Стили для вкладки бустов */
+.boosts-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.boosts-content {
+    background: radial-gradient(circle, #0B3D91, #6A0D83);
+    padding: 20px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 90%;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.boosts-content h2 {
+    margin-bottom: 20px;
+}
+
+/* Панель для бесплатных бустов */
+.free-boosts-panel {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.free-boosts-panel .boost-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.free-boosts-panel .boost-item button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    background: rgba(106, 13, 131, 0.2);
+    border: 2px solid #6A0D83;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+}
+
+.free-boosts-panel .boost-item button:hover {
+    background: rgba(106, 13, 131, 0.3);
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+}
+
+.free-boosts-panel .boost-item button:active {
+    transform: scale(0.95);
+}
+
+.free-boosts-panel .boost-item button .boost-icon {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.free-boosts-panel .boost-item button .boost-uses {
+    font-size: 12px;
+    color: #fff;
+}
+
+/* Список бустов */
+.boost-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    border: 1px solid #6A0D83;
+}
+
+.boost-item button {
+    padding: 5px 10px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+    background: rgba(106, 13, 131, 0.2);
+    border: 2px solid #6A0D83;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.boost-item button:hover {
+    background: rgba(106, 13, 131, 0.3);
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(106, 13, 131, 0.8);
+}
+
+.boost-item button:active {
+    transform: scale(0.95);
+}
+
+.boost-item button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 600px) {
+    /* Верхняя панель */
+    .top-panel {
+        flex-direction: row;
+        align-items: center;
+        padding: 10px;
+    }
+
+    .panel-items-left {
+        flex-direction: row;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+
+    .panel-item {
+        font-size: 6px;
+        padding: 6px 10px;
+    }
+
+    /* Кнопки под верхней панелью */
+    .header-buttons {
+        top: 60px; /* Отступ от верхней панели */
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .vertical-buttons-right {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-end; /* Кнопки справа */
+    }
+
+    /* Шиба */
+    .shiba {
+        width: 150px;
+    }
+
+    /* Нижняя панель */
+    .bottom-panel {
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .bottom-panel button {
+        font-size: 10px;
+        padding: 6px 10px;
+    }
+}
+
+/* Кнопка настроек */
+.settings-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px; /* Уменьшенный размер */
+    height: 30px;
+    padding: 0;
+    font-size: 16px;
+    background: rgba(106, 13, 131, 0.2);
+    border: 2px solid #6A0D83;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+}
+
+.settings-button:hover {
+    background: rgba(106, 13, 131, 0.3);
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+}
+
+.settings-button:active {
+    transform: scale(0.95);
+}
+
+/* Модальное окно настроек */
+.settings-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.settings-content {
+    background: radial-gradient(circle, #0B3D91, #6A0D83);
+    padding: 20px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 90%;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.settings-content h2 {
+    margin-bottom: 20px;
+}
+
+/* Анимация падающих монет */
+.falling-coin {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: url('https://www.pngall.com/wp-content/uploads/5/Gold-Coin-PNG-Image.png') no-repeat center/contain;
+    animation: fall linear infinite;
+}
+
+@keyframes fall {
+    0% { transform: translateY(-100vh); }
+    100% { transform: translateY(100vh); }
+}
+
+/* Новый стиль для анимации фона с падающими монетами */
+.coin {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    font-size: 20px; /* Размер эмодзи */
+    text-align: center;
+    animation: fall linear forwards; /* Анимация падения */
+    z-index: 1000; /* Чтобы монеты были поверх других элементов */
+}
+
+@keyframes fall {
+    0% {
+        transform: translateY(-100px); /* Начальная позиция за пределами экрана */
+    }
+    100% {
+        transform: translateY(100vh); /* Падение вниз за пределы экрана */
+    }
+}
+
+/* Уведомление о бусте */
+.boost-notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(106, 13, 131, 0.9);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    z-index: 10000;
+    animation: fadeInOut 3s ease-in-out;
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0; }
+    10%, 90% { opacity: 1; }
+}
+
+/* Стили для модального окна Airdrop */
+#airdrop-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.airdrop-content {
+    background: radial-gradient(circle, #0B3D91, #6A0D83);
+    padding: 20px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 90%;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+    animation: slideUp 0.5s ease-out;
+}
+
+.airdrop-content h2 {
+    margin-bottom: 20px;
+    color: #fff;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.coming-soon {
+    font-size: 18px;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.connect-wallet-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px 20px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(45deg, #007bff, #00ff88);
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.connect-wallet-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+}
+
+.connect-wallet-button:active {
+    transform: scale(0.95);
+}
+
+.connect-wallet-button i {
+    font-size: 24px;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Стили для кнопки "Донат" */
+.donate-button {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+    background: rgba(106, 13, 131, 0.2);
+    border: 2px solid #6A0D83;
+    border-radius: 20px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+    margin-top: 10px; /* Отступ от кнопки "Клан" */
+}
+
+.donate-button:hover {
+    background: rgba(106, 13, 131, 0.3);
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+}
+
+.donate-button:active {
+    transform: scale(0.95);
+}
+
+.donate-icon {
+    font-size: 16px;
+    margin-bottom: 4px;
+}
+
+.donate-text {
+    font-size: 12px;
+}
+
+/* Стили для модального окна доната */
+.donate-content {
+    text-align: center;
+    padding: 20px;
+}
+
+.buy-spin-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px 20px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background: linear-gradient(45deg, #6A0D83, #9A4D9E);
+    border: 2px solid #6A0D83;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+}
+
+.buy-spin-button:hover {
+    background: linear-gradient(45deg, #9A4D9E, #6A0D83);
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+}
+
+.buy-spin-button:active {
+    transform: scale(0.95);
+}
+
+.buy-spin-icon {
+    font-size: 20px;
 }
