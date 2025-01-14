@@ -7,6 +7,134 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <style>
+        /* Ваши стили */
+    </style>
+</head>
+<body>
+    <!-- Экран загрузки -->
+    <div class="loading-container">
+        <img src="https://cryptologos.cc/logos/shiba-inu-shib-logo.png" alt="Shiba Inu" class="loading-shiba">
+        <div class="loading-text">Загрузка...</div>
+        <div class="progress-bar">
+            <div class="progress-bar-inner" id="progress-bar-inner"></div>
+        </div>
+    </div>
+
+    <!-- Основной контейнер игры -->
+    <div class="game-container">
+        <!-- Ваш интерфейс игры -->
+
+        <!-- Модальное окно Airdrop -->
+        <div id="airdrop-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('airdrop-modal')">&times;</span>
+                <h2>Airdrop</h2>
+                <div class="airdrop-content">
+                    <p class="coming-soon">Подключите кошелёк, чтобы получить Airdrop!</p>
+                    <!-- Контейнер для TON Connect -->
+                    <div id="ton-connect-ui"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация TON Connect
+        const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+            manifestUrl: 'https://realywoyd.github.io/zalupa/tonconnect-manifest.json', // Замените на ваш манифест
+            buttonRootId: 'ton-connect-ui' // ID контейнера для кнопки подключения
+        });
+
+        // Обработка подключения кошелька
+        tonConnectUI.onStatusChange(wallet => {
+            if (wallet) {
+                // Кошелёк подключён
+                console.log('Кошелёк подключён:', wallet);
+                alert('Кошелёк успешно подключён!');
+
+                // Сохраняем адрес кошелька
+                const walletAddress = wallet.account.address;
+                localStorage.setItem('walletAddress', walletAddress);
+                console.log('Адрес кошелька:', walletAddress);
+
+                // Обновляем интерфейс (например, показываем адрес кошелька)
+                const walletAddressDisplay = document.getElementById('wallet-address-display');
+                if (walletAddressDisplay) {
+                    walletAddressDisplay.textContent = walletAddress;
+                }
+            } else {
+                // Кошелёк отключён
+                console.log('Кошелёк отключён');
+                localStorage.removeItem('walletAddress');
+            }
+        });
+
+        // Показ модального окна Airdrop
+        function showAirdropModal() {
+            const modal = document.getElementById('airdrop-modal');
+            modal.style.display = 'flex';
+        }
+
+        // Закрытие модального окна
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'none';
+        }
+
+        // Инициализация игры
+        window.onload = function() {
+            // Симуляция загрузки
+            const progressBar = document.getElementById('progress-bar-inner');
+            const loadingContainer = document.querySelector('.loading-container');
+            const gameContainer = document.querySelector('.game-container');
+            let progress = 0;
+
+            const loadingInterval = setInterval(() => {
+                progress += 10;
+                progressBar.style.width = `${progress}%`;
+
+                if (progress >= 100) {
+                    clearInterval(loadingInterval);
+                    // Скрываем экран загрузки и показываем игру
+                    loadingContainer.style.display = 'none';
+                    gameContainer.style.display = 'block';
+                    initializeGame(); // Инициализация игры после загрузки
+                }
+            }, 300);
+
+            function initializeGame() {
+                loadGame();
+                updateUI();
+                updateLanguage(); // Устанавливаем язык по умолчанию
+
+                // Проверяем, запущена ли игра через Telegram Mini Apps
+                if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
+                    const tg = Telegram.WebApp;
+                    tg.ready(); // Готовим Mini App к работе
+                    tg.expand(); // Разворачиваем приложение на весь экран
+                } else {
+                    // Выводим сообщение или скрываем другие элементы
+                    const airdropContent = document.querySelector('.airdrop-content');
+                    if (airdropContent) {
+                        airdropContent.innerHTML = '<p>Эта функция доступна только в Telegram Mini Apps.</p>';
+                    }
+                }
+            }
+        };
+    </script>
+</body>
+</html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shiba Inu Galactic Tap Game</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
         /* Основные стили */
         body, html {
@@ -940,19 +1068,17 @@
             font-size: 16px;
             font-weight: bold;
             color: #fff;
-            background: rgba(106, 13, 131, 0.2);
-            border: 2px solid #6A0D83;
-            border-radius: 20px;
+            background: linear-gradient(45deg, #007bff, #00ff88);
+            border: none;
+            border-radius: 50px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
         }
 
         .connect-wallet-button:hover {
-            background: rgba(106, 13, 131, 0.3);
             transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
         }
 
         .connect-wallet-button:active {
@@ -960,7 +1086,7 @@
         }
 
         .connect-wallet-button i {
-            font-size: 20px;
+            font-size: 24px;
         }
 
         /* Анимации */
