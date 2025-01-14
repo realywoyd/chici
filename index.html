@@ -420,6 +420,261 @@
             from { transform: translateY(20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
+
+        /* Стили для модального окна бустов */
+        .free-boosts-panel {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .free-boosts-panel .boost-item button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+        }
+
+        .free-boosts-panel .boost-item button:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+        }
+
+        .free-boosts-panel .boost-item button:active {
+            transform: scale(0.95);
+        }
+
+        .boost-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border: 1px solid #6A0D83;
+        }
+
+        .boost-item button {
+            padding: 5px 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .boost-item button:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.8);
+        }
+
+        .boost-item button:active {
+            transform: scale(0.95);
+        }
+
+        .boost-item button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Кнопка "Колесо Удачи" */
+        .wheel-button {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+        }
+
+        .wheel-button:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+        }
+
+        .wheel-button:active {
+            transform: scale(0.95);
+        }
+
+        /* Модальное окно колеса удачи */
+        .wheel-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .wheel-modal-content {
+            background: radial-gradient(circle, #0B3D91, #6A0D83);
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 90%;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+        }
+
+        .wheel {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                #ff6f61 0% 10%,
+                #6A0D83 10% 20%,
+                #ffd700 20% 30%,
+                #6A0D83 30% 40%,
+                #0b3d91 40% 50%,
+                #ff6f61 50% 60%,
+                #6A0D83 60% 70%,
+                #ffd700 70% 80%,
+                #6A0D83 80% 90%,
+                #0b3d91 90% 100%
+            );
+            position: relative;
+            transition: transform 5s cubic-bezier(0.25, 0.1, 0.25, 1);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+        }
+
+        .reward {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform-origin: center;
+        }
+
+        .reward i {
+            font-size: 24px;
+            color: white;
+            transform: translateY(-80px);
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.8));
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%) rotate(180deg);
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 30px solid #6A0D83;
+            filter: drop-shadow(0 0 5px rgba(106, 13, 131, 0.8));
+        }
+
+        .spin-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background: linear-gradient(45deg, #6A0D83, #9A4D9E);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.8);
+        }
+
+        .spin-button:hover {
+            background: linear-gradient(45deg, #9A4D9E, #6A0D83);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+        }
+
+        .spin-button:active {
+            transform: scale(0.95);
+        }
+
+        .spin-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Стили для модального окна магазина */
+        #shop-modal .modal-content {
+            background: radial-gradient(circle, #0B3D91, #6A0D83);
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 300px;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .shop-item button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 15px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+        }
+
+        .shop-item button:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+        }
+
+        .shop-item button:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
 <body>
@@ -463,6 +718,11 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Кнопка "Колесо Удачи" -->
+            <button class="wheel-button" onclick="showWheelModal()">
+                🎡
+            </button>
 
             <!-- Логотип Шибы -->
             <div class="shiba-container">
@@ -509,6 +769,87 @@
                 <div id="ton-connect-ui"></div>
             </div>
         </div>
+
+        <!-- Модальное окно бустов -->
+        <div id="boosts-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('boosts-modal')">&times;</span>
+                <h2>Бусты</h2>
+
+                <!-- Панель для бесплатного буста -->
+                <div class="free-boosts-panel">
+                    <div class="boost-item">
+                        <button onclick="activateFreeTapBoost()">
+                            <span class="boost-icon">🚀</span>
+                            <span class="boost-uses">3/3</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Список остальных бустов -->
+                <div id="boosts-list">
+                    <!-- Бусты будут добавляться сюда динамически -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно колеса удачи -->
+        <div id="wheel-modal" class="wheel-modal">
+            <div class="wheel-modal-content">
+                <span class="close" onclick="closeModal('wheel-modal')">&times;</span>
+                <h2>Колесо Удачи</h2>
+                <div class="wheel-content">
+                    <div class="wheel" id="wheel">
+                        <div class="reward" style="transform: rotate(18deg);">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <div class="reward" style="transform: rotate(54deg);">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="reward" style="transform: rotate(90deg);">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <div class="reward" style="transform: rotate(126deg);">
+                            <i class="fas fa-wine-bottle"></i>
+                        </div>
+                        <div class="reward" style="transform: rotate(162deg);">
+                            <i class="fas fa-network-wired"></i>
+                        </div>
+                        <div class="reward" style="transform: rotate(198deg);">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <div class="reward" style="transform: rotate(234deg);">
+                            <i class="fas fa-gem"></i>
+                        </div>
+                        <div class="reward" style="transform: rotate(270deg);">
+                            <i class="fas fa-battery-full"></i>
+                        </div>
+                        <div class="reward" style="transform: rotate(306deg);">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="reward" style="transform: rotate(342deg);">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                    </div>
+                    <div class="wheel-pointer"></div>
+                    <button class="spin-button" onclick="spinWheel()">Крутить колесо</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно магазина -->
+        <div id="shop-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('shop-modal')">&times;</span>
+                <h2>Магазин</h2>
+                <div class="shop-item">
+                    <button id="buy-coins-button" onclick="buyCoins()">
+                        <span class="coin-icon">🪙</span>
+                        <span class="coin-text">Купить 100 монет за 1$</span>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -535,25 +876,65 @@
                 const walletAddress = wallet.account.address;
                 localStorage.setItem('walletAddress', walletAddress);
                 console.log('Адрес кошелька:', walletAddress);
+
+                // Активируем кнопку покупки монет
+                document.getElementById('buy-coins-button').disabled = false;
             } else {
                 // Кошелёк отключён
                 console.log('Кошелёк отключён');
                 localStorage.removeItem('walletAddress');
+
+                // Деактивируем кнопку покупки монет
+                document.getElementById('buy-coins-button').disabled = true;
             }
         });
 
-        // Функция для открытия модального окна Airdrop
-        function showAirdropModal() {
-            const airdropModal = document.getElementById('airdrop-modal');
-            airdropModal.style.display = 'flex';
+        // Функция для открытия модального окна магазина
+        function showShopModal() {
+            const shopModal = document.getElementById('shop-modal');
+            shopModal.style.display = 'flex';
         }
 
-        // Закрытие модального окна Airdrop при клике вне его
-        document.getElementById('airdrop-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'airdrop-modal') {
-                document.getElementById('airdrop-modal').style.display = 'none';
+        // Функция для покупки монет
+        async function buyCoins() {
+            const walletAddress = localStorage.getItem('walletAddress');
+            if (!walletAddress) {
+                alert("Пожалуйста, подключите кошелёк!");
+                return;
             }
-        });
+
+            // Цена в TON (1$ ≈ 0.004 TON, уточните актуальный курс)
+            const priceInTON = 0.004;
+
+            try {
+                // Отправляем транзакцию через TON Connect
+                const transaction = {
+                    to: "UQBWIbpzlU5H1AmZlpP0Eno7EzTGyttvqGa9WBPt_Gkea34z", // Ваш адрес кошелька
+                    value: priceInTON * 1e9, // Переводим в наноТОН (1 TON = 1e9 наноТОН)
+                    message: "Покупка 100 монет" // Опциональное сообщение
+                };
+
+                const result = await tonConnectUI.sendTransaction(transaction);
+
+                if (result) {
+                    // Если транзакция успешна, добавляем монеты
+                    coins += 100;
+                    updateUI();
+                    alert("Покупка успешна! Вы получили 100 монет.");
+                } else {
+                    alert("Ошибка при обработке платежа.");
+                }
+            } catch (error) {
+                console.error("Ошибка при покупке монет:", error);
+                alert("Произошла ошибка при покупке монет.");
+            }
+        }
+
+        // Закрытие модального окна
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'none';
+        }
 
         // Ваши функции игры
         let coins = 0;
@@ -577,6 +958,7 @@
             document.getElementById('energy-panel').textContent = energy;
             document.getElementById('max-energy-panel').textContent = maxEnergy;
             document.getElementById('level-panel').textContent = level;
+            saveGameState();
         }
 
         function animateShiba(event) {
@@ -584,6 +966,31 @@
             shiba.classList.add('hit');
             setTimeout(() => shiba.classList.remove('hit'), 200);
             addCoins();
+        }
+
+        // Сохранение состояния игры
+        function saveGameState() {
+            const gameState = {
+                coins,
+                energy,
+                maxEnergy,
+                level,
+                clickMultiplier
+            };
+            localStorage.setItem('gameState', JSON.stringify(gameState));
+        }
+
+        // Загрузка состояния игры
+        function loadGameState() {
+            const savedState = localStorage.getItem('gameState');
+            if (savedState) {
+                const gameState = JSON.parse(savedState);
+                coins = gameState.coins;
+                energy = gameState.energy;
+                maxEnergy = gameState.maxEnergy;
+                level = gameState.level;
+                clickMultiplier = gameState.clickMultiplier;
+            }
         }
 
         // Инициализация игры
@@ -601,10 +1008,170 @@
                     clearInterval(loadingInterval);
                     loadingContainer.style.display = 'none';
                     gameContainer.style.display = 'block';
+                    loadGameState();
                     updateUI();
                 }
             }, 300);
         };
+
+        // Награды колеса удачи
+        const rewards = [
+            { icon: "fas fa-coins", text: "50 монет", action: () => alert("Вы получили 50 монет!") },
+            { icon: "fas fa-bolt", text: "20 энергии", action: () => alert("Вы получили 20 энергии!") },
+            { icon: "fas fa-rocket", text: "x2 доход", action: () => alert("Ваш доход увеличен в 2 раза!") },
+            { icon: "fas fa-wine-bottle", text: "Энергетик", action: () => alert("Вы получили энергетик!") },
+            { icon: "fas fa-network-wired", text: "Рой", action: () => alert("Вы получили рой!") },
+            { icon: "fas fa-crown", text: "Легендарный Шиба", action: () => alert("Вы получили Легендарного Шиба!") },
+            { icon: "fas fa-gem", text: "1000 монет", action: () => alert("Вы получили 1000 монет!") },
+            { icon: "fas fa-battery-full", text: "Супер-энергия", action: () => alert("Ваша энергия увеличена!") },
+            { icon: "fas fa-star", text: "Звезда удачи", action: () => alert("Звезда удачи активирована!") },
+            { icon: "fas fa-gift", text: "Сюрприз", action: () => alert("Вы получили сюрприз!") }
+        ];
+
+        // Углы для секторов колеса
+        const sectionAngles = [18, 54, 90, 126, 162, 198, 234, 270, 306, 342];
+
+        // Переменная для отслеживания состояния вращения
+        let isSpinning = false;
+
+        // Функция для вращения колеса
+        function spinWheel() {
+            if (isSpinning) return;
+
+            const wheel = document.getElementById('wheel');
+            const button = document.querySelector('.spin-button');
+            button.disabled = true;
+            isSpinning = true;
+
+            // Случайный угол вращения
+            const randomRotation = 360 * 5 + Math.floor(Math.random() * 360);
+            wheel.style.transition = 'transform 5s cubic-bezier(0.25, 0.1, 0.25, 1)';
+            wheel.style.transform = `rotate(${randomRotation}deg)`;
+
+            // Определение выигрыша после завершения вращения
+            setTimeout(() => {
+                const degrees = randomRotation % 360;
+                const pointerAngle = (360 - degrees) % 360;
+
+                let closestAngle = sectionAngles[0];
+                let minDifference = Math.abs(pointerAngle - closestAngle);
+
+                for (let i = 1; i < sectionAngles.length; i++) {
+                    const difference = Math.abs(pointerAngle - sectionAngles[i]);
+                    if (difference < minDifference) {
+                        minDifference = difference;
+                        closestAngle = sectionAngles[i];
+                    }
+                }
+
+                const rewardIndex = sectionAngles.indexOf(closestAngle);
+                const reward = rewards[rewardIndex];
+
+                reward.action(); // Выполняем действие награды
+                alert(`Вы получили: ${reward.text}`);
+
+                button.disabled = false;
+                isSpinning = false;
+            }, 5000);
+        }
+
+        // Показ модального окна колеса удачи
+        function showWheelModal() {
+            const modal = document.getElementById('wheel-modal');
+            modal.style.display = 'flex';
+        }
+
+        // Функция для открытия модального окна бустов
+        function showBoostsModal() {
+            const boostsModal = document.getElementById('boosts-modal');
+            boostsModal.style.display = 'flex';
+        }
+
+        // Функция для открытия модального окна Airdrop
+        function showAirdropModal() {
+            const airdropModal = document.getElementById('airdrop-modal');
+            airdropModal.style.display = 'flex';
+        }
+
+        // Функция для активации бесплатного буста
+        function activateFreeTapBoost() {
+            if (boosts.freeTapBoost.usesLeft > 0) {
+                const randomMultiplier = Math.floor(Math.random() * 49) + 2; // Случайный множитель от 2 до 50
+                alert(`Буст активирован! Ваш доход увеличен в ${randomMultiplier} раз на 10 секунд!`);
+                boosts.freeTapBoost.usesLeft--;
+                updateBoostsModal(); // Обновляем интерфейс
+            } else {
+                alert("Вы использовали все бесплатные бусты на сегодня!");
+            }
+        }
+
+        // Обновление модального окна бустов
+        function updateBoostsModal() {
+            const boostsList = document.getElementById('boosts-list');
+            boostsList.innerHTML = '';
+
+            // Обновляем количество использований бесплатного буста
+            const freeBoostUses = document.querySelector('.free-boosts-panel .boost-uses');
+            freeBoostUses.textContent = `${boosts.freeTapBoost.usesLeft}/3`;
+
+            // Добавляем остальные бусты
+            for (const [boostType, boost] of Object.entries(boosts)) {
+                if (boostType === 'freeTapBoost') continue; // Пропускаем бесплатный буст
+
+                const boostItem = document.createElement('div');
+                boostItem.className = 'boost-item';
+
+                let boostText;
+                if (boostType === 'tapMultiplier') {
+                    boostText = `Увеличение тапов x${boost.level + 1}`;
+                } else if (boostType === 'maxEnergy') {
+                    boostText = `Увеличение энергии +50 (Уровень ${boost.level})`;
+                } else if (boostType === 'energyRecovery') {
+                    boostText = `Скорость восстановления энергии: 1 ед. в ${boost.level * 2} сек (Уровень ${boost.level})`;
+                } else if (boostType === 'autoClicker') {
+                    boostText = `Робот`;
+                }
+
+                boostItem.innerHTML = `
+                    <span>${boostText}</span>
+                    <button onclick="buyBoost('${boostType}')" ${coins < boost.cost ? 'disabled' : ''}>
+                        Купить за ${boost.cost} монет
+                    </button>
+                `;
+                boostsList.appendChild(boostItem);
+            }
+        }
+
+        // Покупка буста
+        let boosts = {
+            tapMultiplier: { level: 1, cost: 100 },
+            maxEnergy: { level: 1, cost: 200 },
+            energyRecovery: { level: 1, cost: 300 },
+            autoClicker: { cost: 100000 },
+            freeTapBoost: { usesLeft: 3 } // Бесплатный буст с 3 использованиями в день
+        };
+
+        function buyBoost(boostType) {
+            const boost = boosts[boostType];
+            if (coins >= boost.cost) {
+                coins -= boost.cost;
+                if (boostType === 'tapMultiplier') {
+                    boost.level++;
+                    boost.cost *= 2;
+                } else if (boostType === 'maxEnergy') {
+                    boost.level++;
+                    boost.cost *= 2;
+                } else if (boostType === 'energyRecovery') {
+                    boost.level++;
+                    boost.cost *= 2;
+                } else if (boostType === 'autoClicker') {
+                    alert("Автокликер активирован!");
+                }
+                updateBoostsModal();
+            } else {
+                alert("Недостаточно монет!");
+            }
+        }
     </script>
 </body>
 </html>
