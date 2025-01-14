@@ -7,7 +7,6 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Подключаем TON Connect UI -->
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
         /* Основные стили */
@@ -339,8 +338,8 @@
             transform: scale(1.1);
         }
 
-        /* Стили для модального окна Airdrop */
-        #airdrop-modal {
+        /* Колесо удачи */
+        .wheel-container {
             display: none;
             position: fixed;
             top: 0;
@@ -350,203 +349,11 @@
             background: rgba(0, 0, 0, 0.7);
             justify-content: center;
             align-items: center;
-            z-index: 1000;
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        .airdrop-content {
-            background: radial-gradient(circle, #0B3D91, #6A0D83);
-            padding: 20px;
-            border-radius: 20px;
-            text-align: center;
-            max-width: 90%;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
-            animation: slideUp 0.5s ease-out;
-        }
-
-        .airdrop-content h2 {
-            margin-bottom: 20px;
-            color: #fff;
-            font-family: 'Orbitron', sans-serif;
-        }
-
-        .coming-soon {
-            font-size: 18px;
-            color: #fff;
-            margin-bottom: 20px;
-        }
-
-        .connect-wallet-button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            padding: 10px 20px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 16px;
-            font-weight: bold;
-            color: #fff;
-            background: rgba(106, 13, 131, 0.2);
-            border: 2px solid #6A0D83;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
-        }
-
-        .connect-wallet-button:hover {
-            background: rgba(106, 13, 131, 0.3);
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
-        }
-
-        .connect-wallet-button:active {
-            transform: scale(0.95);
-        }
-
-        .connect-wallet-button i {
-            font-size: 20px;
-        }
-
-        /* Анимации */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        /* Стили для модального окна бустов */
-        .free-boosts-panel {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .free-boosts-panel .boost-item button {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 10px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 14px;
-            font-weight: bold;
-            color: #fff;
-            background: rgba(106, 13, 131, 0.2);
-            border: 2px solid #6A0D83;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
-        }
-
-        .free-boosts-panel .boost-item button:hover {
-            background: rgba(106, 13, 131, 0.3);
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
-        }
-
-        .free-boosts-panel .boost-item button:active {
-            transform: scale(0.95);
-        }
-
-        .boost-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            margin-bottom: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            border: 1px solid #6A0D83;
-        }
-
-        .boost-item button {
-            padding: 5px 10px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 12px;
-            font-weight: bold;
-            color: #fff;
-            background: rgba(106, 13, 131, 0.2);
-            border: 2px solid #6A0D83;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .boost-item button:hover {
-            background: rgba(106, 13, 131, 0.3);
-            transform: scale(1.05);
-            box-shadow: 0 0 10px rgba(106, 13, 131, 0.8);
-        }
-
-        .boost-item button:active {
-            transform: scale(0.95);
-        }
-
-        .boost-item button:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Кнопка "Колесо Удачи" */
-        .wheel-button {
-            position: fixed;
-            top: 70px;
-            right: 20px;
-            display: inline-flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 8px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 12px;
-            font-weight: bold;
-            color: #fff;
-            background: rgba(106, 13, 131, 0.2);
-            border: 2px solid #6A0D83;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
-        }
-
-        .wheel-button:hover {
-            background: rgba(106, 13, 131, 0.3);
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
-        }
-
-        .wheel-button:active {
-            transform: scale(0.95);
-        }
-
-        /* Модальное окно колеса удачи */
-        .wheel-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            z-index: 1001;
             animation: fadeIn 0.3s ease-out;
         }
 
-        .wheel-modal-content {
+        .wheel-content {
             background: radial-gradient(circle, #0B3D91, #6A0D83);
             padding: 20px;
             border-radius: 20px;
@@ -637,24 +444,219 @@
             transform: none;
         }
 
-        /* Стили для модального окна магазина */
-        #shop-modal .modal-content {
+        /* Кнопка "Назад" в колесе удачи */
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            cursor: pointer;
+            color: #fff;
+            font-size: 24px;
+            transition: transform 0.2s ease;
+        }
+
+        .back-button:hover {
+            transform: scale(1.1);
+        }
+
+        /* Переключатель языков */
+        .language-switch {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .language-switch label {
+            margin: 0 10px;
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .language-switch input[type="checkbox"] {
+            display: none;
+        }
+
+        .language-switch .slider {
+            width: 60px;
+            height: 30px;
+            background-color: #6A0D83;
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .language-switch .slider:before {
+            content: '';
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background-color: #fff;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.3s ease;
+        }
+
+        .language-switch input[type="checkbox"]:checked + .slider {
+            background-color: #0B3D91;
+        }
+
+        .language-switch input[type="checkbox"]:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        /* Кнопки под верхней панелью */
+        .header-buttons {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 10px;
+            z-index: 1000;
+        }
+
+        /* Контейнер для кнопок справа */
+        .vertical-buttons-right {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end; /* Выравнивание по правому краю */
+        }
+
+        /* Стили для кнопки "Клан" */
+        .clan-button {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+        }
+
+        /* Стили для кнопки "Рейтинг" */
+        .rating-button {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+        }
+
+        /* Стили для кнопки "Колесо Удачи" */
+        .wheel-button {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+        }
+
+        /* Анимация фона */
+        @keyframes gradientBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body {
+            background: linear-gradient(270deg, #0B3D91, #6A0D83, #9A4D9E);
+            background-size: 300% 300%;
+            animation: gradientBackground 10s ease infinite;
+        }
+
+        /* Стили для вкладки бустов */
+        .boosts-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .boosts-content {
             background: radial-gradient(circle, #0B3D91, #6A0D83);
             padding: 20px;
             border-radius: 20px;
             text-align: center;
-            max-width: 300px;
-            animation: slideUp 0.5s ease-out;
+            max-width: 90%;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+            animation: fadeIn 0.3s ease-out;
         }
 
-        .shop-item button {
+        .boosts-content h2 {
+            margin-bottom: 20px;
+        }
+
+        /* Панель для бесплатных бустов */
+        .free-boosts-panel {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .free-boosts-panel .boost-item {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            padding: 15px 20px;
+        }
+
+        .free-boosts-panel .boost-item button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
             font-family: 'Orbitron', sans-serif;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             color: #fff;
             background: rgba(106, 13, 131, 0.2);
@@ -666,14 +668,317 @@
             box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
         }
 
-        .shop-item button:hover {
+        .free-boosts-panel .boost-item button:hover {
             background: rgba(106, 13, 131, 0.3);
             transform: scale(1.05);
             box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
         }
 
-        .shop-item button:active {
+        .free-boosts-panel .boost-item button:active {
             transform: scale(0.95);
+        }
+
+        .free-boosts-panel .boost-item button .boost-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .free-boosts-panel .boost-item button .boost-uses {
+            font-size: 12px;
+            color: #fff;
+        }
+
+        /* Список бустов */
+        .boost-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border: 1px solid #6A0D83;
+        }
+
+        .boost-item button {
+            padding: 5px 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .boost-item button:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.8);
+        }
+
+        .boost-item button:active {
+            transform: scale(0.95);
+        }
+
+        .boost-item button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Адаптивность для мобильных устройств */
+        @media (max-width: 600px) {
+            /* Верхняя панель */
+            .top-panel {
+                flex-direction: row;
+                align-items: center;
+                padding: 10px;
+            }
+
+            .panel-items-left {
+                flex-direction: row;
+                gap: 5px;
+                flex-wrap: wrap;
+            }
+
+            .panel-item {
+                font-size: 6px;
+                padding: 6px 10px;
+            }
+
+            /* Кнопки под верхней панелью */
+            .header-buttons {
+                top: 60px; /* Отступ от верхней панели */
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .vertical-buttons-right {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-end; /* Кнопки справа */
+            }
+
+            /* Шиба */
+            .shiba {
+                width: 150px;
+            }
+
+            /* Нижняя панель */
+            .bottom-panel {
+                flex-wrap: wrap;
+                gap: 10px;
+                padding: 10px;
+            }
+
+            .bottom-panel button {
+                font-size: 10px;
+                padding: 6px 10px;
+            }
+        }
+
+        /* Кнопка настроек */
+        .settings-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px; /* Уменьшенный размер */
+            height: 30px;
+            padding: 0;
+            font-size: 16px;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+        }
+
+        .settings-button:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+        }
+
+        .settings-button:active {
+            transform: scale(0.95);
+        }
+
+        /* Модальное окно настроек */
+        .settings-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .settings-content {
+            background: radial-gradient(circle, #0B3D91, #6A0D83);
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 90%;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .settings-content h2 {
+            margin-bottom: 20px;
+        }
+
+        /* Анимация падающих монет */
+        .falling-coin {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: url('https://www.pngall.com/wp-content/uploads/5/Gold-Coin-PNG-Image.png') no-repeat center/contain;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-100vh); }
+            100% { transform: translateY(100vh); }
+        }
+
+        /* Новый стиль для анимации фона с падающими монетами */
+        .coin {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            font-size: 20px; /* Размер эмодзи */
+            text-align: center;
+            animation: fall linear forwards; /* Анимация падения */
+            z-index: 1000; /* Чтобы монеты были поверх других элементов */
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100px); /* Начальная позиция за пределами экрана */
+            }
+            100% {
+                transform: translateY(100vh); /* Падение вниз за пределы экрана */
+            }
+        }
+
+        /* Уведомление о бусте */
+        .boost-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(106, 13, 131, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            z-index: 10000;
+            animation: fadeInOut 3s ease-in-out;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            10%, 90% { opacity: 1; }
+        }
+
+        /* Стили для модального окна Airdrop */
+        #airdrop-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .airdrop-content {
+            background: radial-gradient(circle, #0B3D91, #6A0D83);
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 90%;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .airdrop-content h2 {
+            margin-bottom: 20px;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .coming-soon {
+            font-size: 18px;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        .connect-wallet-button, .claim-airdrop-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+            margin: 10px auto;
+        }
+
+        .connect-wallet-button:hover, .claim-airdrop-button:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+        }
+
+        .connect-wallet-button:active, .claim-airdrop-button:active {
+            transform: scale(0.95);
+        }
+
+        .connect-wallet-button i, .claim-airdrop-button i {
+            font-size: 20px;
+        }
+
+        .claim-airdrop-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
     </style>
 </head>
@@ -719,10 +1024,28 @@
                 </div>
             </div>
 
-            <!-- Кнопка "Колесо Удачи" -->
-            <button class="wheel-button" onclick="showWheelModal()">
-                🎡
-            </button>
+            <!-- Кнопки под верхней панелью -->
+            <div class="header-buttons">
+                <!-- Кнопка "Клан" слева -->
+                <button class="clan-button" onclick="showModal('Клан', 'Здесь будет информация о кланах.')">
+                    <span class="clan-icon">🛡️</span>
+                    <span class="clan-text">Клан</span>
+                </button>
+
+                <!-- Кнопки "Рейтинг" и "Колесо Удачи" справа -->
+                <div class="vertical-buttons-right">
+                    <button class="rating-button" onclick="showModal('Рейтинг', 'Здесь будет рейтинг игроков.')">
+                        <span class="rating-icon">🏆</span>
+                        <span class="rating-text">Рейтинг</span>
+                    </button>
+
+                    <!-- Кнопка "Колесо Удачи" под кнопкой "Рейтинг" -->
+                    <button class="wheel-button" onclick="showWheel()">
+                        <span class="wheel-icon">🎡</span>
+                        <span class="wheel-text">Колесо Удачи</span>
+                    </button>
+                </div>
+            </div>
 
             <!-- Логотип Шибы -->
             <div class="shiba-container">
@@ -742,7 +1065,29 @@
                 <span class="shop-text">Магазин</span>
             </button>
             <button class="friends-button" onclick="showModal('Друзья', 'Приглашай друзей и получай бонусы!')">
-                <span class="friends-icon">👥</span>
+                <svg class="friends-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+                    <!-- Первый астронавт -->
+                    <circle cx="20" cy="40" r="10" fill="#4e54c8"/>
+                    <circle cx="20" cy="22" r="8" fill="#fff"/>
+                    <circle cx="20" cy="22" r="6" fill="#4e54c8"/>
+                    <line x1="20" y1="14" x2="20" y2="6" stroke="#4e54c8" stroke-width="2"/>
+                    <circle cx="20" cy="6" r="2" fill="#4e54c8"/>
+                    <line x1="6" y1="40" x2="16" y2="28" stroke="#4e54c8" stroke-width="2"/>
+                    <line x1="34" y1="40" x2="24" y2="28" stroke="#4e54c8" stroke-width="2"/>
+                    <line x1="16" y1="50" x2="20" y2="62" stroke="#4e54c8" stroke-width="2"/>
+                    <line x1="24" y1="50" x2="20" y2="62" stroke="#4e54c8" stroke-width="2"/>
+
+                    <!-- Второй астронавт -->
+                    <circle cx="44" cy="40" r="10" fill="#4e54c8"/>
+                    <circle cx="44" cy="22" r="8" fill="#fff"/>
+                    <circle cx="44" cy="22" r="6" fill="#4e54c8"/>
+                    <line x1="44" y1="14" x2="44" y2="6" stroke="#4e54c8" stroke-width="2"/>
+                    <circle cx="44" cy="6" r="2" fill="#4e54c8"/>
+                    <line x1="36" y1="40" x2="44" y2="28" stroke="#4e54c8" stroke-width="2"/>
+                    <line x1="52" y1="40" x2="44" y2="28" stroke="#4e54c8" stroke-width="2"/>
+                    <line x1="40" y1="50" x2="44" y2="62" stroke="#4e54c8" stroke-width="2"/>
+                    <line x1="48" y1="50" x2="44" y2="62" stroke="#4e54c8" stroke-width="2"/>
+                </svg>
                 <span class="friends-text">Друзья</span>
             </button>
             <button class="airdrop-button" onclick="showAirdropModal()">
@@ -755,47 +1100,9 @@
             </button>
         </div>
 
-        <!-- Модальное окно Airdrop -->
-        <div id="airdrop-modal">
-            <div class="airdrop-content">
-                <h2>Airdrop</h2>
-                <p class="coming-soon">Скоро будет доступно!</p>
-                <!-- Кнопка подключения кошелька -->
-                <button class="connect-wallet-button" id="connect-wallet-button">
-                    <i class="fab fa-telegram"></i>
-                    Подключить кошелёк
-                </button>
-                <!-- Контейнер для TON Connect -->
-                <div id="ton-connect-ui"></div>
-            </div>
-        </div>
-
-        <!-- Модальное окно бустов -->
-        <div id="boosts-modal" class="modal">
+        <!-- Колесо удачи -->
+        <div id="wheel-modal" class="modal">
             <div class="modal-content">
-                <span class="close" onclick="closeModal('boosts-modal')">&times;</span>
-                <h2>Бусты</h2>
-
-                <!-- Панель для бесплатного буста -->
-                <div class="free-boosts-panel">
-                    <div class="boost-item">
-                        <button onclick="activateFreeTapBoost()">
-                            <span class="boost-icon">🚀</span>
-                            <span class="boost-uses">3/3</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Список остальных бустов -->
-                <div id="boosts-list">
-                    <!-- Бусты будут добавляться сюда динамически -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Модальное окно колеса удачи -->
-        <div id="wheel-modal" class="wheel-modal">
-            <div class="wheel-modal-content">
                 <span class="close" onclick="closeModal('wheel-modal')">&times;</span>
                 <h2>Колесо Удачи</h2>
                 <div class="wheel-content">
@@ -837,36 +1144,488 @@
             </div>
         </div>
 
-        <!-- Модальное окно магазина -->
-        <div id="shop-modal" class="modal">
+        <!-- Модальное окно бустов -->
+        <div id="boosts-modal" class="modal">
             <div class="modal-content">
-                <span class="close" onclick="closeModal('shop-modal')">&times;</span>
-                <h2>Магазин</h2>
-                <div class="shop-item">
-                    <button id="buy-coins-button" onclick="buyCoins()">
-                        <span class="coin-icon">🪙</span>
-                        <span class="coin-text">Купить 100 монет за 1$</span>
+                <span class="close" onclick="closeModal('boosts-modal')">&times;</span>
+                <h2>Бусты</h2>
+
+                <!-- Панель для бесплатного буста -->
+                <div class="free-boosts-panel">
+                    <div class="boost-item">
+                        <button onclick="activateFreeTapBoost()">
+                            <span class="boost-icon">🚀</span>
+                            <span class="boost-uses">3/3</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Список остальных бустов -->
+                <div id="boosts-list">
+                    <!-- Бусты будут добавляться сюда -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно Airdrop -->
+        <div id="airdrop-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('airdrop-modal')">&times;</span>
+                <h2>Airdrop</h2>
+                <div class="airdrop-content">
+                    <p class="coming-soon">Подключите кошелёк, чтобы получить Airdrop!</p>
+                    <button class="connect-wallet-button" id="connect-wallet-button">
+                        <i class="fab fa-telegram"></i>
+                        Подключить кошелёк
                     </button>
-                    <!-- Новая кнопка для покупки за Telegram Stars -->
-                    <button id="buy-coins-stars-button" onclick="buyCoinsWithStars()">
-                        <span class="coin-icon">🪙</span>
-                        <span class="coin-text">Купить 100 монет за 1 звезду</span>
+                    <!-- Контейнер для TON Connect -->
+                    <div id="ton-connect-ui"></div>
+                    <!-- Кнопка для получения Airdrop -->
+                    <button class="claim-airdrop-button" id="claim-airdrop-button" disabled>
+                        <i class="fas fa-gift"></i>
+                        Получить Airdrop
                     </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно настроек -->
+        <div id="settings-modal" class="settings-modal">
+            <div class="settings-content">
+                <span class="close" onclick="closeModal('settings-modal')">&times;</span>
+                <h2>Настройки</h2>
+                <div class="language-switch">
+                    <label for="language-toggle">RU</label>
+                    <input type="checkbox" id="language-toggle" onchange="toggleLanguage()">
+                    <div class="slider"></div>
+                    <label for="language-toggle">ENG</label>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Скрипты -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script>
-        // Инициализация Telegram Web App
-        const tg = window.Telegram.WebApp;
-        tg.expand(); // Разворачиваем приложение на весь экран
+        // Конфигурация для particles.js
+        particlesJS("particles-js", {
+            "particles": {
+                "number": {
+                    "value": 80,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#6A0D83"
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    },
+                    "polygon": {
+                        "nb_sides": 5
+                    }
+                },
+                "opacity": {
+                    "value": 0.5,
+                    "random": false,
+                    "anim": {
+                        "enable": false,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 3,
+                    "random": true,
+                    "anim": {
+                        "enable": false,
+                        "speed": 40,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#6A0D83",
+                    "opacity": 0.4,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 6,
+                    "direction": "none",
+                    "random": false,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": false,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "repulse"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 400,
+                        "line_linked": {
+                            "opacity": 1
+                        }
+                    },
+                    "bubble": {
+                        "distance": 400,
+                        "size": 40,
+                        "duration": 2,
+                        "opacity": 8,
+                        "speed": 3
+                    },
+                    "repulse": {
+                        "distance": 200,
+                        "duration": 0.4
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    },
+                    "remove": {
+                        "particles_nb": 2
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+
+        // Переменные игры
+        let coins = 0;
+        let level = 1;
+        let energy = 100;
+        let maxEnergy = 100;
+        let clickMultiplier = 1;
+        let energyRecoveryRate = 5000; // Время восстановления энергии в миллисекундах
+        let autoClickerActive = false;
+        let autoClickerInterval;
+        let isFreeTapBoostActive = false; // Флаг для отслеживания активности буста
+
+        // Бусты
+        const boosts = {
+            tapMultiplier: { level: 1, cost: 100 },
+            maxEnergy: { level: 1, cost: 200 },
+            energyRecovery: { level: 1, cost: 300 },
+            autoClicker: { cost: 100000 },
+            freeTapBoost: { usesLeft: 3 } // Новый буст: 3 использования в день
+        };
+
+        // Сохранение прогресса
+        function saveGame() {
+            const gameData = {
+                coins,
+                level,
+                energy,
+                maxEnergy,
+                clickMultiplier,
+                energyRecoveryRate,
+                autoClickerActive,
+                boosts
+            };
+            localStorage.setItem('shibaGameData', JSON.stringify(gameData));
+        }
+
+        // Загрузка прогресса
+        function loadGame() {
+            const savedData = localStorage.getItem('shibaGameData');
+            if (savedData) {
+                const gameData = JSON.parse(savedData);
+                coins = gameData.coins;
+                level = gameData.level;
+                energy = gameData.energy;
+                maxEnergy = gameData.maxEnergy;
+                clickMultiplier = gameData.clickMultiplier;
+                energyRecoveryRate = gameData.energyRecoveryRate;
+                autoClickerActive = gameData.autoClickerActive;
+                boosts.tapMultiplier = gameData.boosts.tapMultiplier;
+                boosts.maxEnergy = gameData.boosts.maxEnergy;
+                boosts.energyRecovery = gameData.boosts.energyRecovery;
+                boosts.autoClicker = gameData.boosts.autoClicker;
+                boosts.freeTapBoost = gameData.boosts.freeTapBoost || { usesLeft: 3 }; // Загружаем или инициализируем новый буст
+
+                if (autoClickerActive) {
+                    activateAutoClicker();
+                }
+            }
+            updateUI();
+        }
+
+        // Обновление интерфейса
+        function updateUI() {
+            document.getElementById('coins-panel').textContent = coins;
+            document.getElementById('energy-panel').textContent = energy;
+            document.getElementById('max-energy-panel').textContent = maxEnergy;
+            document.getElementById('level-panel').textContent = level;
+            updateBoostsModal(); // Обновляем модальное окно бустов
+        }
+
+        // Добавление монет
+        function addCoins() {
+            if (isFreeTapBoostActive || energy > 0) { // Если буст активен или есть энергия
+                coins += 1 * clickMultiplier;
+                if (!isFreeTapBoostActive) { // Если буст не активен, тратим энергию
+                    energy--;
+                }
+                updateUI();
+                saveGame();
+            } else {
+                alert("Недостаточно энергии!");
+            }
+        }
+
+        // Обработка мультитача
+        function handleMultiTouch(event) {
+            event.preventDefault(); // Предотвращаем стандартное поведение (например, масштабирование)
+            const touches = event.touches; // Получаем все касания
+
+            // Обрабатываем каждое касание
+            for (let i = 0; i < touches.length; i++) {
+                const touch = touches[i];
+                animateShiba(touch); // Анимируем Шибу для каждого касания
+            }
+        }
+
+        // Анимация Шибы
+        function animateShiba(event) {
+            const shiba = document.querySelector('.shiba');
+
+            // Анимация удара
+            shiba.classList.add('hit');
+            setTimeout(() => shiba.classList.remove('hit'), 200);
+
+            // Анимация добычи монет
+            const coinEffect = document.createElement('div');
+            coinEffect.className = 'coin-effect';
+            coinEffect.textContent = `+${1 * clickMultiplier}`;
+            coinEffect.style.left = `${event.clientX || event.touches[0].clientX}px`; // Поддержка и мыши, и тач-событий
+            coinEffect.style.top = `${event.clientY || event.touches[0].clientY}px`;
+            document.body.appendChild(coinEffect);
+            setTimeout(() => coinEffect.remove(), 1000);
+
+            addCoins(); // Добавляем монеты
+        }
+
+        // Восстановление энергии
+        function recoverEnergy() {
+            if (energy < maxEnergy) {
+                energy++;
+                updateUI();
+                saveGame();
+            }
+        }
+
+        setInterval(recoverEnergy, energyRecoveryRate);
+
+        // Автокликер
+        function activateAutoClicker() {
+            if (autoClickerActive) return;
+            autoClickerActive = true;
+            autoClickerInterval = setInterval(() => {
+                if (energy > 0) {
+                    addCoins();
+                }
+            }, 1000);
+            saveGame();
+        }
+
+        // Покупка бустов
+        function buyBoost(boostType) {
+            const boost = boosts[boostType];
+            if (coins >= boost.cost) {
+                coins -= boost.cost;
+                if (boostType === 'tapMultiplier') {
+                    clickMultiplier = boost.level + 1;
+                    boost.level++;
+                    boost.cost *= 2;
+                } else if (boostType === 'maxEnergy') {
+                    maxEnergy += 50;
+                    boost.level++;
+                    boost.cost *= 2;
+                } else if (boostType === 'energyRecovery') {
+                    energyRecoveryRate = Math.max(1000, energyRecoveryRate - 1000);
+                    boost.level++;
+                    boost.cost *= 2;
+                } else if (boostType === 'autoClicker') {
+                    activateAutoClicker();
+                }
+                updateUI();
+                updateBoostsModal();
+                saveGame();
+            } else {
+                alert("Недостаточно монет!");
+            }
+        }
+
+        // Активация бесплатного буста на тапы
+        function activateFreeTapBoost() {
+            if (boosts.freeTapBoost.usesLeft > 0) {
+                const randomMultiplier = Math.floor(Math.random() * 49) + 2; // Случайный множитель от 2 до 50
+                clickMultiplier *= randomMultiplier;
+                boosts.freeTapBoost.usesLeft--;
+                isFreeTapBoostActive = true; // Активируем буст
+
+                // Закрываем модальное окно с бустами
+                closeModal('boosts-modal');
+
+                // Показываем уведомление
+                showBoostNotification();
+
+                // Запуск анимации падающих монет
+                startFallingCoins();
+
+                // Сброс буста через 10 секунд
+                setTimeout(() => {
+                    clickMultiplier /= randomMultiplier;
+                    isFreeTapBoostActive = false; // Деактивируем буст
+                    stopFallingCoins(); // Остановка создания монет
+                    updateUI();
+                }, 10000);
+
+                updateUI();
+                updateBoostsModal();
+                saveGame();
+            } else {
+                alert("Вы использовали все бесплатные бусты на сегодня!");
+            }
+        }
+
+        // Показ уведомления о бусте
+        function showBoostNotification() {
+            const notification = document.createElement('div');
+            notification.className = 'boost-notification';
+            notification.textContent = 'Буст активирован! Тапы усилены!';
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000); // Уведомление исчезнет через 3 секунды
+        }
+
+        // Запуск анимации падающих монет
+        function startFallingCoins() {
+            const coinInterval = setInterval(() => {
+                createCoin();
+            }, 200); // Создаем новую монету каждые 200 мс
+
+            // Останавливаем создание монет через 10 секунд
+            setTimeout(() => {
+                clearInterval(coinInterval);
+            }, 10000);
+        }
+
+        // Создание одной монеты
+        function createCoin() {
+            const coin = document.createElement('div');
+            coin.className = 'coin';
+            coin.textContent = '💰'; // Эмодзи монеты
+            coin.style.left = `${Math.random() * 100}vw`; // Случайная позиция по горизонтали
+            coin.style.animationDuration = `${Math.random() * 2 + 3}s`; // Случайная скорость падения
+            document.body.appendChild(coin);
+
+            // Удаление монеты после завершения анимации
+            coin.addEventListener('animationend', () => {
+                coin.remove();
+            });
+        }
+
+        // Остановка создания монет (если нужно)
+        function stopFallingCoins() {
+            // В данном случае интервал уже очищен в startFallingCoins, но можно добавить дополнительные действия, если нужно
+        }
+
+        // Обновление модального окна бустов
+        function updateBoostsModal() {
+            const boostsList = document.getElementById('boosts-list');
+            boostsList.innerHTML = '';
+
+            // Обновляем количество использований бесплатного буста
+            const freeBoostUses = document.querySelector('.free-boosts-panel .boost-uses');
+            freeBoostUses.textContent = `${boosts.freeTapBoost.usesLeft}/3`;
+
+            for (const [boostType, boost] of Object.entries(boosts)) {
+                if (boostType === 'freeTapBoost') continue; // Пропускаем бесплатный буст
+
+                const boostItem = document.createElement('div');
+                boostItem.className = 'boost-item';
+
+                let boostText;
+                if (boostType === 'tapMultiplier') {
+                    boostText = `Увеличение тапов x${boost.level + 1}`;
+                } else if (boostType === 'maxEnergy') {
+                    boostText = `Увеличение энергии +50 (Уровень ${boost.level})`;
+                } else if (boostType === 'energyRecovery') {
+                    boostText = `Скорость восстановления энергии: 1 ед. в ${energyRecoveryRate / 1000} сек (Уровень ${boost.level})`;
+                } else if (boostType === 'autoClicker') {
+                    boostText = `Робот`;
+                }
+
+                boostItem.innerHTML = `
+                    <span>${boostText}</span>
+                    <button onclick="buyBoost('${boostType}')" ${coins < boost.cost ? 'disabled' : ''}>
+                        Купить за ${boost.cost} монет
+                    </button>
+                `;
+                boostsList.appendChild(boostItem);
+            }
+        }
+
+        // Показ модального окна бустов
+        function showBoostsModal() {
+            updateBoostsModal();
+            const modal = document.getElementById('boosts-modal');
+            modal.style.display = 'flex';
+        }
+
+        // Показ модального окна настроек
+        function showSettingsModal() {
+            const modal = document.getElementById('settings-modal');
+            modal.style.display = 'flex';
+        }
+
+        // Показ модального окна колеса удачи
+        function showWheel() {
+            const modal = document.getElementById('wheel-modal');
+            modal.style.display = 'flex';
+        }
+
+        // Показ модального окна Airdrop
+        function showAirdropModal() {
+            const modal = document.getElementById('airdrop-modal');
+            modal.style.display = 'flex';
+        }
 
         // Инициализация TON Connect
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://realywoyd.github.io/zalupa/tonconnect-manifest.json', // Ваш манифест
+            manifestUrl: 'https://yourdomain.com/tonconnect-manifest.json', // Укажите URL вашего манифеста
             buttonRootId: 'ton-connect-ui' // ID контейнера для кнопки подключения
         });
+
+        // Переменная для хранения адреса кошелька
+        let walletAddress = null;
 
         // Обработчик для кнопки "Подключить кошелёк"
         const connectWalletButton = document.getElementById('connect-wallet-button');
@@ -879,93 +1638,56 @@
             if (wallet) {
                 // Кошелёк подключён
                 console.log('Кошелёк подключён:', wallet);
-                alert('Кошелёк успешно подключён!');
-
-                // Сохраняем адрес кошелька
-                const walletAddress = wallet.account.address;
+                walletAddress = wallet.account.address;
                 localStorage.setItem('walletAddress', walletAddress);
-                console.log('Адрес кошелька:', walletAddress);
 
-                // Активируем кнопку покупки монет
-                document.getElementById('buy-coins-button').disabled = false;
+                // Активируем кнопку получения Airdrop
+                document.getElementById('claim-airdrop-button').disabled = false;
+                alert('Кошелёк успешно подключён!');
             } else {
                 // Кошелёк отключён
                 console.log('Кошелёк отключён');
+                walletAddress = null;
                 localStorage.removeItem('walletAddress');
 
-                // Деактивируем кнопку покупки монет
-                document.getElementById('buy-coins-button').disabled = true;
+                // Деактивируем кнопку получения Airdrop
+                document.getElementById('claim-airdrop-button').disabled = true;
             }
         });
 
-        // Функция для покупки монет за Telegram Stars
-        function buyCoinsWithStars() {
-            // Параметры платежа
-            const invoice = {
-                title: "Покупка 100 монет", // Название товара
-                description: "Получите 100 монет за 1 звезду", // Описание
-                currency: "USD", // Валюта (не используется для Stars, но обязателен)
-                prices: [{ label: "100 монет", amount: 100 }], // Стоимость в Stars (1 звезда = 100 единиц)
-                payload: { type: "coins", amount: 100 }, // Дополнительные данные
-            };
-
-            // Отправка запроса на оплату
-            tg.sendInvoice(invoice, function(result) {
-                if (result.status === "paid") {
-                    // Если оплата успешна, добавляем монеты
-                    coins += 100;
-                    updateUI();
-                    alert("Покупка успешна! Вы получили 100 монет.");
-                } else {
-                    // Если оплата отменена или произошла ошибка
-                    alert("Оплата отменена или произошла ошибка.");
-                }
-            });
-        }
-
-        // Функция для покупки монет за TON
-        async function buyCoins() {
-            const walletAddress = localStorage.getItem('walletAddress');
+        // Функция для получения Airdrop
+        const claimAirdropButton = document.getElementById('claim-airdrop-button');
+        claimAirdropButton.addEventListener('click', async () => {
             if (!walletAddress) {
-                alert("Пожалуйста, подключите кошелёк!");
+                alert('Пожалуйста, подключите кошелёк!');
                 return;
             }
 
-            // Цена в TON (1$ ≈ 0.004 TON, уточните актуальный курс)
-            const priceInTON = 0.004;
-
             try {
-                // Формируем транзакцию
-                const transaction = {
-                    to: "UQBWIbpzlU5H1AmZlpP0Eno7EzTGyttvqGa9WBPt_Gkea34z", // Ваш адрес кошелька
-                    value: priceInTON * 1e9, // Переводим в наноТОН (1 TON = 1e9 наноТОН)
-                    message: "Покупка 100 монет" // Опциональное сообщение
-                };
+                // Отправляем запрос на сервер для получения Airdrop
+                const response = await fetch('https://yourdomain.com/airdrop', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ walletAddress }),
+                });
 
-                // Отправляем транзакцию через TON Connect
-                const result = await tonConnectUI.sendTransaction(transaction);
+                const result = await response.json();
 
-                if (result) {
-                    // Если транзакция успешна, добавляем монеты
-                    coins += 100;
+                if (result.success) {
+                    alert('Airdrop успешно получен!');
+                    // Обновляем баланс игрока (если нужно)
+                    coins += result.amount;
                     updateUI();
-                    alert("Покупка успешна! Вы получили 100 монет.");
                 } else {
-                    alert("Ошибка при обработке платежа.");
+                    alert('Ошибка при получении Airdrop: ' + result.message);
                 }
             } catch (error) {
-                console.error("Ошибка при покупке монет:", error);
-
-                // Более подробное сообщение об ошибке
-                if (error.message.includes("User rejected the request")) {
-                    alert("Вы отменили транзакцию.");
-                } else if (error.message.includes("Insufficient balance")) {
-                    alert("Недостаточно TON на вашем балансе.");
-                } else {
-                    alert("Произошла ошибка при покупке монет. Пожалуйста, попробуйте ещё раз.");
-                }
+                console.error('Ошибка при запросе Airdrop:', error);
+                alert('Произошла ошибка при получении Airdrop. Пожалуйста, попробуйте ещё раз.');
             }
-        }
+        });
 
         // Закрытие модального окна
         function closeModal(modalId) {
@@ -973,125 +1695,71 @@
             modal.style.display = 'none';
         }
 
-        // Функция для открытия модального окна магазина
-        function showShopModal() {
-            const shopModal = document.getElementById('shop-modal');
-            shopModal.style.display = 'flex';
+        // Переключение языка
+        let currentLanguage = 'ru'; // По умолчанию язык - русский
+
+        function toggleLanguage() {
+            const toggle = document.getElementById('language-toggle');
+            currentLanguage = toggle.checked ? 'en' : 'ru'; // Определяем текущий язык
+            updateLanguage(); // Обновляем текст на странице
         }
 
-        // Ваши функции игры
-        let coins = 0;
-        let level = 1;
-        let energy = 100;
-        let maxEnergy = 100;
-        let clickMultiplier = 1;
-
-        function addCoins() {
-            if (energy > 0) {
-                coins += 1 * clickMultiplier;
-                energy--;
-                updateUI();
-            } else {
-                alert("Недостаточно энергии!");
-            }
-        }
-
-        function updateUI() {
-            document.getElementById('coins-panel').textContent = coins;
-            document.getElementById('energy-panel').textContent = energy;
-            document.getElementById('max-energy-panel').textContent = maxEnergy;
-            document.getElementById('level-panel').textContent = level;
-            saveGameState();
-        }
-
-        function animateShiba(event) {
-            const shiba = document.querySelector('.shiba');
-            shiba.classList.add('hit');
-            setTimeout(() => shiba.classList.remove('hit'), 200);
-            addCoins();
-        }
-
-        // Сохранение состояния игры
-        function saveGameState() {
-            const gameState = {
-                coins,
-                energy,
-                maxEnergy,
-                level,
-                clickMultiplier
+        function updateLanguage() {
+            const elementsToTranslate = {
+                'coins-panel': { ru: 'Монеты', en: 'Coins' },
+                'energy-panel': { ru: 'Энергия', en: 'Energy' },
+                'level-panel': { ru: 'Уровень', en: 'Level' },
+                'clan-text': { ru: 'Клан', en: 'Clan' },
+                'rating-text': { ru: 'Рейтинг', en: 'Rating' },
+                'wheel-text': { ru: 'Колесо Удачи', en: 'Wheel of Fortune' },
+                'boost-text': { ru: 'Бусты', en: 'Boosts' },
+                'shop-text': { ru: 'Магазин', en: 'Shop' },
+                'friends-text': { ru: 'Друзья', en: 'Friends' },
+                'airdrop-text': { ru: 'Airdrop', en: 'Airdrop' },
+                'roi-text': { ru: 'Рои', en: 'Swarms' },
+                'settings-title': { ru: 'Настройки', en: 'Settings' },
+                'label-ru': { ru: 'RU', en: 'RU' },
+                'label-en': { ru: 'ENG', en: 'ENG' }
             };
-            localStorage.setItem('gameState', JSON.stringify(gameState));
-        }
 
-        // Загрузка состояния игры
-        function loadGameState() {
-            const savedState = localStorage.getItem('gameState');
-            if (savedState) {
-                const gameState = JSON.parse(savedState);
-                coins = gameState.coins;
-                energy = gameState.energy;
-                maxEnergy = gameState.maxEnergy;
-                level = gameState.level;
-                clickMultiplier = gameState.clickMultiplier;
+            for (const [selector, translations] of Object.entries(elementsToTranslate)) {
+                const element = document.querySelector(selector);
+                if (element) {
+                    element.textContent = translations[currentLanguage];
+                }
             }
         }
 
-        // Инициализация игры
-        window.onload = function() {
-            const progressBar = document.getElementById('progress-bar-inner');
-            const loadingContainer = document.querySelector('.loading-container');
-            const gameContainer = document.querySelector('.game-container');
-            let progress = 0;
-
-            const loadingInterval = setInterval(() => {
-                progress += 10;
-                progressBar.style.width = `${progress}%`;
-
-                if (progress >= 100) {
-                    clearInterval(loadingInterval);
-                    loadingContainer.style.display = 'none';
-                    gameContainer.style.display = 'block';
-                    loadGameState();
-                    updateUI();
-                }
-            }, 300);
-        };
-
-        // Награды колеса удачи
-        const rewards = [
-            { icon: "fas fa-coins", text: "50 монет", action: () => alert("Вы получили 50 монет!") },
-            { icon: "fas fa-bolt", text: "20 энергии", action: () => alert("Вы получили 20 энергии!") },
-            { icon: "fas fa-rocket", text: "x2 доход", action: () => alert("Ваш доход увеличен в 2 раза!") },
-            { icon: "fas fa-wine-bottle", text: "Энергетик", action: () => alert("Вы получили энергетик!") },
-            { icon: "fas fa-network-wired", text: "Рой", action: () => alert("Вы получили рой!") },
-            { icon: "fas fa-crown", text: "Легендарный Шиба", action: () => alert("Вы получили Легендарного Шиба!") },
-            { icon: "fas fa-gem", text: "1000 монет", action: () => alert("Вы получили 1000 монет!") },
-            { icon: "fas fa-battery-full", text: "Супер-энергия", action: () => alert("Ваша энергия увеличена!") },
-            { icon: "fas fa-star", text: "Звезда удачи", action: () => alert("Звезда удачи активирована!") },
-            { icon: "fas fa-gift", text: "Сюрприз", action: () => alert("Вы получили сюрприз!") }
-        ];
-
-        // Углы для секторов колеса
-        const sectionAngles = [18, 54, 90, 126, 162, 198, 234, 270, 306, 342];
-
-        // Переменная для отслеживания состояния вращения
+        // Колесо удачи
+        const wheel = document.getElementById('wheel');
         let isSpinning = false;
 
-        // Функция для вращения колеса
+        const rewards = [
+            { icon: "fas fa-coins", text: "50 монет", action: () => coins += 50 },
+            { icon: "fas fa-bolt", text: "20 энергии", action: () => energy += 20 },
+            { icon: "fas fa-rocket", text: "x2 доход", action: () => clickMultiplier *= 2 },
+            { icon: "fas fa-wine-bottle", text: "Энергетик", action: () => energyDrinks++ },
+            { icon: "fas fa-network-wired", text: "Рой", action: () => swarms++ },
+            { icon: "fas fa-crown", text: "Легендарный Шиба", action: () => alert("Вы получили Легендарного Шиба!") },
+            { icon: "fas fa-gem", text: "1000 монет", action: () => coins += 1000 },
+            { icon: "fas fa-battery-full", text: "Супер-энергия", action: () => maxEnergy += 50 },
+            { icon: "fas fa-star", text: "Звезда удачи", action: () => alert("Звезда удачи активирована!") },
+            { icon: "fas fa-gift", text: "Сюрприз", action: () => coins += Math.floor(Math.random() * 500) }
+        ];
+
+        const sectionAngles = [18, 54, 90, 126, 162, 198, 234, 270, 306, 342];
+
         function spinWheel() {
             if (isSpinning) return;
 
-            const wheel = document.getElementById('wheel');
             const button = document.querySelector('.spin-button');
             button.disabled = true;
             isSpinning = true;
 
-            // Случайный угол вращения
             const randomRotation = 360 * 5 + Math.floor(Math.random() * 360);
             wheel.style.transition = 'transform 5s cubic-bezier(0.25, 0.1, 0.25, 1)';
             wheel.style.transform = `rotate(${randomRotation}deg)`;
 
-            // Определение выигрыша после завершения вращения
             setTimeout(() => {
                 const degrees = randomRotation % 360;
                 const pointerAngle = (360 - degrees) % 360;
@@ -1110,111 +1778,119 @@
                 const rewardIndex = sectionAngles.indexOf(closestAngle);
                 const reward = rewards[rewardIndex];
 
-                reward.action(); // Выполняем действие награды
+                reward.action();
                 alert(`Вы получили: ${reward.text}`);
+                updateUI();
+                saveGame();
 
                 button.disabled = false;
                 isSpinning = false;
             }, 5000);
         }
 
-        // Показ модального окна колеса удачи
-        function showWheelModal() {
-            const modal = document.getElementById('wheel-modal');
-            modal.style.display = 'flex';
-        }
+        // Инициализация игры
+        window.onload = function() {
+            // Симуляция загрузки
+            const progressBar = document.getElementById('progress-bar-inner');
+            const loadingContainer = document.querySelector('.loading-container');
+            const gameContainer = document.querySelector('.game-container');
+            let progress = 0;
 
-        // Функция для открытия модального окна бустов
-        function showBoostsModal() {
-            const boostsModal = document.getElementById('boosts-modal');
-            boostsModal.style.display = 'flex';
-        }
+            const loadingInterval = setInterval(() => {
+                progress += 10;
+                progressBar.style.width = `${progress}%`;
 
-        // Функция для открытия модального окна Airdrop
-        function showAirdropModal() {
-            const airdropModal = document.getElementById('airdrop-modal');
-            airdropModal.style.display = 'flex';
-        }
-
-        // Функция для активации бесплатного буста
-        function activateFreeTapBoost() {
-            if (boosts.freeTapBoost.usesLeft > 0) {
-                const randomMultiplier = Math.floor(Math.random() * 49) + 2; // Случайный множитель от 2 до 50
-                alert(`Буст активирован! Ваш доход увеличен в ${randomMultiplier} раз на 10 секунд!`);
-                boosts.freeTapBoost.usesLeft--;
-                updateBoostsModal(); // Обновляем интерфейс
-            } else {
-                alert("Вы использовали все бесплатные бусты на сегодня!");
-            }
-        }
-
-        // Обновление модального окна бустов
-        function updateBoostsModal() {
-            const boostsList = document.getElementById('boosts-list');
-            boostsList.innerHTML = '';
-
-            // Обновляем количество использований бесплатного буста
-            const freeBoostUses = document.querySelector('.free-boosts-panel .boost-uses');
-            freeBoostUses.textContent = `${boosts.freeTapBoost.usesLeft}/3`;
-
-            // Добавляем остальные бусты
-            for (const [boostType, boost] of Object.entries(boosts)) {
-                if (boostType === 'freeTapBoost') continue; // Пропускаем бесплатный буст
-
-                const boostItem = document.createElement('div');
-                boostItem.className = 'boost-item';
-
-                let boostText;
-                if (boostType === 'tapMultiplier') {
-                    boostText = `Увеличение тапов x${boost.level + 1}`;
-                } else if (boostType === 'maxEnergy') {
-                    boostText = `Увеличение энергии +50 (Уровень ${boost.level})`;
-                } else if (boostType === 'energyRecovery') {
-                    boostText = `Скорость восстановления энергии: 1 ед. в ${boost.level * 2} сек (Уровень ${boost.level})`;
-                } else if (boostType === 'autoClicker') {
-                    boostText = `Робот`;
+                if (progress >= 100) {
+                    clearInterval(loadingInterval);
+                    // Скрываем экран загрузки и показываем игру
+                    loadingContainer.style.display = 'none';
+                    gameContainer.style.display = 'block';
+                    initializeGame(); // Инициализация игры после загрузки
                 }
+            }, 300);
 
-                boostItem.innerHTML = `
-                    <span>${boostText}</span>
-                    <button onclick="buyBoost('${boostType}')" ${coins < boost.cost ? 'disabled' : ''}>
-                        Купить за ${boost.cost} монет
-                    </button>
-                `;
-                boostsList.appendChild(boostItem);
+            function initializeGame() {
+                loadGame();
+                updateUI();
+                updateLanguage(); // Устанавливаем язык по умолчанию
+
+                // Проверяем, запущена ли игра через Telegram Mini Apps
+                if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
+                    const tg = Telegram.WebApp;
+                    tg.ready(); // Готовим Mini App к работе
+                    tg.expand(); // Разворачиваем приложение на весь экран
+                } else {
+                    // Скрываем кнопку подключения кошелька
+                    const connectWalletButton = document.querySelector('.connect-wallet-button');
+                    if (connectWalletButton) {
+                        connectWalletButton.style.display = 'none';
+                    }
+
+                    // Выводим сообщение или скрываем другие элементы
+                    const airdropContent = document.querySelector('.airdrop-content');
+                    if (airdropContent) {
+                        airdropContent.innerHTML = '<p>Эта функция доступна только в Telegram Mini Apps.</p>';
+                    }
+                }
             }
-        }
-
-        // Покупка буста
-        let boosts = {
-            tapMultiplier: { level: 1, cost: 100 },
-            maxEnergy: { level: 1, cost: 200 },
-            energyRecovery: { level: 1, cost: 300 },
-            autoClicker: { cost: 100000 },
-            freeTapBoost: { usesLeft: 3 } // Бесплатный буст с 3 использованиями в день
         };
+    </script>
 
-        function buyBoost(boostType) {
-            const boost = boosts[boostType];
-            if (coins >= boost.cost) {
-                coins -= boost.cost;
-                if (boostType === 'tapMultiplier') {
-                    boost.level++;
-                    boost.cost *= 2;
-                } else if (boostType === 'maxEnergy') {
-                    boost.level++;
-                    boost.cost *= 2;
-                } else if (boostType === 'energyRecovery') {
-                    boost.level++;
-                    boost.cost *= 2;
-                } else if (boostType === 'autoClicker') {
-                    alert("Автокликер активирован!");
-                }
-                updateBoostsModal();
-            } else {
-                alert("Недостаточно монет!");
+    <!-- Скрипт для фона с мультяшными звёздами -->
+    <script>
+        const canvas = document.getElementById("starCanvas");
+        const ctx = canvas.getContext("2d");
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const direction = Math.PI / 4;
+        const speed = 0.5;
+
+        function createStars(count) {
+            const stars = [];
+            for (let i = 0; i < count; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 3 + 2,
+                    color: `rgba(255, 255, 255, ${Math.random() * 0.5 + 0.5})`,
+                    brightness: Math.random() * 0.5 + 0.5,
+                    speed: Math.random() * 0.02 + 0.01
+                });
             }
+            return stars;
         }
+
+        const stars = createStars(100);
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            stars.forEach(star => {
+                star.brightness += star.speed;
+                if (star.brightness > 1 || star.brightness < 0.5) {
+                    star.speed *= -1;
+                }
+
+                star.x += Math.cos(direction) * speed;
+                star.y += Math.sin(direction) * speed;
+
+                if (star.x > canvas.width) star.x = 0;
+                if (star.x < 0) star.x = canvas.width;
+                if (star.y > canvas.height) star.y = 0;
+                if (star.y < 0) star.y = canvas.height;
+
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${star.brightness})`;
+                ctx.fill();
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
     </script>
 </body>
 </html>
