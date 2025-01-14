@@ -1847,6 +1847,60 @@
         }
 
         animate();
-    </script>
+    // Инициализация TON Connect
+const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+    manifestUrl: 'https://realywoyd.github.io/zalupa/tonconnect-manifest.json', // Укажите URL вашего манифеста
+    buttonRootId: 'connect-wallet-button' // ID кнопки подключения кошелька
+});
+
+// Функция для подключения кошелька
+async function connectWallet() {
+    try {
+        // Открываем модальное окно для выбора кошелька
+        await tonConnectUI.connectWallet();
+        
+        // После успешного подключения
+        const wallet = tonConnectUI.wallet;
+        if (wallet) {
+            alert(`Кошелёк подключен: ${wallet.account.address}`);
+            // Сохраняем адрес кошелька в localStorage
+            localStorage.setItem('walletAddress', wallet.account.address);
+            // Обновляем интерфейс
+            updateWalletUI(wallet.account.address);
+        }
+    } catch (error) {
+        console.error('Ошибка подключения кошелька:', error);
+        alert('Не удалось подключить кошелёк.');
+    }
+}
+
+// Функция для отключения кошелька
+function disconnectWallet() {
+    tonConnectUI.disconnect();
+    localStorage.removeItem('walletAddress');
+    updateWalletUI('');
+    alert('Кошелёк отключен.');
+}
+
+// Функция для обновления интерфейса после подключения кошелька
+function updateWalletUI(walletAddress) {
+    const walletAddressDisplay = document.getElementById('wallet-address-display');
+    if (walletAddressDisplay) {
+        walletAddressDisplay.textContent = walletAddress || 'Кошелёк не подключён';
+    }
+}
+
+// Проверка подключения кошелька при загрузке страницы
+function checkWalletConnection() {
+    const wallet = tonConnectUI.wallet;
+    if (wallet) {
+        updateWalletUI(wallet.account.address);
+    }
+}
+
+// Инициализация при загрузке страницы
+window.onload = function() {
+    checkWalletConnection();
+};</script>
 </body>
 </html>
