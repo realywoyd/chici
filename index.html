@@ -1766,28 +1766,32 @@
             }, 300);
 
             function initializeGame() {
-                loadGame();
-                updateUI();
-                updateLanguage(); // Устанавливаем язык по умолчанию
+    loadGame();
+    updateUI();
+    updateLanguage(); // Устанавливаем язык по умолчанию
 
-                // Проверяем, запущена ли игра через Telegram Mini Apps
-                if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
-                    const tg = Telegram.WebApp;
-                    tg.ready(); // Готовим Mini App к работе
-                    tg.expand(); // Разворачиваем приложение на весь экран
-                } else {
-                    // Скрываем кнопку подключения кошелька
-                    const connectWalletButton = document.querySelector('.connect-wallet-button');
-                    if (connectWalletButton) {
-                        connectWalletButton.style.display = 'none';
-                    }
+    // Проверяем, запущена ли игра через Telegram Mini Apps
+    if (typeof Telegram !== 'undefined' && Telegram.WebApp) {
+        const tg = Telegram.WebApp;
+        tg.ready(); // Готовим Mini App к работе
+        tg.expand(); // Разворачиваем приложение на весь экран
+    } else {
+        // Скрываем кнопку подключения кошелька, если не в Telegram
+        const connectWalletButton = document.querySelector('.connect-wallet-button');
+        if (connectWalletButton) {
+            connectWalletButton.style.display = 'none';
+        }
 
-                    // Выводим сообщение или скрываем другие элементы
-                    const airdropContent = document.querySelector('.airdrop-content');
-                    if (airdropContent) {
-                        airdropContent.innerHTML = '<p>Эта функция доступна только в Telegram Mini Apps.</p>';
-                    }
-                }
+        // Выводим сообщение или скрываем другие элементы
+        const airdropContent = document.querySelector('.airdrop-content');
+        if (airdropContent) {
+            airdropContent.innerHTML = '<p>Эта функция доступна только в Telegram Mini Apps.</p>';
+        }
+    }
+
+    // Проверяем подключение кошелька
+    checkWalletConnection();
+}
             }
         };
     </script>
