@@ -907,13 +907,14 @@
             const priceInTON = 0.004;
 
             try {
-                // Отправляем транзакцию через TON Connect
+                // Формируем транзакцию
                 const transaction = {
                     to: "UQBWIbpzlU5H1AmZlpP0Eno7EzTGyttvqGa9WBPt_Gkea34z", // Ваш адрес кошелька
                     value: priceInTON * 1e9, // Переводим в наноТОН (1 TON = 1e9 наноТОН)
                     message: "Покупка 100 монет" // Опциональное сообщение
                 };
 
+                // Отправляем транзакцию через TON Connect
                 const result = await tonConnectUI.sendTransaction(transaction);
 
                 if (result) {
@@ -926,7 +927,15 @@
                 }
             } catch (error) {
                 console.error("Ошибка при покупке монет:", error);
-                alert("Произошла ошибка при покупке монет.");
+
+                // Более подробное сообщение об ошибке
+                if (error.message.includes("User rejected the request")) {
+                    alert("Вы отменили транзакцию.");
+                } else if (error.message.includes("Insufficient balance")) {
+                    alert("Недостаточно TON на вашем балансе.");
+                } else {
+                    alert("Произошла ошибка при покупке монет. Пожалуйста, попробуйте ещё раз.");
+                }
             }
         }
 
