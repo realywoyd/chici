@@ -847,12 +847,21 @@
                         <span class="coin-icon">🪙</span>
                         <span class="coin-text">Купить 100 монет за 1$</span>
                     </button>
+                    <!-- Новая кнопка для покупки за Telegram Stars -->
+                    <button id="buy-coins-stars-button" onclick="buyCoinsWithStars()">
+                        <span class="coin-icon">🪙</span>
+                        <span class="coin-text">Купить 100 монет за 1 звезду</span>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        // Инициализация Telegram Web App
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Разворачиваем приложение на весь экран
+
         // Инициализация TON Connect
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
             manifestUrl: 'https://realywoyd.github.io/zalupa/tonconnect-manifest.json', // Ваш манифест
@@ -889,13 +898,32 @@
             }
         });
 
-        // Функция для открытия модального окна магазина
-        function showShopModal() {
-            const shopModal = document.getElementById('shop-modal');
-            shopModal.style.display = 'flex';
+        // Функция для покупки монет за Telegram Stars
+        function buyCoinsWithStars() {
+            // Параметры платежа
+            const invoice = {
+                title: "Покупка 100 монет", // Название товара
+                description: "Получите 100 монет за 1 звезду", // Описание
+                currency: "USD", // Валюта (не используется для Stars, но обязателен)
+                prices: [{ label: "100 монет", amount: 100 }], // Стоимость в Stars (1 звезда = 100 единиц)
+                payload: { type: "coins", amount: 100 }, // Дополнительные данные
+            };
+
+            // Отправка запроса на оплату
+            tg.sendInvoice(invoice, function(result) {
+                if (result.status === "paid") {
+                    // Если оплата успешна, добавляем монеты
+                    coins += 100;
+                    updateUI();
+                    alert("Покупка успешна! Вы получили 100 монет.");
+                } else {
+                    // Если оплата отменена или произошла ошибка
+                    alert("Оплата отменена или произошла ошибка.");
+                }
+            });
         }
 
-        // Функция для покупки монет
+        // Функция для покупки монет за TON
         async function buyCoins() {
             const walletAddress = localStorage.getItem('walletAddress');
             if (!walletAddress) {
@@ -943,6 +971,12 @@
         function closeModal(modalId) {
             const modal = document.getElementById(modalId);
             modal.style.display = 'none';
+        }
+
+        // Функция для открытия модального окна магазина
+        function showShopModal() {
+            const shopModal = document.getElementById('shop-modal');
+            shopModal.style.display = 'flex';
         }
 
         // Ваши функции игры
