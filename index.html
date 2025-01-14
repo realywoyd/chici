@@ -7,11 +7,8 @@
     <link rel="stylesheet" href="styles.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-    <script src="script.js" defer></script>
-    <script src="boosts.js" defer></script>
-    <script src="shop.js" defer></script>
-    <script src="clans.js" defer></script>
-    <script src="animations.js" defer></script>
+    <script src="scripts.js" defer></script>
+    <script src="particles.js" defer></script>
 </head>
 <body>
     <!-- Экран загрузки -->
@@ -25,72 +22,122 @@
 
     <!-- Основной контейнер игры -->
     <div class="game-container">
-        <!-- Верхняя панель -->
-        <div class="top-panel">
-            <div class="panel-items-left">
-                <div class="panel-item" data-tooltip="Ваши монеты">
-                    <i class="fas fa-coins"></i>
-                    <span id="coins-panel">0</span>
-                </div>
-                <div class="panel-item" data-tooltip="Энергия">
-                    <i class="fas fa-bolt"></i>
-                    <span id="energy-panel">100</span>/<span id="max-energy-panel">100</span>
-                </div>
-                <div class="panel-item" data-tooltip="Уровень">
-                    <i class="fas fa-level-up-alt"></i>
-                    <span id="level-panel">1</span>
+        <canvas id="starCanvas"></canvas>
+        <div id="particles-js"></div>
+        <div class="container">
+            <!-- Верхняя панель -->
+            <div class="top-panel">
+                <div class="panel-items-left">
+                    <div class="panel-item" data-tooltip="Ваши монеты">
+                        <i class="fas fa-coins"></i>
+                        <span id="coins-panel">0</span>
+                    </div>
+                    <div class="panel-item" data-tooltip="Энергия">
+                        <i class="fas fa-bolt"></i>
+                        <span id="energy-panel">100</span>/<span id="max-energy-panel">100</span>
+                    </div>
+                    <div class="panel-item" data-tooltip="Уровень">
+                        <i class="fas fa-level-up-alt"></i>
+                        <span id="level-panel">1</span>
+                    </div>
+                    <div class="panel-item" data-tooltip="Энергетики">
+                        <i class="fas fa-wine-bottle"></i>
+                        <span id="energy-drinks-panel">0</span>
+                    </div>
+                    <div class="panel-item" data-tooltip="Опыт">
+                        <i class="fas fa-star"></i>
+                        <span id="exp-panel">0</span>/10
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Шиба -->
-        <div class="shiba-container">
-            <img src="https://cryptologos.cc/logos/shiba-inu-shib-logo.png" alt="Shiba Inu" class="shiba" onclick="tapShiba()">
+            <!-- Кнопки под верхней панелью -->
+            <div class="header-buttons">
+                <button class="clan-button" onclick="showModal('Клан', 'Здесь будет информация о кланах.')">
+                    <span class="clan-icon">🛡️</span>
+                    <span class="clan-text">Клан</span>
+                </button>
+                <button class="donate-button" onclick="showDonateModal()">
+                    <span class="donate-icon">💎</span>
+                    <span class="donate-text">Донат</span>
+                </button>
+                <div class="vertical-buttons-right">
+                    <button class="rating-button" onclick="showModal('Рейтинг', 'Здесь будет рейтинг игроков.')">
+                        <span class="rating-icon">🏆</span>
+                        <span class="rating-text">Рейтинг</span>
+                    </button>
+                    <button class="wheel-button" onclick="showWheel()">
+                        <span class="wheel-icon">🎡</span>
+                        <span class="wheel-text">Колесо Удачи</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Логотип Шибы -->
+            <div class="shiba-container">
+                <img src="https://cryptologos.cc/logos/shiba-inu-shib-logo.png" alt="Shiba Inu" class="shiba" 
+                     ontouchstart="handleMultiTouch(event)" onclick="animateShiba(event)">
+            </div>
         </div>
 
         <!-- Нижняя панель -->
         <div class="bottom-panel">
-            <button onclick="showModal('boosts-modal')">
-                <i class="fas fa-rocket"></i>
-                Бусты
+            <button class="boost-button" onclick="showBoostsModal()">
+                <span class="rocket-icon">🚀</span>
+                <span class="boost-text">Бусты</span>
             </button>
-            <button onclick="showModal('shop-modal')">
-                <i class="fas fa-shopping-cart"></i>
-                Магазин
+            <button class="shop-button" onclick="showShopModal()">
+                <span class="shop-icon">🛒</span>
+                <span class="shop-text">Магазин</span>
             </button>
-            <button onclick="showModal('clans-modal')">
-                <i class="fas fa-users"></i>
-                Кланы
+            <button class="friends-button" onclick="showModal('Друзья', 'Приглашай друзей и получай бонусы!')">
+                <svg class="friends-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+                    <!-- SVG-код для иконки друзей -->
+                </svg>
+                <span class="friends-text">Друзья</span>
             </button>
-            <button onclick="showModal('airdrop-modal')">
-                <i class="fas fa-parachute-box"></i>
-                Airdrop
+            <button class="airdrop-button" onclick="showAirdropModal()">
+                <span class="airdrop-icon">🪂</span>
+                <span class="airdrop-text">Airdrop</span>
+            </button>
+            <button class="roi-button" onclick="showFarmsModal()">
+                <i class="fas fa-network-wired"></i>
+                <span class="roi-text">Рои</span>
+            </button>
+            <button class="donate-button" onclick="requestPayment(1000000000, 'Донат на поддержку игры')">
+                <span class="donate-icon">💎</span>
+                <span class="donate-text">Донат</span>
             </button>
         </div>
 
         <!-- Модальные окна -->
+        <div id="wheel-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('wheel-modal')">&times;</span>
+                <h2>Колесо Удачи</h2>
+                <div class="wheel-content">
+                    <div class="wheel" id="wheel">
+                        <!-- Колесо удачи -->
+                    </div>
+                    <div class="wheel-pointer"></div>
+                    <button class="spin-button" onclick="spinWheel()">Крутить колесо</button>
+                </div>
+            </div>
+        </div>
+
         <div id="boosts-modal" class="modal">
             <div class="modal-content">
                 <span class="close" onclick="closeModal('boosts-modal')">&times;</span>
                 <h2>Бусты</h2>
+                <div class="free-boosts-panel">
+                    <div class="boost-item">
+                        <button onclick="activateFreeTapBoost()">
+                            <span class="boost-icon">🚀</span>
+                            <span class="boost-uses">3/3</span>
+                        </button>
+                    </div>
+                </div>
                 <div id="boosts-list"></div>
-            </div>
-        </div>
-
-        <div id="shop-modal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal('shop-modal')">&times;</span>
-                <h2>Магазин</h2>
-                <div id="shop-list"></div>
-            </div>
-        </div>
-
-        <div id="clans-modal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closeModal('clans-modal')">&times;</span>
-                <h2>Кланы</h2>
-                <div id="clans-list"></div>
-                <button onclick="createClan(prompt('Введите название клана:'))">Создать клан</button>
             </div>
         </div>
 
@@ -98,10 +145,41 @@
             <div class="modal-content">
                 <span class="close" onclick="closeModal('airdrop-modal')">&times;</span>
                 <h2>Airdrop</h2>
-                <button id="connect-wallet-button" class="connect-wallet-button">
-                    <i class="fab fa-telegram"></i>
-                    Подключить кошелёк
-                </button>
+                <div class="airdrop-content">
+                    <p class="coming-soon">Подключите кошелёк, чтобы получить Airdrop!</p>
+                    <button class="connect-wallet-button" onclick="connectWallet()">
+                        <i class="fab fa-telegram"></i>
+                        Подключить кошелёк
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="settings-modal" class="settings-modal">
+            <div class="settings-content">
+                <span class="close" onclick="closeModal('settings-modal')">&times;</span>
+                <h2>Настройки</h2>
+                <div class="language-switch">
+                    <label for="language-toggle">RU</label>
+                    <input type="checkbox" id="language-toggle" onchange="toggleLanguage()">
+                    <div class="slider"></div>
+                    <label for="language-toggle">ENG</label>
+                </div>
+            </div>
+        </div>
+
+        <div id="donate-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('donate-modal')">&times;</span>
+                <h2>Донат</h2>
+                <div class="donate-content">
+                    <p>Поддержите игру и получите дополнительный спин на Колесе Удачи!</p>
+                    <p>Ваш адрес кошелька TON: <strong id="wallet-address-display"></strong></p>
+                    <button class="buy-spin-button" onclick="buySpin()">
+                        <span class="buy-spin-icon">🎡</span>
+                        <span class="buy-spin-text">Купить спин за 1$</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
