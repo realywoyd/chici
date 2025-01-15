@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+<html lang="ru">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shiba Inu Galactic Tap Game</title>
@@ -1255,19 +1257,19 @@
                     <!-- Пример товара -->
                     <div class="shop-item">
                         <span class="item-name">Увеличение тапов x2</span>
-                        <span class="item-price">6 звёзд</span>
-                        <button onclick="event.preventDefault(); buyItem('tapMultiplier', 6)">Купить</button>
+                        <span class="item-price">0.1 TON</span>
+                        <button onclick="buyItemWithTON('tapMultiplier', 0.1)">Купить за TON</button>
                     </div>
                     <!-- Другие товары -->
                     <div class="shop-item">
                         <span class="item-name">Энергетик (+20 энергии)</span>
-                        <span class="item-price">6 звёзд</span>
-                        <button onclick="event.preventDefault(); buyItem('energyDrink', 6)">Купить</button>
+                        <span class="item-price">0.2 TON</span>
+                        <button onclick="buyItemWithTON('energyDrink', 0.2)">Купить за TON</button>
                     </div>
                     <div class="shop-item">
                         <span class="item-name">Автокликер</span>
-                        <span class="item-price">6 звёзд</span>
-                        <button onclick="event.preventDefault(); buyItem('autoClicker', 6)">Купить</button>
+                        <span class="item-price">0.5 TON</span>
+                        <button onclick="buyItemWithTON('autoClicker', 0.5)">Купить за TON</button>
                     </div>
                 </div>
             </div>
@@ -1712,42 +1714,40 @@
             modal.style.display = 'flex';
         }
 
-        // Покупка товара в магазине
-        function buyItem(itemType, price) {
-            if (typeof Telegram === 'undefined' || !Telegram.WebApp) {
-                alert("Эта функция доступна только в Telegram Mini Apps.");
+        // Покупка товара за TON
+        async function buyItemWithTON(itemType, priceInTON) {
+            if (!walletAddress) {
+                alert('Пожалуйста, подключите кошелёк!');
                 return;
             }
 
-            const tg = Telegram.WebApp;
+            try {
+                // Создаем транзакцию
+                const transaction = {
+                    validUntil: Math.floor(Date.now() / 1000) + 300, // 5 минут
+                    messages: [
+                        {
+                            address: 'UQBWIbpzlU5H1AmZlpP0Eno7EzTGyttvqGa9WBPt_Gkea34z', // Ваш адрес кошелька
+                            amount: (priceInTON * 1e9).toString(), // Сумма в наноТОН (1 TON = 1e9 наноТОН)
+                            payload: itemType // Дополнительные данные (например, тип товара)
+                        }
+                    ]
+                };
 
-            // Отправляем запрос на оплату через Telegram Stars
-            tg.sendData(JSON.stringify({
-                type: 'purchase',
-                item: itemType,
-                price: price
-            }));
+                // Отправляем транзакцию через TON Connect
+                const result = await tonConnectUI.sendTransaction(transaction);
 
-            console.log("Запрос на оплату отправлен. Ожидание подтверждения...");
-
-            // Обработка успешной оплаты
-            tg.onEvent('paymentCompleted', (data) => {
-                console.log("Оплата завершена. Данные:", data);
-
-                if (data.success) {
+                if (result) {
+                    alert('Оплата прошла успешно!');
                     applyItemEffect(itemType); // Применение эффекта товара
-                    alert(`Товар "${itemType}" успешно куплен!`);
                     updateUI(); // Обновление интерфейса
                 } else {
-                    alert("Ошибка оплаты. Попробуйте ещё раз.");
+                    alert('Ошибка при оплате. Пожалуйста, попробуйте ещё раз.');
                 }
-            });
-
-            // Обработка ошибок
-            tg.onEvent('paymentFailed', (error) => {
-                console.error("Ошибка оплаты:", error);
-                alert("Произошла ошибка при оплате. Пожалуйста, попробуйте ещё раз.");
-            });
+            } catch (error) {
+                console.error('Ошибка при оплате:', error);
+                alert('Произошла ошибка при оплате. Пожалуйста, попробуйте ещё раз.');
+            }
         }
 
         // Применение эффекта купленного товара
@@ -1787,7 +1787,7 @@
 
         // Инициализация TON Connect
         const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-            manifestUrl: 'https://yourdomain.com/tonconnect-manifest.json', // Укажите URL вашего манифеста
+            manifestUrl: 'https://realywoyd.github.io/zalupa//tonconnect-manifest.json', // Ваш манифест
             buttonRootId: 'ton-connect-ui' // ID контейнера для кнопки подключения
         });
 
@@ -1808,8 +1808,10 @@
                 walletAddress = wallet.account.address;
                 localStorage.setItem('walletAddress', walletAddress);
 
-                // Активируем кнопку получения Airdrop
-                document.getElementById('claim-airdrop-button').disabled = false;
+                // Активируем кнопки покупки
+                document.querySelectorAll('.shop-item button').forEach(button => {
+                    button.disabled = false;
+                });
                 alert('Кошелёк успешно подключён!');
             } else {
                 // Кошелёк отключён
@@ -1817,8 +1819,10 @@
                 walletAddress = null;
                 localStorage.removeItem('walletAddress');
 
-                // Деактивируем кнопку получения Airdrop
-                document.getElementById('claim-airdrop-button').disabled = true;
+                // Деактивируем кнопки покупки
+                document.querySelectorAll('.shop-item button').forEach(button => {
+                    button.disabled = true;
+                });
             }
         });
 
