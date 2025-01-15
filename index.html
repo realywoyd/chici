@@ -532,14 +532,16 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 8px 16px;
+            width: 35px; /* Уменьшенный размер */
+            height: 35px;
+            padding: 0;
             font-family: 'Orbitron', sans-serif;
             font-size: 12px;
             font-weight: bold;
             color: #fff;
             background: rgba(106, 13, 131, 0.2);
             border: 2px solid #6A0D83;
-            border-radius: 20px;
+            border-radius: 50%; /* Круглая форма */
             cursor: pointer;
             position: relative;
             overflow: hidden;
@@ -553,14 +555,16 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 8px 16px;
+            width: 35px; /* Уменьшенный размер */
+            height: 35px;
+            padding: 0;
             font-family: 'Orbitron', sans-serif;
             font-size: 12px;
             font-weight: bold;
             color: #fff;
             background: rgba(106, 13, 131, 0.2);
             border: 2px solid #6A0D83;
-            border-radius: 20px;
+            border-radius: 50%; /* Круглая форма */
             cursor: pointer;
             position: relative;
             overflow: hidden;
@@ -569,10 +573,10 @@
             box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
         }
 
-        /* Увеличиваем размер эмодзи в 3 раза */
+        /* Увеличиваем размер эмодзи */
         .rating-button span,
         .wheel-button span {
-            font-size: 48px; /* Увеличение размера эмодзи в 3 раза */
+            font-size: 20px; /* Увеличение размера эмодзи */
         }
 
         /* Анимация фона */
@@ -976,8 +980,8 @@
             backdrop-filter: blur(10px);
             box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
             position: fixed;
-            bottom: 80px; /* Позиция под нижней панелью */
-            right: 20px; /* Справа */
+            bottom: 80px; /* Позиция над нижней панелью */
+            left: 20px; /* Слева */
         }
 
         .shop-button:hover {
@@ -1404,7 +1408,7 @@
             </button>
         </div>
 
-        <!-- Кнопка "Магазин" под нижней панелью справа -->
+        <!-- Кнопка "Магазин" над нижней панелью слева -->
         <button class="shop-button" onclick="showShopModal()">
             <span class="shop-icon">🛒</span>
             <span class="shop-text">Магазин</span>
