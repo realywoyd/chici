@@ -1304,6 +1304,139 @@
         .referral-button:active {
             transform: scale(0.95);
         }
+
+        /* Стили для кнопки "Задания" */
+        .quests-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+        }
+
+        .quests-button:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+        }
+
+        .quests-button:active {
+            transform: scale(0.95);
+        }
+
+        .quests-icon {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        /* Стили для модального окна заданий */
+        .quests-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .quests-content {
+            background: radial-gradient(circle, #0B3D91, #6A0D83);
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 90%;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .quests-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .quest-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border: 1px solid #6A0D83;
+        }
+
+        .quest-item.completed {
+            opacity: 0.7;
+            text-decoration: line-through;
+        }
+
+        .quest-item button {
+            padding: 5px 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quest-item button:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.8);
+        }
+
+        .quest-item button:active {
+            transform: scale(0.95);
+        }
+
+        .quest-item button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .quest-item a {
+            color: #FF6F61;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .quest-item a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -1603,8 +1736,8 @@
             <div class="modal-content">
                 <span class="close" onclick="closeModal('quests-modal')">&times;</span>
                 <h2>Задания</h2>
-                <div class="quests-list">
-                    <p>Здесь будут отображаться задания для игроков.</p>
+                <div class="quests-list" id="quests-list">
+                    <!-- Задания будут добавляться сюда динамически -->
                 </div>
             </div>
         </div>
@@ -2397,7 +2530,66 @@
         function showQuestsModal() {
             const modal = document.getElementById('quests-modal');
             modal.style.display = 'flex';
+            updateQuestsList();
         }
+
+        // Обновление списка заданий
+        function updateQuestsList() {
+            const questsList = document.getElementById('quests-list');
+            questsList.innerHTML = '';
+
+            quests.forEach(quest => {
+                const questItem = document.createElement('div');
+                questItem.className = `quest-item ${quest.completed ? 'completed' : ''}`;
+                if (quest.link) {
+                    // Если задание содержит ссылку, отображаем её
+                    questItem.innerHTML = `
+                        <span>${quest.description} - ${quest.reward} монет</span>
+                        ${quest.completed ? '<span>✅</span>' : `<a href="${quest.link}" target="_blank">Подписаться</a>`}
+                    `;
+                } else {
+                    // Обычное задание с кнопкой "Выполнить"
+                    questItem.innerHTML = `
+                        <span>${quest.description} - ${quest.reward} монет</span>
+                        ${quest.completed ? '<span>✅</span>' : `<button onclick="completeQuest(${quest.id})" ${quest.completed ? 'disabled' : ''}>Выполнить</button>`}
+                    `;
+                }
+                questsList.appendChild(questItem);
+            });
+        }
+
+        // Функция для выполнения задания
+        function completeQuest(questId) {
+            const quest = quests.find(q => q.id === questId);
+            if (quest && !quest.completed && quest.condition(player)) {
+                quest.completed = true;
+                player.coins += quest.reward;
+                updateQuestsList();
+                showNotification(`Задание выполнено! Вы получили ${quest.reward} монет.`);
+            } else {
+                showErrorModal("Вы не выполнили условия задания!");
+            }
+        }
+
+        // Функция для проверки подписки
+        function checkSubscription() {
+            // Здесь можно добавить логику для проверки подписки через Telegram API
+            // В данном примере просто эмулируем подписку
+            player.subscribed = true;
+            completeQuest(1); // Завершаем задание с ID 1
+        }
+
+        // Пример данных заданий
+        const quests = [
+            {
+                id: 1,
+                description: "Подпишись на наш канал!",
+                reward: 100000,
+                completed: false,
+                condition: (player) => player.subscribed,
+                link: "https://t.me/+HWAk8tvtO65mMDU1" // Ссылка на канал
+            }
+        ];
     </script>
 
     <!-- Скрипт для фона с мультяшными звёздами -->
