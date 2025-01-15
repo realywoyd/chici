@@ -527,32 +527,9 @@
             align-items: flex-end; /* Выравнивание по правому краю */
         }
 
-        /* Стили для кнопки "Клан" */
-        .clan-button {
-            display: inline-flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 16px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 12px;
-            font-weight: bold;
-            color: #fff;
-            background: rgba(106, 13, 131, 0.2);
-            border: 2px solid #6A0D83;
-            border-radius: 20px;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
-        }
-
         /* Стили для кнопки "Рейтинг" */
         .rating-button {
             display: inline-flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 8px 16px;
@@ -574,7 +551,6 @@
         /* Стили для кнопки "Колесо Удачи" */
         .wheel-button {
             display: inline-flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 8px 16px;
@@ -591,6 +567,12 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             backdrop-filter: blur(10px);
             box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+        }
+
+        /* Увеличиваем размер эмодзи в 3 раза */
+        .rating-button span,
+        .wheel-button span {
+            font-size: 48px; /* Увеличение размера эмодзи в 3 раза */
         }
 
         /* Анимация фона */
@@ -1360,23 +1342,15 @@
 
             <!-- Кнопки под верхней панелью -->
             <div class="header-buttons">
-                <!-- Кнопка "Клан" слева -->
-                <button class="clan-button" onclick="showModal('Клан', 'Здесь будет информация о кланах.')">
-                    <span class="clan-icon">🛡️</span>
-                    <span class="clan-text">Клан</span>
-                </button>
-
                 <!-- Кнопки "Рейтинг" и "Колесо Удачи" справа -->
                 <div class="vertical-buttons-right">
                     <button class="rating-button" onclick="showRatingModal()">
                         <span class="rating-icon">🏆</span>
-                        <span class="rating-text">Рейтинг</span>
                     </button>
 
                     <!-- Кнопка "Колесо Удачи" под кнопкой "Рейтинг" -->
                     <button class="wheel-button" onclick="showWheel()">
                         <span class="wheel-icon">🎡</span>
-                        <span class="wheel-text">Колесо Удачи</span>
                     </button>
                 </div>
             </div>
