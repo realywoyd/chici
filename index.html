@@ -1111,6 +1111,27 @@
         .error-content button:active {
             transform: scale(0.95);
         }
+
+        /* Стили для кнопок копирования и отключения кошелька */
+        .wallet-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .wallet-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            color: #fff;
+            transition: transform 0.2s ease;
+        }
+
+        .wallet-actions button:hover {
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body>
@@ -1338,6 +1359,11 @@
                     </button>
                     <!-- Контейнер для TON Connect -->
                     <div id="ton-connect-ui"></div>
+                    <!-- Кнопки для копирования и отключения кошелька -->
+                    <div class="wallet-actions" id="wallet-actions" style="display: none;">
+                        <button onclick="copyWalletAddress()">📋</button>
+                        <button onclick="disconnectWallet()">🚫</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1867,6 +1893,12 @@
                     connectWalletButton.style.display = 'none';
                 }
 
+                // Показываем кнопки для копирования и отключения кошелька
+                const walletActions = document.getElementById('wallet-actions');
+                if (walletActions) {
+                    walletActions.style.display = 'flex';
+                }
+
                 // Активируем кнопки покупки
                 document.querySelectorAll('.shop-item button').forEach(button => {
                     button.disabled = false;
@@ -1882,12 +1914,37 @@
                     connectWalletButton.style.display = 'flex'; // Или 'block', в зависимости от стилей
                 }
 
+                // Скрываем кнопки для копирования и отключения кошелька
+                const walletActions = document.getElementById('wallet-actions');
+                if (walletActions) {
+                    walletActions.style.display = 'none';
+                }
+
                 // Деактивируем кнопки покупки
                 document.querySelectorAll('.shop-item button').forEach(button => {
                     button.disabled = true;
                 });
             }
         });
+
+        // Функция для копирования адреса кошелька
+        function copyWalletAddress() {
+            if (walletAddress) {
+                navigator.clipboard.writeText(walletAddress)
+                    .then(() => {
+                        showNotification('Адрес кошелька скопирован!');
+                    })
+                    .catch(() => {
+                        showErrorModal('Не удалось скопировать адрес кошелька.');
+                    });
+            }
+        }
+
+        // Функция для отключения кошелька
+        function disconnectWallet() {
+            tonConnectUI.disconnect();
+            showNotification('Кошелёк отключён.');
+        }
 
         // Инициализация игры
         window.onload = function() {
@@ -1965,6 +2022,14 @@
             setTimeout(() => {
                 notification.remove();
             }, 3000); // Уведомление исчезнет через 3 секунды
+        }
+
+        // Функция для закрытия модальных окон
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.style.display = 'none';
+            }
         }
     </script>
 
