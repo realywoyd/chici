@@ -1258,18 +1258,18 @@
                     <div class="shop-item">
                         <span class="item-name">Увеличение тапов x2</span>
                         <span class="item-price">6 звёзд</span>
-                        <button onclick="buyItem('tapMultiplier')">Купить</button>
+                        <button onclick="buyItem('tapMultiplier', 6)">Купить</button>
                     </div>
                     <!-- Другие товары -->
                     <div class="shop-item">
                         <span class="item-name">Энергетик (+20 энергии)</span>
                         <span class="item-price">6 звёзд</span>
-                        <button onclick="buyItem('energyDrink')">Купить</button>
+                        <button onclick="buyItem('energyDrink', 6)">Купить</button>
                     </div>
                     <div class="shop-item">
                         <span class="item-name">Автокликер</span>
                         <span class="item-price">6 звёзд</span>
-                        <button onclick="buyItem('autoClicker')">Купить</button>
+                        <button onclick="buyItem('autoClicker', 6)">Купить</button>
                     </div>
                 </div>
             </div>
@@ -1715,32 +1715,40 @@
         }
 
         // Покупка товара в магазине
-        function buyItem(itemType) {
+        function buyItem(itemType, price) {
             if (typeof Telegram === 'undefined' || !Telegram.WebApp) {
-                // Заглушка для тестирования вне Telegram
-                alert('Тестовый режим: товар куплен!');
-                applyItemEffect(itemType);
+                alert("Эта функция доступна только в Telegram Mini Apps.");
                 return;
             }
 
-            const priceInStars = 6; // Минимальная стоимость товара в звёздах
             const tg = Telegram.WebApp;
 
-            // Отправляем запрос на оплату через Telegram
+            // Отправляем запрос на оплату через Telegram Stars
             tg.sendData(JSON.stringify({
                 type: 'purchase',
                 item: itemType,
-                price: priceInStars
+                price: price
             }));
+
+            console.log("Запрос на оплату отправлен. Ожидание подтверждения...");
 
             // Обработка успешной оплаты
             tg.onEvent('paymentCompleted', (data) => {
+                console.log("Оплата завершена. Данные:", data);
+
                 if (data.success) {
-                    applyItemEffect(itemType); // Применяем эффект товара
-                    alert('Покупка успешна!');
+                    applyItemEffect(itemType); // Применение эффекта товара
+                    alert(`Товар "${itemType}" успешно куплен!`);
+                    updateUI(); // Обновление интерфейса
                 } else {
-                    alert('Ошибка оплаты. Попробуйте ещё раз.');
+                    alert("Ошибка оплаты. Попробуйте ещё раз.");
                 }
+            });
+
+            // Обработка ошибок
+            tg.onEvent('paymentFailed', (error) => {
+                console.error("Ошибка оплаты:", error);
+                alert("Произошла ошибка при оплате. Пожалуйста, попробуйте ещё раз.");
             });
         }
 
@@ -1748,22 +1756,17 @@
         function applyItemEffect(itemType) {
             switch (itemType) {
                 case 'tapMultiplier':
-                    clickMultiplier *= 2;
-                    alert('Увеличение тапов x2 активировано!');
+                    clickMultiplier *= 2; // Увеличение множителя тапов
                     break;
                 case 'energyDrink':
-                    energy += 20;
-                    alert('Энергетик использован! +20 энергии.');
+                    energy += 20; // Добавление энергии
                     break;
                 case 'autoClicker':
-                    activateAutoClicker();
-                    alert('Автокликер активирован!');
+                    activateAutoClicker(); // Активация автокликера
                     break;
                 default:
-                    alert('Неизвестный товар.');
+                    alert("Неизвестный товар.");
             }
-            updateUI();
-            saveGame();
         }
 
         // Показ модального окна настроек
