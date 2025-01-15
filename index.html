@@ -1716,42 +1716,41 @@
 
         // Покупка товара в магазине
         function buyItem(itemType, price) {
-    // Проверяем, запущена ли игра через Telegram Mini Apps
-    if (typeof Telegram === 'undefined' || !Telegram.WebApp) {
-        alert("Эта функция доступна только в Telegram Mini Apps.");
-        return;
-    }
+            if (typeof Telegram === 'undefined' || !Telegram.WebApp) {
+                alert("Эта функция доступна только в Telegram Mini Apps.");
+                return;
+            }
 
-    const tg = Telegram.WebApp;
+            const tg = Telegram.WebApp;
 
-    // Отправляем запрос на оплату через Telegram Stars
-    tg.sendData(JSON.stringify({
-        type: 'purchase',
-        item: itemType,
-        price: price
-    }));
+            // Отправляем запрос на оплату через Telegram Stars
+            tg.sendData(JSON.stringify({
+                type: 'purchase',
+                item: itemType,
+                price: price
+            }));
 
-    console.log("Запрос на оплату отправлен. Ожидание подтверждения...");
+            console.log("Запрос на оплату отправлен. Ожидание подтверждения...");
 
-    // Обработка успешной оплаты
-    tg.onEvent('paymentCompleted', (data) => {
-        console.log("Оплата завершена. Данные:", data);
+            // Обработка успешной оплаты
+            tg.onEvent('paymentCompleted', (data) => {
+                console.log("Оплата завершена. Данные:", data);
 
-        if (data.success) {
-            applyItemEffect(itemType); // Применение эффекта товара
-            alert(`Товар "${itemType}" успешно куплен!`);
-            updateUI(); // Обновление интерфейса
-        } else {
-            alert("Ошибка оплаты. Попробуйте ещё раз.");
+                if (data.success) {
+                    applyItemEffect(itemType); // Применение эффекта товара
+                    alert(`Товар "${itemType}" успешно куплен!`);
+                    updateUI(); // Обновление интерфейса
+                } else {
+                    alert("Ошибка оплаты. Попробуйте ещё раз.");
+                }
+            });
+
+            // Обработка ошибок
+            tg.onEvent('paymentFailed', (error) => {
+                console.error("Ошибка оплаты:", error);
+                alert("Произошла ошибка при оплате. Пожалуйста, попробуйте ещё раз.");
+            });
         }
-    });
-
-    // Обработка ошибок
-    tg.onEvent('paymentFailed', (error) => {
-        console.error("Ошибка оплаты:", error);
-        alert("Произошла ошибка при оплате. Пожалуйста, попробуйте ещё раз.");
-    });
-}
 
         // Применение эффекта купленного товара
         function applyItemEffect(itemType) {
