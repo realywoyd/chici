@@ -980,6 +980,87 @@
             from { transform: translateY(20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
+
+        /* Стили для кнопки "Магазин" */
+        .shop-button {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+        }
+
+        .shop-button:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+        }
+
+        .shop-button:active {
+            transform: scale(0.95);
+        }
+
+        .shop-icon {
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        /* Стили для модального окна магазина */
+        .shop-items {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .shop-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border: 1px solid #6A0D83;
+        }
+
+        .shop-item button {
+            padding: 5px 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .shop-item button:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.8);
+        }
+
+        .shop-item button:active {
+            transform: scale(0.95);
+        }
+
+        .shop-item button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
     </style>
 </head>
 <body>
@@ -1163,6 +1244,33 @@
                 <!-- Список остальных бустов -->
                 <div id="boosts-list">
                     <!-- Бусты будут добавляться сюда -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Модальное окно магазина -->
+        <div id="shop-modal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('shop-modal')">&times;</span>
+                <h2>Магазин</h2>
+                <div class="shop-items">
+                    <!-- Пример товара -->
+                    <div class="shop-item">
+                        <span class="item-name">Увеличение тапов x2</span>
+                        <span class="item-price">6 звёзд</span>
+                        <button onclick="buyItem('tapMultiplier')">Купить</button>
+                    </div>
+                    <!-- Другие товары -->
+                    <div class="shop-item">
+                        <span class="item-name">Энергетик (+20 энергии)</span>
+                        <span class="item-price">6 звёзд</span>
+                        <button onclick="buyItem('energyDrink')">Купить</button>
+                    </div>
+                    <div class="shop-item">
+                        <span class="item-name">Автокликер</span>
+                        <span class="item-price">6 звёзд</span>
+                        <button onclick="buyItem('autoClicker')">Купить</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1598,6 +1706,64 @@
             updateBoostsModal();
             const modal = document.getElementById('boosts-modal');
             modal.style.display = 'flex';
+        }
+
+        // Показ модального окна магазина
+        function showShopModal() {
+            const modal = document.getElementById('shop-modal');
+            modal.style.display = 'flex';
+        }
+
+        // Покупка товара в магазине
+        function buyItem(itemType) {
+            if (typeof Telegram === 'undefined' || !Telegram.WebApp) {
+                // Заглушка для тестирования вне Telegram
+                alert('Тестовый режим: товар куплен!');
+                applyItemEffect(itemType);
+                return;
+            }
+
+            const priceInStars = 6; // Минимальная стоимость товара в звёздах
+            const tg = Telegram.WebApp;
+
+            // Отправляем запрос на оплату через Telegram
+            tg.sendData(JSON.stringify({
+                type: 'purchase',
+                item: itemType,
+                price: priceInStars
+            }));
+
+            // Обработка успешной оплаты
+            tg.onEvent('paymentCompleted', (data) => {
+                if (data.success) {
+                    applyItemEffect(itemType); // Применяем эффект товара
+                    alert('Покупка успешна!');
+                } else {
+                    alert('Ошибка оплаты. Попробуйте ещё раз.');
+                }
+            });
+        }
+
+        // Применение эффекта купленного товара
+        function applyItemEffect(itemType) {
+            switch (itemType) {
+                case 'tapMultiplier':
+                    clickMultiplier *= 2;
+                    alert('Увеличение тапов x2 активировано!');
+                    break;
+                case 'energyDrink':
+                    energy += 20;
+                    alert('Энергетик использован! +20 энергии.');
+                    break;
+                case 'autoClicker':
+                    activateAutoClicker();
+                    alert('Автокликер активирован!');
+                    break;
+                default:
+                    alert('Неизвестный товар.');
+            }
+            updateUI();
+            saveGame();
         }
 
         // Показ модального окна настроек
