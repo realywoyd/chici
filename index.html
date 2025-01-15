@@ -1812,7 +1812,7 @@
                 document.querySelectorAll('.shop-item button').forEach(button => {
                     button.disabled = false;
                 });
-                alert('Кошелёк успешно подключён!');
+                showNotification('Кошелёк успешно подключён!'); // Мягкое уведомление
             } else {
                 // Кошелёк отключён
                 console.log('Кошелёк отключён');
