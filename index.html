@@ -1132,6 +1132,95 @@
         .wallet-actions button:hover {
             transform: scale(1.1);
         }
+
+        /* Стили для рейтинга */
+        .rating-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .rating-content {
+            background: radial-gradient(circle, #0B3D91, #6A0D83);
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 90%;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .rating-content h2 {
+            margin-bottom: 20px;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .rating-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .rating-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border: 1px solid #6A0D83;
+        }
+
+        .rating-item img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .rating-item span {
+            font-size: 16px;
+            color: #fff;
+        }
+
+        .rating-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .rating-navigation button {
+            padding: 10px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .rating-navigation button:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+        }
+
+        .rating-navigation button:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
 <body>
@@ -1161,17 +1250,13 @@
                         <i class="fas fa-bolt"></i>
                         <span id="energy-panel">100</span>/<span id="max-energy-panel">100</span>
                     </div>
-                    <div class="panel-item" data-tooltip="Уровень">
-                        <i class="fas fa-level-up-alt"></i>
-                        <span id="level-panel">1</span>
+                    <div class="panel-item" data-tooltip="Ранг">
+                        <i class="fas fa-trophy"></i>
+                        <span id="rank-panel">Мастер</span>
                     </div>
                     <div class="panel-item" data-tooltip="Энергетики">
                         <i class="fas fa-wine-bottle"></i>
                         <span id="energy-drinks-panel">0</span>
-                    </div>
-                    <div class="panel-item" data-tooltip="Опыт">
-                        <i class="fas fa-star"></i>
-                        <span id="exp-panel">0</span>/10
                     </div>
                 </div>
             </div>
@@ -1186,7 +1271,7 @@
 
                 <!-- Кнопки "Рейтинг" и "Колесо Удачи" справа -->
                 <div class="vertical-buttons-right">
-                    <button class="rating-button" onclick="showModal('Рейтинг', 'Здесь будет рейтинг игроков.')">
+                    <button class="rating-button" onclick="showRatingModal()">
                         <span class="rating-icon">🏆</span>
                         <span class="rating-text">Рейтинг</span>
                     </button>
@@ -1390,6 +1475,21 @@
                 <button onclick="closeErrorModal()">Закрыть</button>
             </div>
         </div>
+
+        <!-- Модальное окно рейтинга -->
+        <div id="rating-modal" class="rating-modal">
+            <div class="rating-content">
+                <span class="close" onclick="closeModal('rating-modal')">&times;</span>
+                <h2>Рейтинг игроков</h2>
+                <div class="rating-list" id="rating-list">
+                    <!-- Рейтинг игроков будет добавляться сюда -->
+                </div>
+                <div class="rating-navigation">
+                    <button onclick="changeRank(-1)">← Предыдущий ранг</button>
+                    <button onclick="changeRank(1)">Следующий ранг →</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Скрипты -->
@@ -1504,7 +1604,6 @@
 
         // Переменные игры
         let coins = 0;
-        let level = 1;
         let energy = 100;
         let maxEnergy = 100;
         let clickMultiplier = 1;
@@ -1512,6 +1611,17 @@
         let autoClickerActive = false;
         let autoClickerInterval;
         let isFreeTapBoostActive = false; // Флаг для отслеживания активности буста
+
+        // Ранги
+        const ranks = [
+            { name: "Мастер", minCoins: 0 },
+            { name: "Эпик", minCoins: 1000 },
+            { name: "Легенда", minCoins: 5000 },
+            { name: "Мифический", minCoins: 20000 },
+            { name: "Бессмертный", minCoins: 50000 }
+        ];
+
+        let currentRankIndex = 0; // Текущий ранг игрока
 
         // Бусты
         const boosts = {
@@ -1526,13 +1636,13 @@
         function saveGame() {
             const gameData = {
                 coins,
-                level,
                 energy,
                 maxEnergy,
                 clickMultiplier,
                 energyRecoveryRate,
                 autoClickerActive,
-                boosts
+                boosts,
+                currentRankIndex
             };
             localStorage.setItem('shibaGameData', JSON.stringify(gameData));
         }
@@ -1543,7 +1653,6 @@
             if (savedData) {
                 const gameData = JSON.parse(savedData);
                 coins = gameData.coins;
-                level = gameData.level;
                 energy = gameData.energy;
                 maxEnergy = gameData.maxEnergy;
                 clickMultiplier = gameData.clickMultiplier;
@@ -1554,6 +1663,7 @@
                 boosts.energyRecovery = gameData.boosts.energyRecovery;
                 boosts.autoClicker = gameData.boosts.autoClicker;
                 boosts.freeTapBoost = gameData.boosts.freeTapBoost || { usesLeft: 3 }; // Загружаем или инициализируем новый буст
+                currentRankIndex = gameData.currentRankIndex || 0;
 
                 if (autoClickerActive) {
                     activateAutoClicker();
@@ -1567,7 +1677,7 @@
             document.getElementById('coins-panel').textContent = coins;
             document.getElementById('energy-panel').textContent = energy;
             document.getElementById('max-energy-panel').textContent = maxEnergy;
-            document.getElementById('level-panel').textContent = level;
+            document.getElementById('rank-panel').textContent = ranks[currentRankIndex].name;
             updateBoostsModal(); // Обновляем модальное окно бустов
         }
 
@@ -1580,9 +1690,21 @@
                 }
                 updateUI();
                 saveGame();
+                updateRank(); // Проверяем, нужно ли обновить ранг
             } else {
                 showErrorModal("Недостаточно энергии!");
             }
+        }
+
+        // Обновление ранга
+        function updateRank() {
+            for (let i = ranks.length - 1; i >= 0; i--) {
+                if (coins >= ranks[i].minCoins) {
+                    currentRankIndex = i;
+                    break;
+                }
+            }
+            updateUI();
         }
 
         // Обработка мультитача
@@ -2030,6 +2152,45 @@
             if (modal) {
                 modal.style.display = 'none';
             }
+        }
+
+        // Показ модального окна рейтинга
+        function showRatingModal() {
+            const modal = document.getElementById('rating-modal');
+            modal.style.display = 'flex';
+            loadRating(currentRankIndex); // Загружаем рейтинг для текущего ранга
+        }
+
+        // Загрузка рейтинга для определённого ранга
+        function loadRating(rankIndex) {
+            const ratingList = document.getElementById('rating-list');
+            ratingList.innerHTML = '';
+
+            // Пример данных рейтинга (замените на реальные данные)
+            const players = [
+                { name: "Игрок 1", coins: 10000, avatar: "https://via.placeholder.com/40" },
+                { name: "Игрок 2", coins: 9500, avatar: "https://via.placeholder.com/40" },
+                { name: "Игрок 3", coins: 9000, avatar: "https://via.placeholder.com/40" },
+                // Добавьте больше игроков
+            ];
+
+            players.forEach((player, index) => {
+                const ratingItem = document.createElement('div');
+                ratingItem.className = 'rating-item';
+                ratingItem.innerHTML = `
+                    <img src="${player.avatar}" alt="${player.name}">
+                    <span>${index + 1}. ${player.name} - ${player.coins} монет</span>
+                `;
+                ratingList.appendChild(ratingItem);
+            });
+        }
+
+        // Переключение между рангами
+        function changeRank(direction) {
+            currentRankIndex += direction;
+            if (currentRankIndex < 0) currentRankIndex = ranks.length - 1;
+            if (currentRankIndex >= ranks.length) currentRankIndex = 0;
+            loadRating(currentRankIndex); // Загружаем рейтинг для нового ранга
         }
     </script>
 
