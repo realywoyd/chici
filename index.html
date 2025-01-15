@@ -1061,6 +1061,62 @@
             cursor: not-allowed;
             transform: none;
         }
+
+        /* Стили для кастомного модального окна ошибки */
+        .error-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        .error-content {
+            background: radial-gradient(circle, #0B3D91, #6A0D83);
+            padding: 20px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 90%;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .error-content h2 {
+            margin-bottom: 20px;
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .error-content button {
+            padding: 10px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background: rgba(106, 13, 131, 0.2);
+            border: 2px solid #6A0D83;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 10px rgba(106, 13, 131, 0.5);
+        }
+
+        .error-content button:hover {
+            background: rgba(106, 13, 131, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(106, 13, 131, 0.8);
+        }
+
+        .error-content button:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
 <body>
@@ -1310,6 +1366,15 @@
                 </div>
             </div>
         </div>
+
+        <!-- Модальное окно ошибки -->
+        <div id="error-modal" class="error-modal">
+            <div class="error-content">
+                <h2>Ошибка оплаты</h2>
+                <p id="error-message">Произошла ошибка при оплате. Пожалуйста, попробуйте ещё раз.</p>
+                <button onclick="closeErrorModal()">Закрыть</button>
+            </div>
+        </div>
     </div>
 
     <!-- Скрипты -->
@@ -1501,7 +1566,7 @@
                 updateUI();
                 saveGame();
             } else {
-                alert("Недостаточно энергии!");
+                showErrorModal("Недостаточно энергии!");
             }
         }
 
@@ -1584,7 +1649,7 @@
                 updateBoostsModal();
                 saveGame();
             } else {
-                alert("Недостаточно монет!");
+                showErrorModal("Недостаточно монет!");
             }
         }
 
@@ -1617,7 +1682,7 @@
                 updateBoostsModal();
                 saveGame();
             } else {
-                alert("Вы использовали все бесплатные бусты на сегодня!");
+                showErrorModal("Вы использовали все бесплатные бусты на сегодня!");
             }
         }
 
@@ -1717,7 +1782,7 @@
         // Покупка товара за TON
         async function buyItemWithTON(itemType, priceInTON) {
             if (!walletAddress) {
-                alert('Пожалуйста, подключите кошелёк!');
+                showErrorModal('Пожалуйста, подключите кошелёк!');
                 return;
             }
 
@@ -1738,15 +1803,15 @@
                 const result = await tonConnectUI.sendTransaction(transaction);
 
                 if (result) {
-                    alert('Оплата прошла успешно!');
+                    showNotification('Оплата прошла успешно!');
                     applyItemEffect(itemType); // Применение эффекта товара
                     updateUI(); // Обновление интерфейса
                 } else {
-                    alert('Ошибка при оплате. Пожалуйста, попробуйте ещё раз.');
+                    showErrorModal('Ошибка при оплате. Пожалуйста, попробуйте ещё раз.');
                 }
             } catch (error) {
                 console.error('Ошибка при оплате:', error);
-                alert('Произошла ошибка при оплате. Пожалуйста, попробуйте ещё раз.');
+                showErrorModal('Произошла ошибка при оплате. Пожалуйста, попробуйте ещё раз.');
             }
         }
 
@@ -1763,7 +1828,7 @@
                     activateAutoClicker(); // Активация автокликера
                     break;
                 default:
-                    alert("Неизвестный товар.");
+                    showErrorModal("Неизвестный товар.");
             }
         }
 
@@ -1830,7 +1895,7 @@
         const claimAirdropButton = document.getElementById('claim-airdrop-button');
         claimAirdropButton.addEventListener('click', async () => {
             if (!walletAddress) {
-                alert('Пожалуйста, подключите кошелёк!');
+                showErrorModal('Пожалуйста, подключите кошелёк!');
                 return;
             }
 
@@ -1847,16 +1912,16 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    alert('Airdrop успешно получен!');
+                    showNotification('Airdrop успешно получен!');
                     // Обновляем баланс игрока (если нужно)
                     coins += result.amount;
                     updateUI();
                 } else {
-                    alert('Ошибка при получении Airdrop: ' + result.message);
+                    showErrorModal('Ошибка при получении Airdrop: ' + result.message);
                 }
             } catch (error) {
                 console.error('Ошибка при запросе Airdrop:', error);
-                alert('Произошла ошибка при получении Airdrop. Пожалуйста, попробуйте ещё раз.');
+                showErrorModal('Произошла ошибка при получении Airdrop. Пожалуйста, попробуйте ещё раз.');
             }
         });
 
@@ -1950,7 +2015,7 @@
                 const reward = rewards[rewardIndex];
 
                 reward.action();
-                alert(`Вы получили: ${reward.text}`);
+                showNotification(`Вы получили: ${reward.text}`);
                 updateUI();
                 saveGame();
 
@@ -2005,6 +2070,32 @@
                 }
             }
         };
+
+        // Функция для показа кастомного модального окна ошибки
+        function showErrorModal(message) {
+            const errorModal = document.getElementById('error-modal');
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = message;
+            errorModal.style.display = 'flex';
+        }
+
+        // Функция для закрытия модального окна ошибки
+        function closeErrorModal() {
+            const errorModal = document.getElementById('error-modal');
+            errorModal.style.display = 'none';
+        }
+
+        // Функция для показа уведомлений
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'boost-notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000); // Уведомление исчезнет через 3 секунды
+        }
     </script>
 
     <!-- Скрипт для фона с мультяшными звёздами -->
