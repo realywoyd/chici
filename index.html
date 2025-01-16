@@ -2545,7 +2545,10 @@
                     // Если задание содержит ссылку, отображаем её
                     questItem.innerHTML = `
                         <span>${quest.description} - ${quest.reward} монет</span>
-                        ${quest.completed ? '<span>✅</span>' : `<a href="${quest.link}" target="_blank">Подписаться</a>`}
+                        ${quest.completed ? '<span>✅</span>' : `
+                            <a href="${quest.link}" target="_blank">Подписаться</a>
+                            <button onclick="checkSubscription(${quest.id})" ${quest.checked ? 'disabled' : ''}>Проверка</button>
+                        `}
                     `;
                 } else {
                     // Обычное задание с кнопкой "Выполнить"
@@ -2558,25 +2561,24 @@
             });
         }
 
-        // Функция для выполнения задания
-        function completeQuest(questId) {
-            const quest = quests.find(q => q.id === questId);
-            if (quest && !quest.completed && quest.condition(player)) {
-                quest.completed = true;
-                player.coins += quest.reward;
-                updateQuestsList();
-                showNotification(`Задание выполнено! Вы получили ${quest.reward} монет.`);
-            } else {
-                showErrorModal("Вы не выполнили условия задания!");
-            }
-        }
-
         // Функция для проверки подписки
-        function checkSubscription() {
-            // Здесь можно добавить логику для проверки подписки через Telegram API
-            // В данном примере просто эмулируем подписку
-            player.subscribed = true;
-            completeQuest(1); // Завершаем задание с ID 1
+        function checkSubscription(questId) {
+            const quest = quests.find(q => q.id === questId);
+            if (!quest) return;
+
+            // Эмуляция проверки подписки через Telegram API
+            // В реальной игре здесь должен быть вызов API для проверки подписки
+            const isSubscribed = confirm("Вы подписались на канал?"); // Эмуляция проверки
+
+            if (isSubscribed) {
+                quest.checked = true; // Отмечаем, что подписка проверена
+                quest.completed = true; // Задание выполнено
+                player.coins += quest.reward; // Начисляем монеты
+                updateQuestsList(); // Обновляем список заданий
+                showNotification(`Подписка подтверждена! Вы получили ${quest.reward} монет.`);
+            } else {
+                showErrorModal("Подписка не подтверждена. Пожалуйста, подпишитесь на канал.");
+            }
         }
 
         // Пример данных заданий
@@ -2586,6 +2588,7 @@
                 description: "Подпишись на наш канал!",
                 reward: 100000,
                 completed: false,
+                checked: false, // Добавляем поле для отслеживания проверки
                 condition: (player) => player.subscribed,
                 link: "https://t.me/+HWAk8tvtO65mMDU1" // Ссылка на канал
             }
