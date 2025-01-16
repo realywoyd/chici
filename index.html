@@ -2566,19 +2566,24 @@
             const quest = quests.find(q => q.id === questId);
             if (!quest) return;
 
-            // Эмуляция проверки подписки через Telegram API
-            // В реальной игре здесь должен быть вызов API для проверки подписки
-            const isSubscribed = confirm("Вы подписались на канал?"); // Эмуляция проверки
-
+            const isSubscribed = confirm("Вы подписались на канал?");
             if (isSubscribed) {
-                quest.checked = true; // Отмечаем, что подписка проверена
-                quest.completed = true; // Задание выполнено
-                player.coins += quest.reward; // Начисляем монеты
-                updateQuestsList(); // Обновляем список заданий
-                showNotification(`Подписка подтверждена! Вы получили ${quest.reward} монет.`);
+                completeQuest(questId);
             } else {
                 showErrorModal("Подписка не подтверждена. Пожалуйста, подпишитесь на канал.");
             }
+        }
+
+        // Функция для завершения задания
+        function completeQuest(questId) {
+            const quest = quests.find(q => q.id === questId);
+            if (!quest || quest.completed) return;
+
+            quest.completed = true;
+            player.coins += quest.reward;
+            updateQuestsList();
+            updateUI();
+            showNotification(`Задание выполнено! Вы получили ${quest.reward} монет.`);
         }
 
         // Пример данных заданий
@@ -2588,9 +2593,8 @@
                 description: "Подпишись на наш канал!",
                 reward: 100000,
                 completed: false,
-                checked: false, // Добавляем поле для отслеживания проверки
-                condition: (player) => player.subscribed,
-                link: "https://t.me/+HWAk8tvtO65mMDU1" // Ссылка на канал
+                checked: false,
+                link: "https://t.me/+HWAk8tvtO65mMDU1"
             }
         ];
     </script>
