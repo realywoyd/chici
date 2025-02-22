@@ -14,6 +14,45 @@
             font-family: 'Courier New', monospace;
             touch-action: none;
         }
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        #loading-screen {
+            background: #0d0d1a;
+            text-align: center;
+        }
+        #loading-screen h1 {
+            font-size: 24px;
+            text-shadow: 0 0 10px #ff00ff, 0 0 20px #00ffcc;
+            animation: flicker 1.5s infinite alternate;
+        }
+        #loading-screen p {
+            font-size: 14px;
+            text-shadow: 0 0 5px #00ffcc;
+        }
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        #character-screen {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #ff00ff;
+            box-shadow: 0 0 15px #ff00ff;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        #game-screen {
+            width: 100%;
+            height: 100%;
+        }
         #game-ui {
             position: absolute;
             top: 10px;
@@ -113,11 +152,15 @@
     </style>
 </head>
 <body>
-    <div id="game-ui">
+    <!-- Экран загрузки -->
+    <div id="loading-screen" class="screen">
+        <h1 class="neon-text">Кибер-Город 2089</h1>
+        <p>Загрузка системы...</p>
+    </div>
+
+    <!-- Экран создания/выбора персонажа -->
+    <div id="character-screen" class="screen">
         <h1 class="neon-text">🌃 Кибер-Город</h1>
-        <div id="output">
-            Добро пожаловать!<br>Создай персонажа:<br>
-        </div>
         <div id="create-character">
             <input id="char-name" type="text" placeholder="Имя" style="width: 80px; background: #1a1a33; color: #00ffcc; border: 1px solid #ff00ff; padding: 2px;">
             <button onclick="createCharacter('Хакер')">Хакер</button>
@@ -125,27 +168,37 @@
             <button onclick="createCharacter('Техник')">Техник</button>
         </div>
         <div id="character-list"></div>
-        <div id="action-buttons" style="display: none;">
-            <button onclick="startMission()">Миссия</button>
-            <button onclick="completeMission()">Выполнить</button>
-            <button onclick="showUpgradeMenu()">Прокачка</button>
+    </div>
+
+    <!-- Экран игры -->
+    <div id="game-screen" class="screen">
+        <div id="game-ui">
+            <h1 class="neon-text">🌃 Кибер-Город</h1>
+            <div id="output">
+                Добро пожаловать в Кибер-Город!<br>
+            </div>
+            <div id="action-buttons">
+                <button onclick="startMission()">Миссия</button>
+                <button onclick="completeMission()">Выполнить</button>
+                <button onclick="showUpgradeMenu()">Прокачка</button>
+            </div>
         </div>
-    </div>
-    <div id="joystick">
-        <div id="joystick-knob"></div>
-    </div>
-    <div id="action-buttons-mobile">
-        <button onclick="startMission()" style="width: 80px;">Миссия</button><br>
-        <button onclick="completeMission()" style="width: 80px;">Выполнить</button><br>
-        <button onclick="showUpgradeMenu()" style="width: 80px;">Прокачка</button>
-    </div>
-    <div id="upgrade-menu">
-        <h3 class="neon-text">Прокачка</h3>
-        <p id="upgrade-stats"></p>
-        <button onclick="upgradeStat('strength')">Сила +1 (100 кр.)</button>
-        <button onclick="upgradeStat('intelligence')">Интеллект +1 (100 кр.)</button>
-        <button onclick="upgradeStat('agility')">Ловкость +1 (100 кр.)</button>
-        <button onclick="hideUpgradeMenu()">Закрыть</button>
+        <div id="joystick">
+            <div id="joystick-knob"></div>
+        </div>
+        <div id="action-buttons-mobile">
+            <button onclick="startMission()" style="width: 80px;">Миссия</button><br>
+            <button onclick="completeMission()" style="width: 80px;">Выполнить</button><br>
+            <button onclick="showUpgradeMenu()" style="width: 80px;">Прокачка</button>
+        </div>
+        <div id="upgrade-menu">
+            <h3 class="neon-text">Прокачка</h3>
+            <p id="upgrade-stats"></p>
+            <button onclick="upgradeStat('strength')">Сила +1 (100 кр.)</button>
+            <button onclick="upgradeStat('intelligence')">Интеллект +1 (100 кр.)</button>
+            <button onclick="upgradeStat('agility')">Ловкость +1 (100 кр.)</button>
+            <button onclick="hideUpgradeMenu()">Закрыть</button>
+        </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
@@ -155,13 +208,26 @@
         window.Telegram.WebApp.ready();
         window.Telegram.WebApp.expand();
 
-        // Настройка сцены
+        // Элементы интерфейса
+        const loadingScreen = document.getElementById("loading-screen");
+        const characterScreen = document.getElementById("character-screen");
+        const gameScreen = document.getElementById("game-screen");
+        const output = document.getElementById("output");
+        const createCharacterDiv = document.getElementById("create-character");
+
+        // Переменные игры
+        let currentCharacter = null;
+        let characters = [];
+        let selectedCharacter = null;
+        let currentMission = null;
+
+        // Настройка сцены Three.js
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
         const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "low-power" });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        document.body.appendChild(renderer.domElement);
+        document.getElementById("game-screen").appendChild(renderer.domElement);
 
         // Текстуры
         const textureLoader = new THREE.TextureLoader();
@@ -193,18 +259,18 @@
             scene.add(building);
         }
 
-        // Неоновый дождь (частицы)
+        // Неоновый дождь
         const particleCount = 200;
         const particlesGeometry = new THREE.BufferGeometry();
         const positions = new Float32Array(particleCount * 3);
         const colors = new Float32Array(particleCount * 3);
         for (let i = 0; i < particleCount; i++) {
-            positions[i * 3] = Math.random() * 50 - 25;     // x
-            positions[i * 3 + 1] = Math.random() * 20 + 5;  // y
-            positions[i * 3 + 2] = Math.random() * 50 - 25; // z
-            colors[i * 3] = Math.random() > 0.5 ? 1 : 0;     // r (ff00ff или 00ffcc)
-            colors[i * 3 + 1] = 0;                           // g
-            colors[i * 3 + 2] = Math.random() > 0.5 ? 1 : 0; // b
+            positions[i * 3] = Math.random() * 50 - 25;
+            positions[i * 3 + 1] = Math.random() * 20 + 5;
+            positions[i * 3 + 2] = Math.random() * 50 - 25;
+            colors[i * 3] = Math.random() > 0.5 ? 1 : 0;
+            colors[i * 3 + 1] = 0;
+            colors[i * 3 + 2] = Math.random() > 0.5 ? 1 : 0;
         }
         particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
         particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
@@ -236,21 +302,8 @@
             scene.add(energyBlock);
             missionObjects.push(energyBlock);
         }
-        createMissionObjects();
 
-        // Переменные
-        let currentCharacter = null;
-        let characters = [];
-        let selectedCharacter = null;
-        const output = document.getElementById("output");
-        const actionButtons = document.getElementById("action-buttons");
-        const createCharacterDiv = document.getElementById("create-character");
-        let currentMission = null;
-
-        // Камера
-        camera.position.set(0, 8, 10);
-
-        // Создание персонажа
+        // Создание модели персонажа
         function createCharacterModel(role) {
             if (currentCharacter) scene.remove(currentCharacter);
             const group = new THREE.Group();
@@ -327,14 +380,13 @@
                 camera.lookAt(currentCharacter.position);
             }
 
-            // Анимация частиц
             const positions = particles.geometry.attributes.position.array;
             for (let i = 0; i < particleCount; i++) {
-                positions[i * 3 + 1] -= 0.05; // Падение
+                positions[i * 3 + 1] -= 0.05;
                 if (positions[i * 3 + 1] < 0) {
-                    positions[i * 3 + 1] = Math.random() * 20 + 5; // Респавн сверху
-                    positions[i * 3] = Math.random() * 50 - 25;     // Новая x
-                    positions[i * 3 + 2] = Math.random() * 50 - 25; // Новая z
+                    positions[i * 3 + 1] = Math.random() * 20 + 5;
+                    positions[i * 3] = Math.random() * 50 - 25;
+                    positions[i * 3 + 2] = Math.random() * 50 - 25;
                 }
             }
             particles.geometry.attributes.position.needsUpdate = true;
@@ -342,6 +394,14 @@
             renderer.render(scene, camera);
         }
         animate();
+
+        // Управление экранами
+        function showScreen(screenId) {
+            loadingScreen.style.display = "none";
+            characterScreen.style.display = "none";
+            gameScreen.style.display = "none";
+            document.getElementById(screenId).style.display = "flex";
+        }
 
         // Логика игры
         function appendMessage(text) {
@@ -358,12 +418,12 @@
 
         function createCharacter(role) {
             if (characters.length >= 3) {
-                appendMessage("Максимум 3 персонажа!");
+                window.Telegram.WebApp.showAlert("Максимум 3 персонажа!");
                 return;
             }
             const name = document.getElementById("char-name").value.trim();
             if (!name) {
-                appendMessage("Введи имя!");
+                window.Telegram.WebApp.showAlert("Введи имя!");
                 return;
             }
             const character = {
@@ -380,9 +440,7 @@
             document.getElementById("char-name").value = "";
             updateCharacterList();
             saveProgress();
-            appendMessage(`Создан: ${name} (${role}).`);
             window.Telegram.WebApp.showAlert(`Персонаж ${name} создан!`);
-            if (characters.length === 3) createCharacterDiv.style.display = "none";
         }
 
         function updateCharacterList() {
@@ -395,21 +453,20 @@
                         [С:${char.stats.strength} И:${char.stats.intelligence} Л:${char.stats.agility}]
                     </button><br>`;
             });
+            if (characters.length >= 3) createCharacterDiv.style.display = "none";
+            else createCharacterDiv.style.display = "block";
         }
 
         function selectCharacter(index) {
             selectedCharacter = characters[index];
             createCharacterModel(selectedCharacter.role);
+            createMissionObjects();
+            showScreen("game-screen");
             appendMessage(`Выбран: ${selectedCharacter.name}.`);
-            actionButtons.style.display = "block";
-            currentMission = null;
         }
 
         function startMission() {
-            if (!selectedCharacter) {
-                appendMessage("Выбери персонажа!");
-                return;
-            }
+            if (!selectedCharacter) return;
             const missions = {
                 "Хакер": [
                     { target: [-5, -5], reward: 30 + selectedCharacter.stats.intelligence * 5, desc: "Взломать терминал", type: "hack" },
@@ -430,14 +487,7 @@
         }
 
         function completeMission() {
-            if (!selectedCharacter || !currentCharacter) {
-                appendMessage("Выбери персонажа!");
-                return;
-            }
-            if (!currentMission) {
-                appendMessage("Начни миссию!");
-                return;
-            }
+            if (!selectedCharacter || !currentMission) return;
             const pos = currentCharacter.position;
             const [targetX, targetZ] = currentMission.target;
             if (Math.abs(pos.x - targetX) < 1 && Math.abs(pos.z - targetZ) < 1) {
@@ -447,13 +497,12 @@
                 missionObjects.find(obj => obj.userData.type === currentMission.type && 
                     Math.abs(obj.position.x - targetX) < 1 && Math.abs(obj.position.z - targetZ) < 1).visible = false;
                 setTimeout(() => createMissionObjects(), 5000);
+                currentMission = null;
+                updateCharacterList();
+                saveProgress();
             } else {
                 appendMessage("💥 Не в точке!");
-                return;
             }
-            updateCharacterList();
-            saveProgress();
-            currentMission = null;
         }
 
         // Прокачка персонажей
@@ -461,10 +510,7 @@
         const upgradeStats = document.getElementById("upgrade-stats");
 
         function showUpgradeMenu() {
-            if (!selectedCharacter) {
-                appendMessage("Выбери персонажа!");
-                return;
-            }
+            if (!selectedCharacter) return;
             upgradeStats.innerHTML = `${selectedCharacter.name}: ${selectedCharacter.creds} кр.<br>
                 Сила: ${selectedCharacter.stats.strength}<br>
                 Интеллект: ${selectedCharacter.stats.intelligence}<br>
@@ -477,8 +523,7 @@
         }
 
         function upgradeStat(stat) {
-            if (!selectedCharacter) return;
-            if (selectedCharacter.creds < 100) {
+            if (!selectedCharacter || selectedCharacter.creds < 100) {
                 appendMessage("Недостаточно кредитов!");
                 window.Telegram.WebApp.showAlert("Недостаточно кредитов!");
                 return;
@@ -494,24 +539,44 @@
 
         // Сохранение и загрузка прогресса
         function saveProgress() {
-            window.Telegram.WebApp.CloudStorage.setItem("characters", JSON.stringify(characters), () => {
-                console.log("Прогресс сохранен");
+            try {
+                window.Telegram.WebApp.CloudStorage.setItem("characters", JSON.stringify(characters), () => {
+                    console.log("Прогресс сохранен");
+                });
+            } catch (e) {
+                console.error("Ошибка сохранения:", e);
+            }
+        }
+
+        function loadProgress(callback) {
+            try {
+                window.Telegram.WebApp.CloudStorage.getItem("characters", (error, result) => {
+                    if (!error && result) {
+                        characters = JSON.parse(result);
+                        console.log("Прогресс загружен:", characters);
+                    } else {
+                        console.log("Прогресс не найден, новый старт");
+                    }
+                    callback();
+                });
+            } catch (e) {
+                console.error("Ошибка загрузки:", e);
+                callback();
+            }
+        }
+
+        // Инициализация
+        function initializeGame() {
+            showScreen("loading-screen");
+            loadProgress(() => {
+                setTimeout(() => {
+                    updateCharacterList();
+                    showScreen("character-screen");
+                }, 2000); // Экран загрузки показывается 2 секунды
             });
         }
 
-        function loadProgress() {
-            window.Telegram.WebApp.CloudStorage.getItem("characters", (error, result) => {
-                if (!error && result) {
-                    characters = JSON.parse(result);
-                    updateCharacterList();
-                    if (characters.length >= 3) createCharacterDiv.style.display = "none";
-                    appendMessage("Прогресс загружен!");
-                } else {
-                    appendMessage("Новый старт!");
-                }
-            });
-        }
-        loadProgress();
+        initializeGame();
 
         // Адаптация под размер окна
         window.addEventListener('resize', () => {
