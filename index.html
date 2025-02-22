@@ -133,6 +133,39 @@
             width: 100%;
             margin: 5px 0;
         }
+        #character-hud {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            text-align: center;
+        }
+        #character-avatar {
+            font-size: 40px;
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #ff00ff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ff00ff;
+        }
+        #character-level {
+            font-size: 16px;
+            margin-top: 5px;
+            text-shadow: 0 0 5px #00ffcc;
+        }
+        #health-bar {
+            width: 50px;
+            height: 10px;
+            background: #333;
+            border: 1px solid #ff00ff;
+            margin-top: 5px;
+        }
+        #health-fill {
+            height: 100%;
+            background: #00ffcc;
+            transition: width 0.3s ease;
+        }
     </style>
 </head>
 <body>
@@ -156,6 +189,13 @@
 
     <!-- Экран игры -->
     <div id="game-screen" class="screen">
+        <div id="character-hud">
+            <div id="character-avatar">😊</div>
+            <div id="character-level">1</div>
+            <div id="health-bar">
+                <div id="health-fill" style="width: 100%;"></div>
+            </div>
+        </div>
         <div id="welcome-message" class="neon-text">Добро пожаловать в Кибер-Город!</div>
         <div id="joystick">
             <div id="joystick-knob"></div>
@@ -189,6 +229,8 @@
         const gameScreen = document.getElementById("game-screen");
         const welcomeMessage = document.getElementById("welcome-message");
         const createCharacterDiv = document.getElementById("create-character");
+        const characterLevel = document.getElementById("character-level");
+        const healthFill = document.getElementById("health-fill");
 
         // Переменные игры
         let currentCharacter = null;
@@ -437,6 +479,12 @@
                         saveProgress();
                     }
                 });
+
+                // Обновление HUD
+                if (selectedCharacter) {
+                    characterLevel.textContent = selectedCharacter.level || 1;
+                    healthFill.style.width = `${(selectedCharacter.health / 100) * 100}%`;
+                }
             }
 
             const positions = particles.geometry.attributes.position.array;
@@ -489,7 +537,8 @@
                 name,
                 role,
                 creds: 0,
-                health: 100, // Добавляем здоровье
+                health: 100,
+                level: 1, // Начальный уровень
                 stats: {
                     strength: role === "Наемник" ? 10 : 5,
                     intelligence: role === "Хакер" ? 10 : 5,
@@ -511,7 +560,7 @@
             characters.forEach((char, index) => {
                 charList.innerHTML += `
                     <button onclick="selectCharacter(${index})">
-                        ${char.name} (${char.role}) - ${char.creds} кр. [Зд:${char.health}]
+                        ${char.name} (${char.role}) - ${char.creds} кр. [Зд:${char.health}] Ур.${char.level}
                         [С:${char.stats.strength} И:${char.stats.intelligence} Л:${char.stats.agility}]
                     </button><br>`;
             });
@@ -580,7 +629,7 @@
                         Math.pow(currentCharacter.position.x - enemy.position.x, 2) +
                         Math.pow(currentCharacter.position.z - enemy.position.z, 2)
                     );
-                    if (dist < minDist && dist < 2) { // Дистанция для атаки — 2 единицы
+                    if (dist < minDist && dist < 2) {
                         minDist = dist;
                         nearestEnemy = enemy;
                     }
@@ -592,7 +641,7 @@
                 return;
             }
 
-            const playerAttack = selectedCharacter.stats.strength + Math.floor(Math.random() * 5); // Сила + рандом
+            const playerAttack = selectedCharacter.stats.strength + Math.floor(Math.random() * 5);
             const enemyAttack = nearestEnemy.userData.stats.strength + Math.floor(Math.random() * 5);
             const enemyHealth = nearestEnemy.userData.stats.health;
 
@@ -611,8 +660,8 @@
                 appendMessage(`Враг ${nearestEnemy.userData.name} атаковал тебя! Урон: ${enemyAttack}. Твоё здоровье: ${selectedCharacter.health}`);
                 if (selectedCharacter.health <= 0) {
                     appendMessage("Ты побеждён! Возвращайся на базу для восстановления.");
-                    selectedCharacter.health = 100; // Восстановление после смерти
-                    currentCharacter.position.set(0, 0, 0); // Телепорт на базу
+                    selectedCharacter.health = 100;
+                    currentCharacter.position.set(0, 0, 0);
                 }
             }
             updateCharacterList();
@@ -630,6 +679,7 @@
                 : "Инвентарь пуст";
             upgradeStats.innerHTML = `${selectedCharacter.name}: ${selectedCharacter.creds} кр.<br>
                 Здоровье: ${selectedCharacter.health}<br>
+                Уровень: ${selectedCharacter.level || 1}<br>
                 Сила: ${selectedCharacter.stats.strength}<br>
                 Интеллект: ${selectedCharacter.stats.intelligence}<br>
                 Ловкость: ${selectedCharacter.stats.agility}<br>
