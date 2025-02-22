@@ -163,6 +163,7 @@
         <div id="action-buttons-mobile">
             <button onclick="startMission()" style="width: 80px;">Миссия</button><br>
             <button onclick="completeMission()" style="width: 80px;">Выполнить</button><br>
+            <button onclick="attackEnemy()" style="width: 80px;">Атака</button><br>
             <button onclick="showUpgradeMenu()" style="width: 80px;">Прокачка</button>
         </div>
         <div id="upgrade-menu">
@@ -195,6 +196,7 @@
         let selectedCharacter = null;
         let currentMission = null;
         let itemObjects = [];
+        let enemyObjects = [];
 
         // Квесты для каждого класса
         const quests = {
@@ -321,6 +323,30 @@
             itemObjects.push(module);
         }
 
+        // Враги на карте
+        function createEnemies() {
+            enemyObjects.forEach(obj => scene.remove(obj));
+            enemyObjects.length = 0;
+
+            const rogueDrone = new THREE.Mesh(new THREE.SphereGeometry(0.7, 8, 8), new THREE.MeshBasicMaterial({ color: 0xff5555 }));
+            rogueDrone.position.set(4, 0.7, 4);
+            rogueDrone.userData = { type: "enemy", name: "Бунтующий дрон", stats: { health: 20, strength: 5 }, reward: 30 };
+            scene.add(rogueDrone);
+            enemyObjects.push(rogueDrone);
+
+            const guard = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.5, 0.8), new THREE.MeshBasicMaterial({ color: 0x5555ff }));
+            guard.position.set(-4, 0.75, -4);
+            guard.userData = { type: "enemy", name: "Охранник", stats: { health: 30, strength: 8 }, reward: 50 };
+            scene.add(guard);
+            enemyObjects.push(guard);
+
+            const cyberBeast = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 1.2, 8), new THREE.MeshBasicMaterial({ color: 0xffaa00 }));
+            cyberBeast.position.set(0, 0.6, 6);
+            cyberBeast.userData = { type: "enemy", name: "Кибер-зверь", stats: { health: 40, strength: 10 }, reward: 70 };
+            scene.add(cyberBeast);
+            enemyObjects.push(cyberBeast);
+        }
+
         // Создание модели персонажа
         function createCharacterModel(role) {
             if (currentCharacter) scene.remove(currentCharacter);
@@ -376,7 +402,7 @@
             knob.style.top = "20px";
         });
 
-        // Анимация и проверка взаимодействия с предметами
+        // Анимация и проверка взаимодействия
         function animate() {
             requestAnimationFrame(animate);
 
@@ -463,13 +489,14 @@
                 name,
                 role,
                 creds: 0,
+                health: 100, // Добавляем здоровье
                 stats: {
                     strength: role === "Наемник" ? 10 : 5,
                     intelligence: role === "Хакер" ? 10 : 5,
                     agility: role === "Техник" ? 10 : 5
                 },
                 inventory: [],
-                questProgress: 0 // Номер текущего квеста (0 = первый квест)
+                questProgress: 0
             };
             characters.push(character);
             document.getElementById("char-name").value = "";
@@ -484,7 +511,7 @@
             characters.forEach((char, index) => {
                 charList.innerHTML += `
                     <button onclick="selectCharacter(${index})">
-                        ${char.name} (${char.role}) - ${char.creds} кр.
+                        ${char.name} (${char.role}) - ${char.creds} кр. [Зд:${char.health}]
                         [С:${char.stats.strength} И:${char.stats.intelligence} Л:${char.stats.agility}]
                     </button><br>`;
             });
@@ -497,9 +524,10 @@
             createCharacterModel(selectedCharacter.role);
             createMissionObjects();
             createItems();
+            createEnemies();
             showScreen("game-screen");
             showWelcomeMessage();
-            appendMessage(`Выбран: ${selectedCharacter.name}. Начни первую миссию!`);
+            appendMessage(`Выбран: ${selectedCharacter.name}. Начни первую миссию или сражайся с врагами!`);
         }
 
         function startMission() {
@@ -540,6 +568,57 @@
             }
         }
 
+        // Логика боя с врагами
+        function attackEnemy() {
+            if (!selectedCharacter) return;
+            let nearestEnemy = null;
+            let minDist = Infinity;
+
+            enemyObjects.forEach(enemy => {
+                if (enemy.visible) {
+                    const dist = Math.sqrt(
+                        Math.pow(currentCharacter.position.x - enemy.position.x, 2) +
+                        Math.pow(currentCharacter.position.z - enemy.position.z, 2)
+                    );
+                    if (dist < minDist && dist < 2) { // Дистанция для атаки — 2 единицы
+                        minDist = dist;
+                        nearestEnemy = enemy;
+                    }
+                }
+            });
+
+            if (!nearestEnemy) {
+                appendMessage("Нет врагов поблизости!");
+                return;
+            }
+
+            const playerAttack = selectedCharacter.stats.strength + Math.floor(Math.random() * 5); // Сила + рандом
+            const enemyAttack = nearestEnemy.userData.stats.strength + Math.floor(Math.random() * 5);
+            const enemyHealth = nearestEnemy.userData.stats.health;
+
+            if (playerAttack > enemyAttack) {
+                nearestEnemy.userData.stats.health -= playerAttack;
+                appendMessage(`Ты атаковал ${nearestEnemy.userData.name}! Нанесён урон: ${playerAttack}. Здоровье врага: ${nearestEnemy.userData.stats.health}`);
+                if (nearestEnemy.userData.stats.health <= 0) {
+                    selectedCharacter.creds += nearestEnemy.userData.reward;
+                    appendMessage(`⚡️ ${nearestEnemy.userData.name} побеждён! +${nearestEnemy.userData.reward} кр.`);
+                    nearestEnemy.visible = false;
+                    enemyObjects = enemyObjects.filter(e => e !== nearestEnemy);
+                    saveProgress();
+                }
+            } else {
+                selectedCharacter.health -= enemyAttack;
+                appendMessage(`Враг ${nearestEnemy.userData.name} атаковал тебя! Урон: ${enemyAttack}. Твоё здоровье: ${selectedCharacter.health}`);
+                if (selectedCharacter.health <= 0) {
+                    appendMessage("Ты побеждён! Возвращайся на базу для восстановления.");
+                    selectedCharacter.health = 100; // Восстановление после смерти
+                    currentCharacter.position.set(0, 0, 0); // Телепорт на базу
+                }
+            }
+            updateCharacterList();
+            saveProgress();
+        }
+
         // Прокачка и инвентарь
         const upgradeMenu = document.getElementById("upgrade-menu");
         const upgradeStats = document.getElementById("upgrade-stats");
@@ -550,6 +629,7 @@
                 ? "Инвентарь: " + selectedCharacter.inventory.map(item => item.name).join(", ") 
                 : "Инвентарь пуст";
             upgradeStats.innerHTML = `${selectedCharacter.name}: ${selectedCharacter.creds} кр.<br>
+                Здоровье: ${selectedCharacter.health}<br>
                 Сила: ${selectedCharacter.stats.strength}<br>
                 Интеллект: ${selectedCharacter.stats.intelligence}<br>
                 Ловкость: ${selectedCharacter.stats.agility}<br>
