@@ -12,7 +12,7 @@
             background: #0d0d1a;
             color: #00ffcc;
             font-family: 'Courier New', monospace;
-            touch-action: none; /* Отключаем стандартное масштабирование */
+            touch-action: none;
         }
         #game-ui {
             position: absolute;
@@ -23,6 +23,7 @@
             padding: 5px;
             border: 1px solid #ff00ff;
             font-size: 12px;
+            box-shadow: 0 0 10px #ff00ff;
         }
         .neon-text {
             text-shadow: 0 0 5px #00ffcc, 0 0 10px #ff00ff;
@@ -35,6 +36,8 @@
             margin: 2px;
             cursor: pointer;
             font-size: 10px;
+            text-shadow: 0 0 5px #00ffcc;
+            transition: all 0.3s;
         }
         button:hover {
             background: #00ffcc;
@@ -50,6 +53,7 @@
             padding: 3px;
             margin: 2px 0;
             transition: opacity 0.5s ease-out;
+            text-shadow: 0 0 5px #00ffcc;
         }
         .notification.fade-out {
             opacity: 0;
@@ -63,6 +67,7 @@
             background: rgba(255, 0, 255, 0.2);
             border-radius: 50%;
             touch-action: none;
+            border: 1px solid #ff00ff;
         }
         #joystick-knob {
             width: 40px;
@@ -72,6 +77,38 @@
             position: absolute;
             top: 20px;
             left: 20px;
+            box-shadow: 0 0 10px #00ffcc;
+        }
+        #action-buttons-mobile {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+        }
+        #upgrade-menu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 15px;
+            border: 2px solid #ff00ff;
+            box-shadow: 0 0 15px #ff00ff, 0 0 30px #00ffcc;
+            display: none;
+            border-radius: 5px;
+            text-align: center;
+        }
+        #upgrade-menu h3 {
+            margin: 0 0 10px;
+            font-size: 14px;
+            text-shadow: 0 0 5px #00ffcc;
+        }
+        #upgrade-menu p {
+            margin: 5px 0;
+            font-size: 12px;
+        }
+        #upgrade-menu button {
+            width: 100%;
+            margin: 5px 0;
         }
     </style>
 </head>
@@ -91,17 +128,30 @@
         <div id="action-buttons" style="display: none;">
             <button onclick="startMission()">Миссия</button>
             <button onclick="completeMission()">Выполнить</button>
+            <button onclick="showUpgradeMenu()">Прокачка</button>
         </div>
     </div>
     <div id="joystick">
         <div id="joystick-knob"></div>
     </div>
+    <div id="action-buttons-mobile">
+        <button onclick="startMission()" style="width: 80px;">Миссия</button><br>
+        <button onclick="completeMission()" style="width: 80px;">Выполнить</button><br>
+        <button onclick="showUpgradeMenu()" style="width: 80px;">Прокачка</button>
+    </div>
+    <div id="upgrade-menu">
+        <h3 class="neon-text">Прокачка</h3>
+        <p id="upgrade-stats"></p>
+        <button onclick="upgradeStat('strength')">Сила +1 (100 кр.)</button>
+        <button onclick="upgradeStat('intelligence')">Интеллект +1 (100 кр.)</button>
+        <button onclick="upgradeStat('agility')">Ловкость +1 (100 кр.)</button>
+        <button onclick="hideUpgradeMenu()">Закрыть</button>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-    <!-- Telegram Web Apps SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-        // Telegram Web Apps инициализация
+        // Telegram Web Apps
         window.Telegram.WebApp.ready();
         window.Telegram.WebApp.expand();
 
@@ -110,8 +160,15 @@
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
         const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "low-power" });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Ограничение для мобильных
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         document.body.appendChild(renderer.domElement);
+
+        // Текстуры
+        const textureLoader = new THREE.TextureLoader();
+        const groundTexture = textureLoader.load('https://threejs.org/examples/textures/terrain/grasslight-big.jpg');
+        groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
+        groundTexture.repeat.set(5, 5);
+        const buildingTexture = textureLoader.load('https://threejs.org/examples/textures/brick_diffuse.jpg');
 
         // Освещение
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
@@ -122,13 +179,13 @@
 
         // Земля
         const groundGeometry = new THREE.PlaneGeometry(50, 50);
-        const groundMaterial = new THREE.MeshBasicMaterial({ color: 0x1a1a33 });
+        const groundMaterial = new THREE.MeshBasicMaterial({ map: groundTexture });
         const ground = new THREE.Mesh(groundGeometry, groundMaterial);
         ground.rotation.x = -Math.PI / 2;
         scene.add(ground);
 
-        // Здания (оптимизировано)
-        const buildingMaterial = new THREE.MeshBasicMaterial({ color: 0x00ffcc });
+        // Здания
+        const buildingMaterial = new THREE.MeshBasicMaterial({ map: buildingTexture });
         for (let i = 0; i < 10; i++) {
             const height = Math.random() * 10 + 5;
             const building = new THREE.Mesh(new THREE.BoxGeometry(3, height, 3), buildingMaterial);
@@ -136,9 +193,54 @@
             scene.add(building);
         }
 
+        // Неоновый дождь (частицы)
+        const particleCount = 200;
+        const particlesGeometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const colors = new Float32Array(particleCount * 3);
+        for (let i = 0; i < particleCount; i++) {
+            positions[i * 3] = Math.random() * 50 - 25;     // x
+            positions[i * 3 + 1] = Math.random() * 20 + 5;  // y
+            positions[i * 3 + 2] = Math.random() * 50 - 25; // z
+            colors[i * 3] = Math.random() > 0.5 ? 1 : 0;     // r (ff00ff или 00ffcc)
+            colors[i * 3 + 1] = 0;                           // g
+            colors[i * 3 + 2] = Math.random() > 0.5 ? 1 : 0; // b
+        }
+        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        const particlesMaterial = new THREE.PointsMaterial({ size: 0.2, vertexColors: true, transparent: true });
+        const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+        scene.add(particles);
+
+        // Интерактивные объекты
+        const missionObjects = [];
+        function createMissionObjects() {
+            missionObjects.forEach(obj => scene.remove(obj));
+            missionObjects.length = 0;
+
+            const terminal = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 1), new THREE.MeshBasicMaterial({ color: 0x00ffcc }));
+            terminal.position.set(-5, 1, -5);
+            terminal.userData = { type: "hack" };
+            scene.add(terminal);
+            missionObjects.push(terminal);
+
+            const drone = new THREE.Mesh(new THREE.SphereGeometry(0.5, 8, 8), new THREE.MeshBasicMaterial({ color: 0xff00ff }));
+            drone.position.set(5, 1, 5);
+            drone.userData = { type: "fight" };
+            scene.add(drone);
+            missionObjects.push(drone);
+
+            const energyBlock = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 1.5, 8), new THREE.MeshBasicMaterial({ color: 0xffff00 }));
+            energyBlock.position.set(0, 0.75, 5);
+            energyBlock.userData = { type: "repair" };
+            scene.add(energyBlock);
+            missionObjects.push(energyBlock);
+        }
+        createMissionObjects();
+
         // Переменные
         let currentCharacter = null;
-        const characters = [];
+        let characters = [];
         let selectedCharacter = null;
         const output = document.getElementById("output");
         const actionButtons = document.getElementById("action-buttons");
@@ -225,6 +327,18 @@
                 camera.lookAt(currentCharacter.position);
             }
 
+            // Анимация частиц
+            const positions = particles.geometry.attributes.position.array;
+            for (let i = 0; i < particleCount; i++) {
+                positions[i * 3 + 1] -= 0.05; // Падение
+                if (positions[i * 3 + 1] < 0) {
+                    positions[i * 3 + 1] = Math.random() * 20 + 5; // Респавн сверху
+                    positions[i * 3] = Math.random() * 50 - 25;     // Новая x
+                    positions[i * 3 + 2] = Math.random() * 50 - 25; // Новая z
+                }
+            }
+            particles.geometry.attributes.position.needsUpdate = true;
+
             renderer.render(scene, camera);
         }
         animate();
@@ -265,9 +379,10 @@
             characters.push(character);
             document.getElementById("char-name").value = "";
             updateCharacterList();
+            saveProgress();
             appendMessage(`Создан: ${name} (${role}).`);
-            if (characters.length === 3) createCharacterDiv.style.display = "none";
             window.Telegram.WebApp.showAlert(`Персонаж ${name} создан!`);
+            if (characters.length === 3) createCharacterDiv.style.display = "none";
         }
 
         function updateCharacterList() {
@@ -277,6 +392,7 @@
                 charList.innerHTML += `
                     <button onclick="selectCharacter(${index})">
                         ${char.name} (${char.role}) - ${char.creds} кр.
+                        [С:${char.stats.strength} И:${char.stats.intelligence} Л:${char.stats.agility}]
                     </button><br>`;
             });
         }
@@ -296,21 +412,21 @@
             }
             const missions = {
                 "Хакер": [
-                    { target: [-5, -5], reward: 50, desc: "Взломать терминал" },
-                    { target: [7, -7], reward: 75, desc: "Взломать сервер" }
+                    { target: [-5, -5], reward: 30 + selectedCharacter.stats.intelligence * 5, desc: "Взломать терминал", type: "hack" },
+                    { target: [7, -7], reward: 50 + selectedCharacter.stats.intelligence * 5, desc: "Взломать сервер", type: "hack" }
                 ],
                 "Наемник": [
-                    { target: [5, 5], reward: 70, desc: "Уничтожить дрона" },
-                    { target: [-7, 7], reward: 100, desc: "Ликвидировать цель" }
+                    { target: [5, 5], reward: 40 + selectedCharacter.stats.strength * 5, desc: "Уничтожить дрона", type: "fight" },
+                    { target: [-7, 7], reward: 60 + selectedCharacter.stats.strength * 5, desc: "Ликвидировать цель", type: "fight" }
                 ],
                 "Техник": [
-                    { target: [0, 5], reward: 60, desc: "Починить дрон" },
-                    { target: [5, -5], reward: 90, desc: "Восстановить энергоблок" }
+                    { target: [0, 5], reward: 35 + selectedCharacter.stats.agility * 5, desc: "Починить дрон", type: "repair" },
+                    { target: [5, -5], reward: 55 + selectedCharacter.stats.agility * 5, desc: "Восстановить энергоблок", type: "repair" }
                 ]
             };
             const missionList = missions[selectedCharacter.role];
             currentMission = missionList[Math.floor(Math.random() * missionList.length)];
-            appendMessage(`Цель: ${currentMission.desc}. Иди к (${currentMission.target[0]}, ${currentMission.target[1]}).`);
+            appendMessage(`Цель: ${currentMission.desc}. Иди к (${currentMission.target[0]}, ${currentMission.target[1]}). Награда: ${currentMission.reward} кр.`);
         }
 
         function completeMission() {
@@ -328,13 +444,74 @@
                 selectedCharacter.creds += currentMission.reward;
                 appendMessage(`⚡️ ${currentMission.desc}: +${currentMission.reward} кр.`);
                 window.Telegram.WebApp.showAlert(`Миссия выполнена! +${currentMission.reward} кредитов`);
+                missionObjects.find(obj => obj.userData.type === currentMission.type && 
+                    Math.abs(obj.position.x - targetX) < 1 && Math.abs(obj.position.z - targetZ) < 1).visible = false;
+                setTimeout(() => createMissionObjects(), 5000);
             } else {
                 appendMessage("💥 Не в точке!");
                 return;
             }
             updateCharacterList();
+            saveProgress();
             currentMission = null;
         }
+
+        // Прокачка персонажей
+        const upgradeMenu = document.getElementById("upgrade-menu");
+        const upgradeStats = document.getElementById("upgrade-stats");
+
+        function showUpgradeMenu() {
+            if (!selectedCharacter) {
+                appendMessage("Выбери персонажа!");
+                return;
+            }
+            upgradeStats.innerHTML = `${selectedCharacter.name}: ${selectedCharacter.creds} кр.<br>
+                Сила: ${selectedCharacter.stats.strength}<br>
+                Интеллект: ${selectedCharacter.stats.intelligence}<br>
+                Ловкость: ${selectedCharacter.stats.agility}`;
+            upgradeMenu.style.display = "block";
+        }
+
+        function hideUpgradeMenu() {
+            upgradeMenu.style.display = "none";
+        }
+
+        function upgradeStat(stat) {
+            if (!selectedCharacter) return;
+            if (selectedCharacter.creds < 100) {
+                appendMessage("Недостаточно кредитов!");
+                window.Telegram.WebApp.showAlert("Недостаточно кредитов!");
+                return;
+            }
+            selectedCharacter.creds -= 100;
+            selectedCharacter.stats[stat] += 1;
+            appendMessage(`Улучшено: ${stat === "strength" ? "Сила" : stat === "intelligence" ? "Интеллект" : "Ловкость"} +1!`);
+            window.Telegram.WebApp.showAlert(`Улучшено: ${stat === "strength" ? "Сила" : stat === "intelligence" ? "Интеллект" : "Ловкость"} +1`);
+            updateCharacterList();
+            saveProgress();
+            showUpgradeMenu();
+        }
+
+        // Сохранение и загрузка прогресса
+        function saveProgress() {
+            window.Telegram.WebApp.CloudStorage.setItem("characters", JSON.stringify(characters), () => {
+                console.log("Прогресс сохранен");
+            });
+        }
+
+        function loadProgress() {
+            window.Telegram.WebApp.CloudStorage.getItem("characters", (error, result) => {
+                if (!error && result) {
+                    characters = JSON.parse(result);
+                    updateCharacterList();
+                    if (characters.length >= 3) createCharacterDiv.style.display = "none";
+                    appendMessage("Прогресс загружен!");
+                } else {
+                    appendMessage("Новый старт!");
+                }
+            });
+        }
+        loadProgress();
 
         // Адаптация под размер окна
         window.addEventListener('resize', () => {
