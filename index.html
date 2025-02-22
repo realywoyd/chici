@@ -53,17 +53,6 @@
             width: 100%;
             height: 100%;
         }
-        #game-ui {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            width: 200px;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 5px;
-            border: 1px solid #ff00ff;
-            font-size: 12px;
-            box-shadow: 0 0 10px #ff00ff;
-        }
         .neon-text {
             text-shadow: 0 0 5px #00ffcc, 0 0 10px #ff00ff;
         }
@@ -82,20 +71,15 @@
             background: #00ffcc;
             color: #ff00ff;
         }
-        #output {
-            height: 60px;
-            overflow-y: auto;
-            border: 1px dashed #00ffcc;
-            padding: 5px;
-        }
-        .notification {
-            padding: 3px;
-            margin: 2px 0;
-            transition: opacity 0.5s ease-out;
-            text-shadow: 0 0 5px #00ffcc;
-        }
-        .notification.fade-out {
+        #welcome-message {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            text-shadow: 0 0 10px #ff00ff, 0 0 20px #00ffcc;
             opacity: 0;
+            transition: opacity 1s ease-out;
         }
         #joystick {
             position: absolute;
@@ -172,17 +156,7 @@
 
     <!-- Экран игры -->
     <div id="game-screen" class="screen">
-        <div id="game-ui">
-            <h1 class="neon-text">🌃 Кибер-Город</h1>
-            <div id="output">
-                Добро пожаловать в Кибер-Город!<br>
-            </div>
-            <div id="action-buttons">
-                <button onclick="startMission()">Миссия</button>
-                <button onclick="completeMission()">Выполнить</button>
-                <button onclick="showUpgradeMenu()">Прокачка</button>
-            </div>
-        </div>
+        <div id="welcome-message" class="neon-text">Добро пожаловать в Кибер-Город!</div>
         <div id="joystick">
             <div id="joystick-knob"></div>
         </div>
@@ -192,7 +166,7 @@
             <button onclick="showUpgradeMenu()" style="width: 80px;">Прокачка</button>
         </div>
         <div id="upgrade-menu">
-            <h3 class="neon-text">Прокачка</h3>
+            <h3 class="neon-text">Прокачка и Инвентарь</h3>
             <p id="upgrade-stats"></p>
             <button onclick="upgradeStat('strength')">Сила +1 (100 кр.)</button>
             <button onclick="upgradeStat('intelligence')">Интеллект +1 (100 кр.)</button>
@@ -212,7 +186,7 @@
         const loadingScreen = document.getElementById("loading-screen");
         const characterScreen = document.getElementById("character-screen");
         const gameScreen = document.getElementById("game-screen");
-        const output = document.getElementById("output");
+        const welcomeMessage = document.getElementById("welcome-message");
         const createCharacterDiv = document.getElementById("create-character");
 
         // Переменные игры
@@ -220,6 +194,26 @@
         let characters = [];
         let selectedCharacter = null;
         let currentMission = null;
+        let itemObjects = [];
+
+        // Квесты для каждого класса
+        const quests = {
+            "Хакер": [
+                { id: 1, desc: "Взломай терминал в Неоновом районе", target: [-5, -5], reward: 50, type: "hack", completed: false },
+                { id: 2, desc: "Получи доступ к серверу корпорации", target: [7, -7], reward: 100, type: "hack", completed: false },
+                { id: 3, desc: "Раскрой тайну Neon Core", target: [0, 10], reward: 200, type: "hack", completed: false }
+            ],
+            "Наемник": [
+                { id: 1, desc: "Уничтожь дрона на Свалке", target: [5, 5], reward: 60, type: "fight", completed: false },
+                { id: 2, desc: "Очисти район от охраны", target: [-7, 7], reward: 120, type: "fight", completed: false },
+                { id: 3, desc: "Ликвидируй главаря банды", target: [10, 0], reward: 250, type: "fight", completed: false }
+            ],
+            "Техник": [
+                { id: 1, desc: "Почини энергоблок в центре", target: [0, 5], reward: 55, type: "repair", completed: false },
+                { id: 2, desc: "Восстанови дрона-помощника", target: [5, -5], reward: 110, type: "repair", completed: false },
+                { id: 3, desc: "Перезапусти сеть города", target: [-10, 0], reward: 220, type: "repair", completed: false }
+            ]
+        };
 
         // Настройка сцены Three.js
         const scene = new THREE.Scene();
@@ -278,7 +272,7 @@
         const particles = new THREE.Points(particlesGeometry, particlesMaterial);
         scene.add(particles);
 
-        // Интерактивные объекты
+        // Интерактивные объекты миссий
         const missionObjects = [];
         function createMissionObjects() {
             missionObjects.forEach(obj => scene.remove(obj));
@@ -301,6 +295,30 @@
             energyBlock.userData = { type: "repair" };
             scene.add(energyBlock);
             missionObjects.push(energyBlock);
+        }
+
+        // Предметы на карте
+        function createItems() {
+            itemObjects.forEach(obj => scene.remove(obj));
+            itemObjects.length = 0;
+
+            const chip = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), new THREE.MeshBasicMaterial({ color: 0x00ffcc }));
+            chip.position.set(3, 0.25, -3);
+            chip.userData = { type: "item", name: "Чип доступа", effect: { intelligence: 5 } };
+            scene.add(chip);
+            itemObjects.push(chip);
+
+            const weapon = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), new THREE.MeshBasicMaterial({ color: 0xff00ff }));
+            weapon.position.set(-3, 0.25, 3);
+            weapon.userData = { type: "item", name: "Кибер-оружие", effect: { strength: 5 } };
+            scene.add(weapon);
+            itemObjects.push(weapon);
+
+            const module = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), new THREE.MeshBasicMaterial({ color: 0xffff00 }));
+            module.position.set(0, 0.25, -5);
+            module.userData = { type: "item", name: "Энерго-модуль", effect: { agility: 5 } };
+            scene.add(module);
+            itemObjects.push(module);
         }
 
         // Создание модели персонажа
@@ -358,7 +376,7 @@
             knob.style.top = "20px";
         });
 
-        // Анимация
+        // Анимация и проверка взаимодействия с предметами
         function animate() {
             requestAnimationFrame(animate);
 
@@ -378,6 +396,21 @@
                     currentCharacter.position.z + 10
                 );
                 camera.lookAt(currentCharacter.position);
+
+                // Проверка подбора предметов
+                itemObjects.forEach((item, index) => {
+                    const dist = Math.sqrt(
+                        Math.pow(currentCharacter.position.x - item.position.x, 2) +
+                        Math.pow(currentCharacter.position.z - item.position.z, 2)
+                    );
+                    if (dist < 1 && item.visible) {
+                        selectedCharacter.inventory.push(item.userData);
+                        appendMessage(`Подобран предмет: ${item.userData.name}`);
+                        item.visible = false;
+                        itemObjects.splice(index, 1);
+                        saveProgress();
+                    }
+                });
             }
 
             const positions = particles.geometry.attributes.position.array;
@@ -403,27 +436,27 @@
             document.getElementById(screenId).style.display = "flex";
         }
 
+        // Отображение приветственного сообщения
+        function showWelcomeMessage() {
+            welcomeMessage.style.opacity = "1";
+            setTimeout(() => {
+                welcomeMessage.style.opacity = "0";
+            }, 4000);
+        }
+
         // Логика игры
         function appendMessage(text) {
-            const message = document.createElement("div");
-            message.className = "notification";
-            message.innerHTML = text;
-            output.appendChild(message);
-            output.scrollTop = output.scrollHeight;
-            setTimeout(() => {
-                message.classList.add("fade-out");
-                setTimeout(() => message.remove(), 500);
-            }, 2000);
+            window.Telegram.WebApp.showAlert(text);
         }
 
         function createCharacter(role) {
             if (characters.length >= 3) {
-                window.Telegram.WebApp.showAlert("Максимум 3 персонажа!");
+                appendMessage("Максимум 3 персонажа!");
                 return;
             }
             const name = document.getElementById("char-name").value.trim();
             if (!name) {
-                window.Telegram.WebApp.showAlert("Введи имя!");
+                appendMessage("Введи имя!");
                 return;
             }
             const character = {
@@ -434,13 +467,15 @@
                     strength: role === "Наемник" ? 10 : 5,
                     intelligence: role === "Хакер" ? 10 : 5,
                     agility: role === "Техник" ? 10 : 5
-                }
+                },
+                inventory: [],
+                questProgress: 0 // Номер текущего квеста (0 = первый квест)
             };
             characters.push(character);
             document.getElementById("char-name").value = "";
             updateCharacterList();
             saveProgress();
-            window.Telegram.WebApp.showAlert(`Персонаж ${name} создан!`);
+            appendMessage(`Персонаж ${name} создан!`);
         }
 
         function updateCharacterList() {
@@ -461,29 +496,22 @@
             selectedCharacter = characters[index];
             createCharacterModel(selectedCharacter.role);
             createMissionObjects();
+            createItems();
             showScreen("game-screen");
-            appendMessage(`Выбран: ${selectedCharacter.name}.`);
+            showWelcomeMessage();
+            appendMessage(`Выбран: ${selectedCharacter.name}. Начни первую миссию!`);
         }
 
         function startMission() {
             if (!selectedCharacter) return;
-            const missions = {
-                "Хакер": [
-                    { target: [-5, -5], reward: 30 + selectedCharacter.stats.intelligence * 5, desc: "Взломать терминал", type: "hack" },
-                    { target: [7, -7], reward: 50 + selectedCharacter.stats.intelligence * 5, desc: "Взломать сервер", type: "hack" }
-                ],
-                "Наемник": [
-                    { target: [5, 5], reward: 40 + selectedCharacter.stats.strength * 5, desc: "Уничтожить дрона", type: "fight" },
-                    { target: [-7, 7], reward: 60 + selectedCharacter.stats.strength * 5, desc: "Ликвидировать цель", type: "fight" }
-                ],
-                "Техник": [
-                    { target: [0, 5], reward: 35 + selectedCharacter.stats.agility * 5, desc: "Починить дрон", type: "repair" },
-                    { target: [5, -5], reward: 55 + selectedCharacter.stats.agility * 5, desc: "Восстановить энергоблок", type: "repair" }
-                ]
-            };
-            const missionList = missions[selectedCharacter.role];
-            currentMission = missionList[Math.floor(Math.random() * missionList.length)];
-            appendMessage(`Цель: ${currentMission.desc}. Иди к (${currentMission.target[0]}, ${currentMission.target[1]}). Награда: ${currentMission.reward} кр.`);
+            const questList = quests[selectedCharacter.role];
+            const currentQuestIndex = selectedCharacter.questProgress;
+            if (currentQuestIndex >= questList.length) {
+                appendMessage("Все квесты завершены!");
+                return;
+            }
+            currentMission = questList[currentQuestIndex];
+            appendMessage(`Квест ${currentMission.id}: ${currentMission.desc}. Иди к (${currentMission.target[0]}, ${currentMission.target[1]}). Награда: ${currentMission.reward} кр.`);
         }
 
         function completeMission() {
@@ -493,28 +521,39 @@
             if (Math.abs(pos.x - targetX) < 1 && Math.abs(pos.z - targetZ) < 1) {
                 selectedCharacter.creds += currentMission.reward;
                 appendMessage(`⚡️ ${currentMission.desc}: +${currentMission.reward} кр.`);
-                window.Telegram.WebApp.showAlert(`Миссия выполнена! +${currentMission.reward} кредитов`);
+                window.Telegram.WebApp.showAlert(`Квест выполнен! +${currentMission.reward} кредитов`);
                 missionObjects.find(obj => obj.userData.type === currentMission.type && 
                     Math.abs(obj.position.x - targetX) < 1 && Math.abs(obj.position.z - targetZ) < 1).visible = false;
                 setTimeout(() => createMissionObjects(), 5000);
+                currentMission.completed = true;
+                selectedCharacter.questProgress += 1;
                 currentMission = null;
                 updateCharacterList();
                 saveProgress();
+                if (selectedCharacter.questProgress < quests[selectedCharacter.role].length) {
+                    appendMessage(`Следующий квест доступен! Нажми "Миссия".`);
+                } else {
+                    appendMessage("Поздравляем! Все квесты завершены!");
+                }
             } else {
-                appendMessage("💥 Не в точке!");
+                appendMessage("💥 Ты не в точке цели!");
             }
         }
 
-        // Прокачка персонажей
+        // Прокачка и инвентарь
         const upgradeMenu = document.getElementById("upgrade-menu");
         const upgradeStats = document.getElementById("upgrade-stats");
 
         function showUpgradeMenu() {
             if (!selectedCharacter) return;
+            let inventoryText = selectedCharacter.inventory.length > 0 
+                ? "Инвентарь: " + selectedCharacter.inventory.map(item => item.name).join(", ") 
+                : "Инвентарь пуст";
             upgradeStats.innerHTML = `${selectedCharacter.name}: ${selectedCharacter.creds} кр.<br>
                 Сила: ${selectedCharacter.stats.strength}<br>
                 Интеллект: ${selectedCharacter.stats.intelligence}<br>
-                Ловкость: ${selectedCharacter.stats.agility}`;
+                Ловкость: ${selectedCharacter.stats.agility}<br>
+                ${inventoryText}`;
             upgradeMenu.style.display = "block";
         }
 
@@ -572,7 +611,7 @@
                 setTimeout(() => {
                     updateCharacterList();
                     showScreen("character-screen");
-                }, 2000); // Экран загрузки показывается 2 секунды
+                }, 2000);
             });
         }
 
