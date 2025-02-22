@@ -64,7 +64,7 @@
             background: #ff00ff;
             color: #00ffcc;
             border: none;
-            padding: 10px 15px; /* Увеличил для удобства нажатия */
+            padding: 10px 15px;
             margin: 5px;
             cursor: pointer;
             font-size: 12px;
@@ -215,9 +215,9 @@
         <h1 class="neon-text">🌃 Кибер-Город</h1>
         <div id="create-character">
             <input id="char-name" type="text" placeholder="Имя" style="width: 80px; background: #1a1a33; color: #00ffcc; border: 1px solid #ff00ff; padding: 2px;">
-            <button onclick="createCharacter('Хакер')">Хакер</button>
-            <button onclick="createCharacter('Наемник')">Наемник</button>
-            <button onclick="createCharacter('Техник')">Техник</button>
+            <button ontouchstart="createCharacter('Хакер')">Хакер</button>
+            <button ontouchstart="createCharacter('Наемник')">Наемник</button>
+            <button ontouchstart="createCharacter('Техник')">Техник</button>
         </div>
         <div id="character-list"></div>
     </div>
@@ -421,7 +421,7 @@
             });
             enemyObjects.length = 0;
 
-            const rogueDrone = new THREE.Mesh(new THREE.SphereGeometry(0.7, 8, 8), new THREE.MeshBasicMaterial({ color: 0xff5555 }));
+            const rogueDrone = new THREE.Mesh(new THREE.SphereGeometry(0.7, 8, 8), new THREE.MeshBasicMaterial({ color: 0xff5555, emissive: 0x000000 }));
             rogueDrone.position.set(25, 0.7, 25);
             rogueDrone.userData = { type: "enemy", name: "Бунтующий дрон", stats: { health: 20, strength: 5 }, reward: 30 };
             const rogueDroneLabel = document.createElement("div");
@@ -432,7 +432,7 @@
             scene.add(rogueDrone);
             enemyObjects.push(rogueDrone);
 
-            const guard = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.5, 0.8), new THREE.MeshBasicMaterial({ color: 0x5555ff }));
+            const guard = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.5, 0.8), new THREE.MeshBasicMaterial({ color: 0x5555ff, emissive: 0x000000 }));
             guard.position.set(-25, 0.75, -25);
             guard.userData = { type: "enemy", name: "Охранник", stats: { health: 30, strength: 8 }, reward: 50 };
             const guardLabel = document.createElement("div");
@@ -443,7 +443,7 @@
             scene.add(guard);
             enemyObjects.push(guard);
 
-            const cyberBeast = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 1.2, 8), new THREE.MeshBasicMaterial({ color: 0xffaa00 }));
+            const cyberBeast = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 1.2, 8), new THREE.MeshBasicMaterial({ color: 0xffaa00, emissive: 0x000000 }));
             cyberBeast.position.set(25, 0.6, -25);
             cyberBeast.userData = { type: "enemy", name: "Кибер-зверь", stats: { health: 40, strength: 10 }, reward: 70 };
             const cyberBeastLabel = document.createElement("div");
@@ -577,15 +577,18 @@
             const raycaster = new THREE.Raycaster();
             raycaster.setFromCamera(mouse, camera);
 
-            const intersects = raycaster.intersectObjects(enemyObjects);
+            const intersects = raycaster.intersectObjects(enemyObjects, true); // true для рекурсивного поиска
             if (intersects.length > 0) {
                 const enemy = intersects[0].object;
+                console.log("Касание по врагу:", enemy.userData.name); // Отладка
                 if (selectedEnemy && selectedEnemy !== enemy) {
                     selectedEnemy.material.emissive.setHex(0x000000);
                 }
                 selectedEnemy = enemy;
                 enemy.material.emissive.setHex(0xffffff);
                 appendMessage(`${enemy.userData.name}: Здоровье ${enemy.userData.stats.health}`);
+            } else {
+                console.log("Касание не попало по врагу"); // Отладка
             }
         });
 
