@@ -166,8 +166,22 @@
         #health-fill {
             height: 100%;
             background: #00ffcc;
-            width: 100%; /* Начальная ширина */
+            width: 100%;
             transition: width 0.3s ease;
+        }
+        #mini-map {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 100px;
+            height: 100px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #ff00ff;
+            box-shadow: 0 0 10px #ff00ff;
+        }
+        #mini-map-canvas {
+            width: 100%;
+            height: 100%;
         }
     </style>
 </head>
@@ -198,6 +212,9 @@
             <div id="health-bar">
                 <div id="health-fill"></div>
             </div>
+        </div>
+        <div id="mini-map">
+            <canvas id="mini-map-canvas"></canvas>
         </div>
         <div id="welcome-message" class="neon-text">Добро пожаловать в Кибер-Город!</div>
         <div id="joystick">
@@ -234,6 +251,8 @@
         const createCharacterDiv = document.getElementById("create-character");
         const characterLevel = document.getElementById("character-level");
         const healthFill = document.getElementById("health-fill");
+        const miniMapCanvas = document.getElementById("mini-map-canvas");
+        const miniMapCtx = miniMapCanvas.getContext("2d");
 
         // Переменные игры
         let currentCharacter = null;
@@ -243,28 +262,35 @@
         let itemObjects = [];
         let enemyObjects = [];
 
-        // Квесты для каждого класса
+        // Квесты для каждого класса с новыми координатами
         const quests = {
             "Хакер": [
-                { id: 1, desc: "Взломай терминал в Неоновом районе", target: [-5, -5], reward: 50, type: "hack", completed: false },
-                { id: 2, desc: "Получи доступ к серверу корпорации", target: [7, -7], reward: 100, type: "hack", completed: false },
-                { id: 3, desc: "Раскрой тайну Neon Core", target: [0, 10], reward: 200, type: "hack", completed: false }
+                { id: 1, desc: "Взломай терминал в Неоновом районе", target: [-30, -30], reward: 50, type: "hack", completed: false },
+                { id: 2, desc: "Получи доступ к серверу в Корпоративном секторе", target: [20, 20], reward: 100, type: "hack", completed: false },
+                { id: 3, desc: "Раскрой тайну Neon Core на Свалке", target: [0, 40], reward: 200, type: "hack", completed: false }
             ],
             "Наемник": [
-                { id: 1, desc: "Уничтожь дрона на Свалке", target: [5, 5], reward: 60, type: "fight", completed: false },
-                { id: 2, desc: "Очисти район от охраны", target: [-7, 7], reward: 120, type: "fight", completed: false },
-                { id: 3, desc: "Ликвидируй главаря банды", target: [10, 0], reward: 250, type: "fight", completed: false }
+                { id: 1, desc: "Уничтожь дрона на Свалке", target: [30, 30], reward: 60, type: "fight", completed: false },
+                { id: 2, desc: "Очисти Неоновый район от охраны", target: [-20, -20], reward: 120, type: "fight", completed: false },
+                { id: 3, desc: "Ликвидируй главаря в Корпоративном секторе", target: [40, 0], reward: 250, type: "fight", completed: false }
             ],
             "Техник": [
-                { id: 1, desc: "Почини энергоблок в центре", target: [0, 5], reward: 55, type: "repair", completed: false },
-                { id: 2, desc: "Восстанови дрона-помощника", target: [5, -5], reward: 110, type: "repair", completed: false },
-                { id: 3, desc: "Перезапусти сеть города", target: [-10, 0], reward: 220, type: "repair", completed: false }
+                { id: 1, desc: "Почини энергоблок в центре", target: [0, 0], reward: 55, type: "repair", completed: false },
+                { id: 2, desc: "Восстанови дрона на Свалке", target: [20, -20], reward: 110, type: "repair", completed: false },
+                { id: 3, desc: "Перезапусти сеть в Неоновом районе", target: [-40, 0], reward: 220, type: "repair", completed: false }
             ]
         };
 
+        // Зоны карты
+        const zones = [
+            { name: "Неоновый район", x: -25, z: -25, color: "#ff00ff" },
+            { name: "Свалка", x: 25, z: 25, color: "#ffff00" },
+            { name: "Корпоративный сектор", x: 25, z: -25, color: "#00ffcc" }
+        ];
+
         // Настройка сцены Three.js
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 200); // Увеличили дальность
         const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "low-power" });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -274,18 +300,11 @@
         const textureLoader = new THREE.TextureLoader();
         const groundTexture = textureLoader.load('https://threejs.org/examples/textures/terrain/grasslight-big.jpg');
         groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
-        groundTexture.repeat.set(5, 5);
+        groundTexture.repeat.set(10, 10); // Увеличили повторение текстуры
         const buildingTexture = textureLoader.load('https://threejs.org/examples/textures/brick_diffuse.jpg');
 
-        // Освещение
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
-        scene.add(ambientLight);
-        const neonLight = new THREE.PointLight(0xff00ff, 1, 30);
-        neonLight.position.set(0, 10, 0);
-        scene.add(neonLight);
-
         // Земля
-        const groundGeometry = new THREE.PlaneGeometry(50, 50);
+        const groundGeometry = new THREE.PlaneGeometry(100, 100); // Увеличили карту до 100x100
         const groundMaterial = new THREE.MeshBasicMaterial({ map: groundTexture });
         const ground = new THREE.Mesh(groundGeometry, groundMaterial);
         ground.rotation.x = -Math.PI / 2;
@@ -293,22 +312,22 @@
 
         // Здания
         const buildingMaterial = new THREE.MeshBasicMaterial({ map: buildingTexture });
-        for (let i = 0; i < 10; i++) {
-            const height = Math.random() * 10 + 5;
-            const building = new THREE.Mesh(new THREE.BoxGeometry(3, height, 3), buildingMaterial);
-            building.position.set(Math.random() * 40 - 20, height / 2, Math.random() * 40 - 20);
+        for (let i = 0; i < 20; i++) { // Увеличили количество зданий
+            const height = Math.random() * 15 + 5;
+            const building = new THREE.Mesh(new THREE.BoxGeometry(5, height, 5), buildingMaterial);
+            building.position.set(Math.random() * 90 - 45, height / 2, Math.random() * 90 - 45);
             scene.add(building);
         }
 
         // Неоновый дождь
-        const particleCount = 200;
+        const particleCount = 500; // Увеличили количество частиц
         const particlesGeometry = new THREE.BufferGeometry();
         const positions = new Float32Array(particleCount * 3);
         const colors = new Float32Array(particleCount * 3);
         for (let i = 0; i < particleCount; i++) {
-            positions[i * 3] = Math.random() * 50 - 25;
+            positions[i * 3] = Math.random() * 100 - 50; // Увеличили диапазон
             positions[i * 3 + 1] = Math.random() * 20 + 5;
-            positions[i * 3 + 2] = Math.random() * 50 - 25;
+            positions[i * 3 + 2] = Math.random() * 100 - 50;
             colors[i * 3] = Math.random() > 0.5 ? 1 : 0;
             colors[i * 3 + 1] = 0;
             colors[i * 3 + 2] = Math.random() > 0.5 ? 1 : 0;
@@ -319,6 +338,13 @@
         const particles = new THREE.Points(particlesGeometry, particlesMaterial);
         scene.add(particles);
 
+        // Освещение
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+        scene.add(ambientLight);
+        const neonLight = new THREE.PointLight(0xff00ff, 1, 50); // Увеличили радиус света
+        neonLight.position.set(0, 10, 0);
+        scene.add(neonLight);
+
         // Интерактивные объекты миссий
         const missionObjects = [];
         function createMissionObjects() {
@@ -326,19 +352,19 @@
             missionObjects.length = 0;
 
             const terminal = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 1), new THREE.MeshBasicMaterial({ color: 0x00ffcc }));
-            terminal.position.set(-5, 1, -5);
+            terminal.position.set(-30, 1, -30); // Неоновый район
             terminal.userData = { type: "hack" };
             scene.add(terminal);
             missionObjects.push(terminal);
 
             const drone = new THREE.Mesh(new THREE.SphereGeometry(0.5, 8, 8), new THREE.MeshBasicMaterial({ color: 0xff00ff }));
-            drone.position.set(5, 1, 5);
+            drone.position.set(30, 1, 30); // Свалка
             drone.userData = { type: "fight" };
             scene.add(drone);
             missionObjects.push(drone);
 
             const energyBlock = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 1.5, 8), new THREE.MeshBasicMaterial({ color: 0xffff00 }));
-            energyBlock.position.set(0, 0.75, 5);
+            energyBlock.position.set(0, 0.75, 0); // Центр
             energyBlock.userData = { type: "repair" };
             scene.add(energyBlock);
             missionObjects.push(energyBlock);
@@ -350,19 +376,19 @@
             itemObjects.length = 0;
 
             const chip = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), new THREE.MeshBasicMaterial({ color: 0x00ffcc }));
-            chip.position.set(3, 0.25, -3);
+            chip.position.set(-20, 0.25, -20); // Неоновый район
             chip.userData = { type: "item", name: "Чип доступа", effect: { intelligence: 5 } };
             scene.add(chip);
             itemObjects.push(chip);
 
             const weapon = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), new THREE.MeshBasicMaterial({ color: 0xff00ff }));
-            weapon.position.set(-3, 0.25, 3);
+            weapon.position.set(20, 0.25, 20); // Свалка
             weapon.userData = { type: "item", name: "Кибер-оружие", effect: { strength: 5 } };
             scene.add(weapon);
             itemObjects.push(weapon);
 
             const module = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), new THREE.MeshBasicMaterial({ color: 0xffff00 }));
-            module.position.set(0, 0.25, -5);
+            module.position.set(20, 0.25, -20); // Корпоративный сектор
             module.userData = { type: "item", name: "Энерго-модуль", effect: { agility: 5 } };
             scene.add(module);
             itemObjects.push(module);
@@ -374,19 +400,19 @@
             enemyObjects.length = 0;
 
             const rogueDrone = new THREE.Mesh(new THREE.SphereGeometry(0.7, 8, 8), new THREE.MeshBasicMaterial({ color: 0xff5555 }));
-            rogueDrone.position.set(4, 0.7, 4);
+            rogueDrone.position.set(25, 0.7, 25); // Свалка
             rogueDrone.userData = { type: "enemy", name: "Бунтующий дрон", stats: { health: 20, strength: 5 }, reward: 30 };
             scene.add(rogueDrone);
             enemyObjects.push(rogueDrone);
 
             const guard = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.5, 0.8), new THREE.MeshBasicMaterial({ color: 0x5555ff }));
-            guard.position.set(-4, 0.75, -4);
+            guard.position.set(-25, 0.75, -25); // Неоновый район
             guard.userData = { type: "enemy", name: "Охранник", stats: { health: 30, strength: 8 }, reward: 50 };
             scene.add(guard);
             enemyObjects.push(guard);
 
             const cyberBeast = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 1.2, 8), new THREE.MeshBasicMaterial({ color: 0xffaa00 }));
-            cyberBeast.position.set(0, 0.6, 6);
+            cyberBeast.position.set(25, 0.6, -25); // Корпоративный сектор
             cyberBeast.userData = { type: "enemy", name: "Кибер-зверь", stats: { health: 40, strength: 10 }, reward: 70 };
             scene.add(cyberBeast);
             enemyObjects.push(cyberBeast);
@@ -447,14 +473,55 @@
             knob.style.top = "20px";
         });
 
+        // Мини-карта
+        function updateMiniMap() {
+            miniMapCtx.clearRect(0, 0, 100, 100);
+            miniMapCtx.fillStyle = "rgba(0, 0, 0, 0.5)";
+            miniMapCtx.fillRect(0, 0, 100, 100);
+
+            // Отрисовка зон
+            zones.forEach(zone => {
+                const x = (zone.x + 50) / 100 * 100;
+                const z = (zone.z + 50) / 100 * 100;
+                miniMapCtx.fillStyle = zone.color;
+                miniMapCtx.beginPath();
+                miniMapCtx.arc(x, z, 10, 0, Math.PI * 2);
+                miniMapCtx.fill();
+            });
+
+            // Позиция персонажа
+            if (currentCharacter) {
+                const playerX = (currentCharacter.position.x + 50) / 100 * 100;
+                const playerZ = (currentCharacter.position.z + 50) / 100 * 100;
+                miniMapCtx.fillStyle = "#ffffff";
+                miniMapCtx.beginPath();
+                miniMapCtx.arc(playerX, playerZ, 3, 0, Math.PI * 2);
+                miniMapCtx.fill();
+            }
+
+            // Текущая цель миссии
+            if (currentMission) {
+                const missionX = (currentMission.target[0] + 50) / 100 * 100;
+                const missionZ = (currentMission.target[1] + 50) / 100 * 100;
+                miniMapCtx.fillStyle = "#ff0000";
+                miniMapCtx.beginPath();
+                miniMapCtx.arc(missionX, missionZ, 3, 0, Math.PI * 2);
+                miniMapCtx.fill();
+            }
+        }
+
         // Анимация и проверка взаимодействия
         function animate() {
             requestAnimationFrame(animate);
 
             if (currentCharacter) {
-                const speed = 0.05;
+                const speed = 0.1; // Увеличили скорость для большой карты
                 currentCharacter.position.x += direction.x * speed;
                 currentCharacter.position.z += direction.y * speed;
+
+                // Ограничение выхода за пределы карты
+                currentCharacter.position.x = Math.max(-50, Math.min(50, currentCharacter.position.x));
+                currentCharacter.position.z = Math.max(-50, Math.min(50, currentCharacter.position.z));
 
                 if (direction.x !== 0 || direction.y !== 0) {
                     currentCharacter.rotation.y = Math.atan2(direction.x, direction.y);
@@ -464,7 +531,7 @@
                 camera.position.set(
                     currentCharacter.position.x,
                     currentCharacter.position.y + 8,
-                    currentCharacter.position.z + 10
+                    currentCharacter.position.z + 15 // Увеличили дистанцию камеры
                 );
                 camera.lookAt(currentCharacter.position);
 
@@ -486,8 +553,11 @@
                 // Обновление HUD
                 if (selectedCharacter) {
                     characterLevel.textContent = selectedCharacter.level || 1;
-                    healthFill.style.width = `${Math.max(0, (selectedCharacter.health / 100) * 100)}%`; // Убедимся, что не меньше 0%
+                    healthFill.style.width = `${Math.max(0, (selectedCharacter.health / 100) * 100)}%`;
                 }
+
+                // Обновление мини-карты
+                updateMiniMap();
             }
 
             const positions = particles.geometry.attributes.position.array;
@@ -495,8 +565,8 @@
                 positions[i * 3 + 1] -= 0.05;
                 if (positions[i * 3 + 1] < 0) {
                     positions[i * 3 + 1] = Math.random() * 20 + 5;
-                    positions[i * 3] = Math.random() * 50 - 25;
-                    positions[i * 3 + 2] = Math.random() * 50 - 25;
+                    positions[i * 3] = Math.random() * 100 - 50;
+                    positions[i * 3 + 2] = Math.random() * 100 - 50;
                 }
             }
             particles.geometry.attributes.position.needsUpdate = true;
@@ -579,8 +649,8 @@
             createEnemies();
             showScreen("game-screen");
             showWelcomeMessage();
-            appendMessage(`Выбран: ${selectedCharacter.name}. Начни первую миссию или сражайся с врагами!`);
-            updateHUD(); // Обновляем HUD при выборе персонажа
+            appendMessage(`Выбран: ${selectedCharacter.name}. Исследуй Кибер-Город и начни миссию!`);
+            updateHUD();
         }
 
         function startMission() {
@@ -670,7 +740,7 @@
             }
             updateCharacterList();
             saveProgress();
-            updateHUD(); // Обновляем HUD после боя
+            updateHUD();
         }
 
         // Обновление HUD
@@ -717,7 +787,7 @@
             updateCharacterList();
             saveProgress();
             showUpgradeMenu();
-            updateHUD(); // Обновляем HUD после прокачки
+            updateHUD();
         }
 
         // Сохранение и загрузка прогресса
