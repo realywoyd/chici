@@ -13,6 +13,8 @@
             color: #00ffcc;
             font-family: 'Courier New', monospace;
             touch-action: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
         .screen {
             position: absolute;
@@ -52,6 +54,8 @@
         #game-screen {
             width: 100%;
             height: 100%;
+            position: relative;
+            overflow: hidden;
         }
         .neon-text {
             text-shadow: 0 0 5px #00ffcc, 0 0 10px #ff00ff;
@@ -60,14 +64,15 @@
             background: #ff00ff;
             color: #00ffcc;
             border: none;
-            padding: 5px 10px;
-            margin: 2px;
+            padding: 10px 15px; /* Увеличил для удобства нажатия */
+            margin: 5px;
             cursor: pointer;
-            font-size: 10px;
+            font-size: 12px;
             text-shadow: 0 0 5px #00ffcc;
             transition: all 0.3s;
+            border-radius: 5px;
         }
-        button:hover {
+        button:hover, button:active {
             background: #00ffcc;
             color: #ff00ff;
         }
@@ -106,6 +111,9 @@
             position: absolute;
             bottom: 20px;
             right: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
         }
         #upgrade-menu {
             position: absolute;
@@ -119,6 +127,7 @@
             display: none;
             border-radius: 5px;
             text-align: center;
+            max-width: 90%;
         }
         #upgrade-menu h3 {
             margin: 0 0 10px;
@@ -183,6 +192,15 @@
             width: 100%;
             height: 100%;
         }
+        .name-label {
+            position: absolute;
+            color: #00ffcc;
+            font-size: 12px;
+            text-shadow: 0 0 5px #ff00ff;
+            pointer-events: none;
+            text-align: center;
+            width: 100px;
+        }
     </style>
 </head>
 <body>
@@ -221,18 +239,18 @@
             <div id="joystick-knob"></div>
         </div>
         <div id="action-buttons-mobile">
-            <button onclick="startMission()" style="width: 80px;">Миссия</button><br>
-            <button onclick="completeMission()" style="width: 80px;">Выполнить</button><br>
-            <button onclick="attackEnemy()" style="width: 80px;">Атака</button><br>
-            <button onclick="showUpgradeMenu()" style="width: 80px;">Прокачка</button>
+            <button ontouchstart="startMission()">Миссия</button>
+            <button ontouchstart="completeMission()">Выполнить</button>
+            <button ontouchstart="attackEnemy()">Атака</button>
+            <button ontouchstart="showUpgradeMenu()">Прокачка</button>
         </div>
         <div id="upgrade-menu">
             <h3 class="neon-text">Прокачка и Инвентарь</h3>
             <p id="upgrade-stats"></p>
-            <button onclick="upgradeStat('strength')">Сила +1 (100 кр.)</button>
-            <button onclick="upgradeStat('intelligence')">Интеллект +1 (100 кр.)</button>
-            <button onclick="upgradeStat('agility')">Ловкость +1 (100 кр.)</button>
-            <button onclick="hideUpgradeMenu()">Закрыть</button>
+            <button ontouchstart="upgradeStat('strength')">Сила +1 (100 кр.)</button>
+            <button ontouchstart="upgradeStat('intelligence')">Интеллект +1 (100 кр.)</button>
+            <button ontouchstart="upgradeStat('agility')">Ловкость +1 (100 кр.)</button>
+            <button ontouchstart="hideUpgradeMenu()">Закрыть</button>
         </div>
     </div>
 
@@ -261,8 +279,9 @@
         let currentMission = null;
         let itemObjects = [];
         let enemyObjects = [];
+        let selectedEnemy = null;
 
-        // Квесты для каждого класса с новыми координатами
+        // Квесты для каждого класса
         const quests = {
             "Хакер": [
                 { id: 1, desc: "Взломай терминал в Неоновом районе", target: [-30, -30], reward: 50, type: "hack", completed: false },
@@ -290,7 +309,7 @@
 
         // Настройка сцены Three.js
         const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 200); // Увеличили дальность
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 200);
         const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "low-power" });
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -300,11 +319,11 @@
         const textureLoader = new THREE.TextureLoader();
         const groundTexture = textureLoader.load('https://threejs.org/examples/textures/terrain/grasslight-big.jpg');
         groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
-        groundTexture.repeat.set(10, 10); // Увеличили повторение текстуры
+        groundTexture.repeat.set(10, 10);
         const buildingTexture = textureLoader.load('https://threejs.org/examples/textures/brick_diffuse.jpg');
 
         // Земля
-        const groundGeometry = new THREE.PlaneGeometry(100, 100); // Увеличили карту до 100x100
+        const groundGeometry = new THREE.PlaneGeometry(100, 100);
         const groundMaterial = new THREE.MeshBasicMaterial({ map: groundTexture });
         const ground = new THREE.Mesh(groundGeometry, groundMaterial);
         ground.rotation.x = -Math.PI / 2;
@@ -312,7 +331,7 @@
 
         // Здания
         const buildingMaterial = new THREE.MeshBasicMaterial({ map: buildingTexture });
-        for (let i = 0; i < 20; i++) { // Увеличили количество зданий
+        for (let i = 0; i < 20; i++) {
             const height = Math.random() * 15 + 5;
             const building = new THREE.Mesh(new THREE.BoxGeometry(5, height, 5), buildingMaterial);
             building.position.set(Math.random() * 90 - 45, height / 2, Math.random() * 90 - 45);
@@ -320,12 +339,12 @@
         }
 
         // Неоновый дождь
-        const particleCount = 500; // Увеличили количество частиц
+        const particleCount = 500;
         const particlesGeometry = new THREE.BufferGeometry();
         const positions = new Float32Array(particleCount * 3);
         const colors = new Float32Array(particleCount * 3);
         for (let i = 0; i < particleCount; i++) {
-            positions[i * 3] = Math.random() * 100 - 50; // Увеличили диапазон
+            positions[i * 3] = Math.random() * 100 - 50;
             positions[i * 3 + 1] = Math.random() * 20 + 5;
             positions[i * 3 + 2] = Math.random() * 100 - 50;
             colors[i * 3] = Math.random() > 0.5 ? 1 : 0;
@@ -341,7 +360,7 @@
         // Освещение
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
         scene.add(ambientLight);
-        const neonLight = new THREE.PointLight(0xff00ff, 1, 50); // Увеличили радиус света
+        const neonLight = new THREE.PointLight(0xff00ff, 1, 50);
         neonLight.position.set(0, 10, 0);
         scene.add(neonLight);
 
@@ -352,19 +371,19 @@
             missionObjects.length = 0;
 
             const terminal = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 1), new THREE.MeshBasicMaterial({ color: 0x00ffcc }));
-            terminal.position.set(-30, 1, -30); // Неоновый район
+            terminal.position.set(-30, 1, -30);
             terminal.userData = { type: "hack" };
             scene.add(terminal);
             missionObjects.push(terminal);
 
             const drone = new THREE.Mesh(new THREE.SphereGeometry(0.5, 8, 8), new THREE.MeshBasicMaterial({ color: 0xff00ff }));
-            drone.position.set(30, 1, 30); // Свалка
+            drone.position.set(30, 1, 30);
             drone.userData = { type: "fight" };
             scene.add(drone);
             missionObjects.push(drone);
 
             const energyBlock = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 1.5, 8), new THREE.MeshBasicMaterial({ color: 0xffff00 }));
-            energyBlock.position.set(0, 0.75, 0); // Центр
+            energyBlock.position.set(0, 0.75, 0);
             energyBlock.userData = { type: "repair" };
             scene.add(energyBlock);
             missionObjects.push(energyBlock);
@@ -376,19 +395,19 @@
             itemObjects.length = 0;
 
             const chip = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), new THREE.MeshBasicMaterial({ color: 0x00ffcc }));
-            chip.position.set(-20, 0.25, -20); // Неоновый район
+            chip.position.set(-20, 0.25, -20);
             chip.userData = { type: "item", name: "Чип доступа", effect: { intelligence: 5 } };
             scene.add(chip);
             itemObjects.push(chip);
 
             const weapon = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), new THREE.MeshBasicMaterial({ color: 0xff00ff }));
-            weapon.position.set(20, 0.25, 20); // Свалка
+            weapon.position.set(20, 0.25, 20);
             weapon.userData = { type: "item", name: "Кибер-оружие", effect: { strength: 5 } };
             scene.add(weapon);
             itemObjects.push(weapon);
 
             const module = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), new THREE.MeshBasicMaterial({ color: 0xffff00 }));
-            module.position.set(20, 0.25, -20); // Корпоративный сектор
+            module.position.set(20, 0.25, -20);
             module.userData = { type: "item", name: "Энерго-модуль", effect: { agility: 5 } };
             scene.add(module);
             itemObjects.push(module);
@@ -396,31 +415,52 @@
 
         // Враги на карте
         function createEnemies() {
-            enemyObjects.forEach(obj => scene.remove(obj));
+            enemyObjects.forEach(obj => {
+                scene.remove(obj);
+                if (obj.label) document.body.removeChild(obj.label);
+            });
             enemyObjects.length = 0;
 
             const rogueDrone = new THREE.Mesh(new THREE.SphereGeometry(0.7, 8, 8), new THREE.MeshBasicMaterial({ color: 0xff5555 }));
-            rogueDrone.position.set(25, 0.7, 25); // Свалка
+            rogueDrone.position.set(25, 0.7, 25);
             rogueDrone.userData = { type: "enemy", name: "Бунтующий дрон", stats: { health: 20, strength: 5 }, reward: 30 };
+            const rogueDroneLabel = document.createElement("div");
+            rogueDroneLabel.className = "name-label";
+            rogueDroneLabel.textContent = "Бунтующий дрон";
+            document.body.appendChild(rogueDroneLabel);
+            rogueDrone.label = rogueDroneLabel;
             scene.add(rogueDrone);
             enemyObjects.push(rogueDrone);
 
             const guard = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.5, 0.8), new THREE.MeshBasicMaterial({ color: 0x5555ff }));
-            guard.position.set(-25, 0.75, -25); // Неоновый район
+            guard.position.set(-25, 0.75, -25);
             guard.userData = { type: "enemy", name: "Охранник", stats: { health: 30, strength: 8 }, reward: 50 };
+            const guardLabel = document.createElement("div");
+            guardLabel.className = "name-label";
+            guardLabel.textContent = "Охранник";
+            document.body.appendChild(guardLabel);
+            guard.label = guardLabel;
             scene.add(guard);
             enemyObjects.push(guard);
 
             const cyberBeast = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 1.2, 8), new THREE.MeshBasicMaterial({ color: 0xffaa00 }));
-            cyberBeast.position.set(25, 0.6, -25); // Корпоративный сектор
+            cyberBeast.position.set(25, 0.6, -25);
             cyberBeast.userData = { type: "enemy", name: "Кибер-зверь", stats: { health: 40, strength: 10 }, reward: 70 };
+            const cyberBeastLabel = document.createElement("div");
+            cyberBeastLabel.className = "name-label";
+            cyberBeastLabel.textContent = "Кибер-зверь";
+            document.body.appendChild(cyberBeastLabel);
+            cyberBeast.label = cyberBeastLabel;
             scene.add(cyberBeast);
             enemyObjects.push(cyberBeast);
         }
 
         // Создание модели персонажа
         function createCharacterModel(role) {
-            if (currentCharacter) scene.remove(currentCharacter);
+            if (currentCharacter) {
+                scene.remove(currentCharacter);
+                if (currentCharacter.label) document.body.removeChild(currentCharacter.label);
+            }
             const group = new THREE.Group();
             let color = role === "Хакер" ? 0x00ffcc : role === "Наемник" ? 0xff00ff : 0xffff00;
             const material = new THREE.MeshBasicMaterial({ color });
@@ -435,6 +475,11 @@
 
             currentCharacter = group;
             currentCharacter.position.set(0, 0, 0);
+            const nameLabel = document.createElement("div");
+            nameLabel.className = "name-label";
+            nameLabel.textContent = selectedCharacter ? selectedCharacter.name : "Игрок";
+            document.body.appendChild(nameLabel);
+            currentCharacter.label = nameLabel;
             scene.add(currentCharacter);
         }
 
@@ -479,7 +524,6 @@
             miniMapCtx.fillStyle = "rgba(0, 0, 0, 0.5)";
             miniMapCtx.fillRect(0, 0, 100, 100);
 
-            // Отрисовка зон
             zones.forEach(zone => {
                 const x = (zone.x + 50) / 100 * 100;
                 const z = (zone.z + 50) / 100 * 100;
@@ -489,7 +533,6 @@
                 miniMapCtx.fill();
             });
 
-            // Позиция персонажа
             if (currentCharacter) {
                 const playerX = (currentCharacter.position.x + 50) / 100 * 100;
                 const playerZ = (currentCharacter.position.z + 50) / 100 * 100;
@@ -499,7 +542,6 @@
                 miniMapCtx.fill();
             }
 
-            // Текущая цель миссии
             if (currentMission) {
                 const missionX = (currentMission.target[0] + 50) / 100 * 100;
                 const missionZ = (currentMission.target[1] + 50) / 100 * 100;
@@ -510,16 +552,52 @@
             }
         }
 
+        // Преобразование 3D-координат в 2D-экранные
+        function toScreenPosition(obj, camera) {
+            const vector = new THREE.Vector3();
+            obj.updateMatrixWorld();
+            vector.setFromMatrixPosition(obj.matrixWorld);
+            vector.project(camera);
+            const widthHalf = window.innerWidth / 2;
+            const heightHalf = window.innerHeight / 2;
+            return {
+                x: (vector.x * widthHalf) + widthHalf,
+                y: -(vector.y * heightHalf) + heightHalf
+            };
+        }
+
+        // Обработка касания по монстру
+        renderer.domElement.addEventListener("touchstart", (event) => {
+            event.preventDefault();
+            const touch = event.touches[0];
+            const mouse = new THREE.Vector2();
+            mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
+
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(mouse, camera);
+
+            const intersects = raycaster.intersectObjects(enemyObjects);
+            if (intersects.length > 0) {
+                const enemy = intersects[0].object;
+                if (selectedEnemy && selectedEnemy !== enemy) {
+                    selectedEnemy.material.emissive.setHex(0x000000);
+                }
+                selectedEnemy = enemy;
+                enemy.material.emissive.setHex(0xffffff);
+                appendMessage(`${enemy.userData.name}: Здоровье ${enemy.userData.stats.health}`);
+            }
+        });
+
         // Анимация и проверка взаимодействия
         function animate() {
             requestAnimationFrame(animate);
 
             if (currentCharacter) {
-                const speed = 0.1; // Увеличили скорость для большой карты
+                const speed = 0.1;
                 currentCharacter.position.x += direction.x * speed;
                 currentCharacter.position.z += direction.y * speed;
 
-                // Ограничение выхода за пределы карты
                 currentCharacter.position.x = Math.max(-50, Math.min(50, currentCharacter.position.x));
                 currentCharacter.position.z = Math.max(-50, Math.min(50, currentCharacter.position.z));
 
@@ -531,11 +609,14 @@
                 camera.position.set(
                     currentCharacter.position.x,
                     currentCharacter.position.y + 8,
-                    currentCharacter.position.z + 15 // Увеличили дистанцию камеры
+                    currentCharacter.position.z + 15
                 );
                 camera.lookAt(currentCharacter.position);
 
-                // Проверка подбора предметов
+                const playerScreenPos = toScreenPosition(currentCharacter, camera);
+                currentCharacter.label.style.left = `${playerScreenPos.x - 50}px`;
+                currentCharacter.label.style.top = `${playerScreenPos.y - 20}px`;
+
                 itemObjects.forEach((item, index) => {
                     const dist = Math.sqrt(
                         Math.pow(currentCharacter.position.x - item.position.x, 2) +
@@ -550,13 +631,17 @@
                     }
                 });
 
-                // Обновление HUD
-                if (selectedCharacter) {
-                    characterLevel.textContent = selectedCharacter.level || 1;
-                    healthFill.style.width = `${Math.max(0, (selectedCharacter.health / 100) * 100)}%`;
-                }
+                enemyObjects.forEach(enemy => {
+                    if (enemy.visible) {
+                        const enemyScreenPos = toScreenPosition(enemy, camera);
+                        enemy.label.style.left = `${enemyScreenPos.x - 50}px`;
+                        enemy.label.style.top = `${enemyScreenPos.y - 20}px`;
+                    } else {
+                        enemy.label.style.display = "none";
+                    }
+                });
 
-                // Обновление мини-карты
+                updateHUD();
                 updateMiniMap();
             }
 
@@ -632,7 +717,7 @@
             charList.innerHTML = "<h3>Персонажи:</h3>";
             characters.forEach((char, index) => {
                 charList.innerHTML += `
-                    <button onclick="selectCharacter(${index})">
+                    <button ontouchstart="selectCharacter(${index})">
                         ${char.name} (${char.role}) - ${char.creds} кр. [Зд:${char.health}] Ур.${char.level}
                         [С:${char.stats.strength} И:${char.stats.intelligence} Л:${char.stats.agility}]
                     </button><br>`;
@@ -726,7 +811,9 @@
                     selectedCharacter.creds += nearestEnemy.userData.reward;
                     appendMessage(`⚡️ ${nearestEnemy.userData.name} побеждён! +${nearestEnemy.userData.reward} кр.`);
                     nearestEnemy.visible = false;
+                    document.body.removeChild(nearestEnemy.label);
                     enemyObjects = enemyObjects.filter(e => e !== nearestEnemy);
+                    if (selectedEnemy === nearestEnemy) selectedEnemy = null;
                     saveProgress();
                 }
             } else {
