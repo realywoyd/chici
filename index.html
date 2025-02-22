@@ -160,10 +160,13 @@
             background: #333;
             border: 1px solid #ff00ff;
             margin-top: 5px;
+            position: relative;
+            overflow: hidden;
         }
         #health-fill {
             height: 100%;
             background: #00ffcc;
+            width: 100%; /* Начальная ширина */
             transition: width 0.3s ease;
         }
     </style>
@@ -193,7 +196,7 @@
             <div id="character-avatar">😊</div>
             <div id="character-level">1</div>
             <div id="health-bar">
-                <div id="health-fill" style="width: 100%;"></div>
+                <div id="health-fill"></div>
             </div>
         </div>
         <div id="welcome-message" class="neon-text">Добро пожаловать в Кибер-Город!</div>
@@ -483,7 +486,7 @@
                 // Обновление HUD
                 if (selectedCharacter) {
                     characterLevel.textContent = selectedCharacter.level || 1;
-                    healthFill.style.width = `${(selectedCharacter.health / 100) * 100}%`;
+                    healthFill.style.width = `${Math.max(0, (selectedCharacter.health / 100) * 100)}%`; // Убедимся, что не меньше 0%
                 }
             }
 
@@ -538,7 +541,7 @@
                 role,
                 creds: 0,
                 health: 100,
-                level: 1, // Начальный уровень
+                level: 1,
                 stats: {
                     strength: role === "Наемник" ? 10 : 5,
                     intelligence: role === "Хакер" ? 10 : 5,
@@ -577,6 +580,7 @@
             showScreen("game-screen");
             showWelcomeMessage();
             appendMessage(`Выбран: ${selectedCharacter.name}. Начни первую миссию или сражайся с врагами!`);
+            updateHUD(); // Обновляем HUD при выборе персонажа
         }
 
         function startMission() {
@@ -666,6 +670,15 @@
             }
             updateCharacterList();
             saveProgress();
+            updateHUD(); // Обновляем HUD после боя
+        }
+
+        // Обновление HUD
+        function updateHUD() {
+            if (selectedCharacter) {
+                characterLevel.textContent = selectedCharacter.level || 1;
+                healthFill.style.width = `${Math.max(0, (selectedCharacter.health / 100) * 100)}%`;
+            }
         }
 
         // Прокачка и инвентарь
@@ -704,6 +717,7 @@
             updateCharacterList();
             saveProgress();
             showUpgradeMenu();
+            updateHUD(); // Обновляем HUD после прокачки
         }
 
         // Сохранение и загрузка прогресса
