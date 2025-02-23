@@ -424,7 +424,7 @@
             const rogueDroneMaterial = new THREE.MeshBasicMaterial({ color: 0xff5555 });
             const rogueDrone = new THREE.Mesh(new THREE.SphereGeometry(0.7, 8, 8), rogueDroneMaterial);
             rogueDrone.position.set(25, 0.7, 25);
-            rogueDrone.userData = { type: "enemy", name: "Бунтующий дрон", stats: { health: 20, strength: 5 }, reward: 30, originalScale: rogueDrone.scale.clone() };
+            rogueDrone.userData = { type: "enemy", name: "Бунтующий дрон", stats: { health: 20, strength: 5 }, reward: 30, originalColor: 0xff5555 };
             const rogueDroneLabel = document.createElement("div");
             rogueDroneLabel.className = "name-label";
             rogueDroneLabel.textContent = "Бунтующий дрон";
@@ -436,7 +436,7 @@
             const guardMaterial = new THREE.MeshBasicMaterial({ color: 0x5555ff });
             const guard = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.5, 0.8), guardMaterial);
             guard.position.set(-25, 0.75, -25);
-            guard.userData = { type: "enemy", name: "Охранник", stats: { health: 30, strength: 8 }, reward: 50, originalScale: guard.scale.clone() };
+            guard.userData = { type: "enemy", name: "Охранник", stats: { health: 30, strength: 8 }, reward: 50, originalColor: 0x5555ff };
             const guardLabel = document.createElement("div");
             guardLabel.className = "name-label";
             guardLabel.textContent = "Охранник";
@@ -448,7 +448,7 @@
             const cyberBeastMaterial = new THREE.MeshBasicMaterial({ color: 0xffaa00 });
             const cyberBeast = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 1.2, 8), cyberBeastMaterial);
             cyberBeast.position.set(25, 0.6, -25);
-            cyberBeast.userData = { type: "enemy", name: "Кибер-зверь", stats: { health: 40, strength: 10 }, reward: 70, originalScale: cyberBeast.scale.clone() };
+            cyberBeast.userData = { type: "enemy", name: "Кибер-зверь", stats: { health: 40, strength: 10 }, reward: 70, originalColor: 0xffaa00 };
             const cyberBeastLabel = document.createElement("div");
             cyberBeastLabel.className = "name-label";
             cyberBeastLabel.textContent = "Кибер-зверь";
@@ -557,47 +557,55 @@
             }
         }
 
-        // Преобразование 3D-координат в 2D-экранные
-        function toScreenPosition(obj, camera) {
+        // Преобразование экранных координат в 3D-позицию
+        function screenToWorld(touchX, touchY) {
             const vector = new THREE.Vector3();
-            obj.updateMatrixWorld();
-            vector.setFromMatrixPosition(obj.matrixWorld);
-            vector.project(camera);
-            const widthHalf = window.innerWidth / 2;
-            const heightHalf = window.innerHeight / 2;
-            return {
-                x: (vector.x * widthHalf) + widthHalf,
-                y: -(vector.y * heightHalf) + heightHalf
-            };
+            vector.set(
+                (touchX / window.innerWidth) * 2 - 1,
+                -(touchY / window.innerHeight) * 2 + 1,
+                0.5
+            );
+            vector.unproject(camera);
+            const dir = vector.sub(camera.position).normalize();
+            const distance = -camera.position.y / dir.y; // Проекция на плоскость земли (y = 0)
+            const pos = camera.position.clone().add(dir.multiplyScalar(distance));
+            return pos;
         }
 
         // Обработка касания по монстру
         renderer.domElement.addEventListener("touchstart", (event) => {
             event.preventDefault();
             const touch = event.touches[0];
-            const mouse = new THREE.Vector2();
-            mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
-            mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
+            const touchWorldPos = screenToWorld(touch.clientX, touch.clientY);
 
-            appendMessage(`Касание: x=${mouse.x.toFixed(2)}, y=${mouse.y.toFixed(2)}`);
+            appendMessage(`Касание: x=${touchWorldPos.x.toFixed(2)}, z=${touchWorldPos.z.toFixed(2)}`);
 
-            const raycaster = new THREE.Raycaster();
-            raycaster.setFromCamera(mouse, camera);
+            let closestEnemy = null;
+            let minDist = Infinity;
 
-            const intersects = raycaster.intersectObjects(enemyObjects, true);
-            if (intersects.length > 0) {
-                const enemy = intersects[0].object;
-                appendMessage(`Попадание: ${enemy.userData.name} на ${intersects[0].point.x.toFixed(2)}, ${intersects[0].point.z.toFixed(2)}`);
-                if (selectedEnemy && selectedEnemy !== enemy) {
-                    selectedEnemy.scale.copy(selectedEnemy.userData.originalScale);
-                    selectedEnemy.material.color.setHex(selectedEnemy.material.color.getHex());
+            enemyObjects.forEach(enemy => {
+                if (enemy.visible) {
+                    const dist = Math.sqrt(
+                        Math.pow(touchWorldPos.x - enemy.position.x, 2) +
+                        Math.pow(touchWorldPos.z - enemy.position.z, 2)
+                    );
+                    if (dist < minDist && dist < 5) { // Радиус выбора 5 единиц
+                        minDist = dist;
+                        closestEnemy = enemy;
+                    }
                 }
-                selectedEnemy = enemy;
-                enemy.scale.setScalar(1.2); // Увеличение размера
-                enemy.material.color.setHex(0xffffff); // Изменение цвета на белый
-                appendMessage(`${enemy.userData.name}: Здоровье ${enemy.userData.stats.health}`);
+            });
+
+            if (closestEnemy) {
+                appendMessage(`Выбран: ${closestEnemy.userData.name}`);
+                if (selectedEnemy && selectedEnemy !== closestEnemy) {
+                    selectedEnemy.material.color.setHex(selectedEnemy.userData.originalColor);
+                }
+                selectedEnemy = closestEnemy;
+                selectedEnemy.material.color.setHex(0xffffff); // Белый цвет для выделения
+                appendMessage(`${selectedEnemy.userData.name}: Здоровье ${selectedEnemy.userData.stats.health}`);
             } else {
-                appendMessage("Нет пересечений с врагами");
+                appendMessage("Нет врагов в зоне касания");
             }
         });
 
@@ -625,9 +633,9 @@
                 );
                 camera.lookAt(currentCharacter.position);
 
-                const playerScreenPos = toScreenPosition(currentCharacter, camera);
-                currentCharacter.label.style.left = `${playerScreenPos.x - 50}px`;
-                currentCharacter.label.style.top = `${playerScreenPos.y - 20}px`;
+                const playerScreenPos = screenToWorld(window.innerWidth / 2, window.innerHeight / 2); // Центр экрана для примера
+                currentCharacter.label.style.left = `${window.innerWidth / 2 - 50}px`;
+                currentCharacter.label.style.top = `${window.innerHeight / 2 - 20}px`;
 
                 itemObjects.forEach((item, index) => {
                     const dist = Math.sqrt(
