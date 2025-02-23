@@ -421,7 +421,7 @@
             });
             enemyObjects.length = 0;
 
-            const rogueDroneMaterial = new THREE.MeshBasicMaterial({ color: 0xff5555, emissive: 0x000000 });
+            const rogueDroneMaterial = new THREE.MeshBasicMaterial({ color: 0xff5555 });
             const rogueDrone = new THREE.Mesh(new THREE.SphereGeometry(0.7, 8, 8), rogueDroneMaterial);
             rogueDrone.position.set(25, 0.7, 25);
             rogueDrone.userData = { type: "enemy", name: "Бунтующий дрон", stats: { health: 20, strength: 5 }, reward: 30, originalScale: rogueDrone.scale.clone() };
@@ -433,7 +433,7 @@
             scene.add(rogueDrone);
             enemyObjects.push(rogueDrone);
 
-            const guardMaterial = new THREE.MeshBasicMaterial({ color: 0x5555ff, emissive: 0x000000 });
+            const guardMaterial = new THREE.MeshBasicMaterial({ color: 0x5555ff });
             const guard = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.5, 0.8), guardMaterial);
             guard.position.set(-25, 0.75, -25);
             guard.userData = { type: "enemy", name: "Охранник", stats: { health: 30, strength: 8 }, reward: 50, originalScale: guard.scale.clone() };
@@ -445,7 +445,7 @@
             scene.add(guard);
             enemyObjects.push(guard);
 
-            const cyberBeastMaterial = new THREE.MeshBasicMaterial({ color: 0xffaa00, emissive: 0x000000 });
+            const cyberBeastMaterial = new THREE.MeshBasicMaterial({ color: 0xffaa00 });
             const cyberBeast = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 1.2, 8), cyberBeastMaterial);
             cyberBeast.position.set(25, 0.6, -25);
             cyberBeast.userData = { type: "enemy", name: "Кибер-зверь", stats: { health: 40, strength: 10 }, reward: 70, originalScale: cyberBeast.scale.clone() };
@@ -456,6 +456,8 @@
             cyberBeast.label = cyberBeastLabel;
             scene.add(cyberBeast);
             enemyObjects.push(cyberBeast);
+
+            appendMessage(`Враги созданы: ${enemyObjects.length} объектов`);
         }
 
         // Создание модели персонажа
@@ -569,7 +571,7 @@
             };
         }
 
-        // Обработка касания по монстру с отладкой
+        // Обработка касания по монстру
         renderer.domElement.addEventListener("touchstart", (event) => {
             event.preventDefault();
             const touch = event.touches[0];
@@ -577,7 +579,7 @@
             mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
 
-            appendMessage(`Касание: x=${mouse.x.toFixed(2)}, y=${mouse.y.toFixed(2)}`); // Отладка координат
+            appendMessage(`Касание: x=${mouse.x.toFixed(2)}, y=${mouse.y.toFixed(2)}`);
 
             const raycaster = new THREE.Raycaster();
             raycaster.setFromCamera(mouse, camera);
@@ -585,17 +587,17 @@
             const intersects = raycaster.intersectObjects(enemyObjects, true);
             if (intersects.length > 0) {
                 const enemy = intersects[0].object;
-                appendMessage(`Выбран враг: ${enemy.userData.name}`); // Подтверждение выбора
+                appendMessage(`Попадание: ${enemy.userData.name} на ${intersects[0].point.x.toFixed(2)}, ${intersects[0].point.z.toFixed(2)}`);
                 if (selectedEnemy && selectedEnemy !== enemy) {
-                    selectedEnemy.material.emissive.setHex(0x000000);
-                    selectedEnemy.scale.copy(selectedEnemy.userData.originalScale); // Сброс масштаба
+                    selectedEnemy.scale.copy(selectedEnemy.userData.originalScale);
+                    selectedEnemy.material.color.setHex(selectedEnemy.material.color.getHex());
                 }
                 selectedEnemy = enemy;
-                enemy.material.emissive.setHex(0xffffff); // Подсветка
-                enemy.scale.setScalar(1.2); // Увеличение на 20% как дополнительное выделение
+                enemy.scale.setScalar(1.2); // Увеличение размера
+                enemy.material.color.setHex(0xffffff); // Изменение цвета на белый
                 appendMessage(`${enemy.userData.name}: Здоровье ${enemy.userData.stats.health}`);
             } else {
-                appendMessage("Касание не попало по врагу");
+                appendMessage("Нет пересечений с врагами");
             }
         });
 
